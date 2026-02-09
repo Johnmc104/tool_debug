@@ -1,7 +1,12 @@
 build/
 .wave_run/
+.vsignal_run/
 *.o
 *.d
-test/tb_top.fsdb
-vwaveLog
-verdiLog
+test_vwave/tb_top.fsdb
+test_vsignal/simv
+test_vsignal/simv.daidir/
+test_vsignal/csrc/
+vwaveLog/
+verdiLog/
+vsignalLog/

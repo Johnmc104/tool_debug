@@ -4,14 +4,14 @@
 #
 # Usage:
 #   cd <project_root>
-#   bash test/run_test.sh
+#   bash test_vwave/run_test.sh
 # ───────────────────────────────────────────────────────────────────────────────
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 VWAVE="$PROJECT_DIR/build/bin/vwave"
-FSDB="$PROJECT_DIR/test/tb_top.fsdb"
+FSDB="$PROJECT_DIR/test_vwave/tb_top.fsdb"
 RUNDIR="$PROJECT_DIR/.wave_run"
 TIMEOUT_CMD="timeout 10"
 
@@ -117,8 +117,8 @@ if assert_has "$OUT" "\"pid\":$PID"; then pass; else fail "$OUT"; fi
 
 log_section "T3: Auto-detect"
 
-# Run from test/ dir (parent of .wave_run)
-cd "$PROJECT_DIR/test"
+# Run from test_vwave/ dir (parent of .wave_run)
+cd "$PROJECT_DIR/test_vwave"
 
 OUT=$($TIMEOUT_CMD "$VWAVE" status --json 2>/dev/null || true)
 
@@ -289,7 +289,7 @@ fi
 
 log_section "T11: Signal File Input"
 
-SIGFILE="$PROJECT_DIR/test/test_signals.txt"
+SIGFILE="$PROJECT_DIR/test_vwave/test_signals.txt"
 cat > "$SIGFILE" << 'EOF'
 # Test signal list
 tb.intf.clk

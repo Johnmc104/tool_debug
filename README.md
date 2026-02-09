@@ -1,177 +1,242 @@
-# vwave — FSDB Waveform Reader
+# tool_debug — FSDB 波形读取 & 网表信号追踪工具集
 
-基于 Synopsys Verdi NPI 接口的命令行波形读取工具。单一可执行文件，内置驻留式后台服务，首次加载后续查询无需重复指定文件路径。
+基于 Synopsys Verdi NPI 接口的命令行工具集，包含两个独立二进制：
+
+| 工具 | 用途 | 数据源 | 运行时目录 |
+|------|------|--------|------------|
+| **vwave** | FSDB 波形值读取 | `.fsdb` 波形文件 | `.wave_run/` |
+| **vsignal** | 网表信号驱动/负载追踪 | VCS KDB 数据库 或 RTL 源文件 | `.vsignal_run/` |
+
+两者共享相同的架构模式（fork 驻留服务 + UDS 通信），但功能完全独立，可同时运行互不干扰。
 
 ## 快速开始
 
 ```bash
-# 编译
+# 编译全部
 make
 
-# 加载波形
-vwave open test/tb_top.fsdb
-
-# 查询（自动检测运行中的服务，无需指定文件）
+# ── vwave: 波形读取 ──
+vwave open test_vwave/tb_top.fsdb
 vwave info
 vwave scopes
-vwave scopes tb
 vwave signals tb.intf
 vwave get-value -s tb.intf.clk -t 500000
 vwave get-value -s tb.intf.paddr -t 1500000 -r hex
-vwave get-value -s tb.intf.clk -b 0 -e 100000
-
-# 批量读取
-vwave get-value -f signals.txt -t 1000 -r hex
-
-# 关闭波形
 vwave close
+
+# ── vsignal: 信号追踪 ──
+vsignal open -dbdir simv.daidir         # 加载 VCS KDB 数据库
+vsignal driver top.u_sub.data_out       # 追踪信号驱动源
+vsignal load   top.data_in              # 追踪信号负载
+vsignal fanin  top.data_out             # FanIn 寄存器连接
+vsignal fanout top.clk                  # FanOut 寄存器连接
+vsignal trace  top.data_in top.data_out # 信号间路径追踪
+vsignal conn   top.u_sub                # 实例端口连接
+vsignal close
 ```
 
-## 核心特性
-
-| 特性 | 说明 |
-|------|------|
-| **单一二进制** | `vwave` 同时包含后台服务和客户端逻辑，无需单独启动服务 |
-| **自动检测** | 首次 `open` 后，后续命令自动从 CWD 向上搜索 `.wave_run/` 定位服务 |
-| **波形切换** | `vwave open other.fsdb` 自动关闭旧波形并加载新文件 |
-| **常驻加速** | NPI 加载一次，后续查询走 Unix Socket 通信，毫秒级响应 |
-| **JSON 输出** | 所有命令支持 `--json` 输出，便于脚本集成 |
-
-## 命令参考
-
-### 波形生命周期
+## 编译 & 测试
 
 ```bash
-vwave open <file.fsdb>      # 加载波形（启动后台服务）
-vwave close                  # 关闭波形（停止服务）
-vwave status                 # 查看服务状态
+make                 # 编译 vwave + vsignal
+make vwave           # 仅编译 vwave
+make vsignal         # 仅编译 vsignal
+make clean           # 清理构建产物
+
+make test            # 运行全部测试（vwave 62 项 + vsignal 27 项）
+make test-vwave      # 仅运行 vwave 测试
+make test-vsignal    # 仅运行 vsignal 测试
 ```
 
-### 文件与层次查询
+---
+
+## vwave — FSDB 波形读取
+
+### 功能
+
+从 FSDB 波形文件中读取信号值、层次结构信息，支持单点/范围/批量查询。
+
+### 命令参考
 
 ```bash
-vwave info                              # FSDB 文件信息（时间范围、版本等）
-vwave scopes                            # 列出顶层层次
-vwave scopes <path>                     # 列出子层次
-vwave signals <path>                    # 列出指定层次下的信号
-vwave signal-info <name>                # 查看信号详情（位宽、方向）
+vwave open  <file.fsdb>                    # 加载波形（启动后台服务）
+vwave close                                # 关闭波形（停止服务）
+vwave status                               # 查看服务状态
+vwave info                                 # FSDB 文件信息（时间范围、版本等）
+vwave scopes  [<path>]                     # 列出层次作用域
+vwave signals <path>                       # 列出指定层次下的信号
+vwave signal-info <name>                   # 查看信号详情（位宽、方向）
+vwave get-value [options]                  # 读取信号值
 ```
 
-### 信号值读取
-
-```bash
-# 单信号 @ 时间点
-vwave get-value -s <signal> -t <time>
-
-# 多信号 @ 时间点
-vwave get-value -s <sig1> -s <sig2> -t <time>
-
-# 信号列表文件 @ 时间点
-vwave get-value -f <signal_file> -t <time>
-
-# 单信号 @ 时间范围（返回所有变化点）
-vwave get-value -s <signal> -b <begin> -e <end>
-
-# 指定进制：bin(默认), hex, oct, dec
-vwave get-value -s <signal> -t <time> -r hex
-```
-
-### 选项缩写
+### Get-value 选项
 
 | 长格式 | 缩写 | 说明 |
 |--------|------|------|
-| `--signal` | `-s` | 信号全路径 |
+| `--signal` | `-s` | 信号全路径（可重复） |
 | `--signal-file` | `-f` | 信号列表文件 |
 | `--time` | `-t` | 时间点 |
 | `--begin` | `-b` | 范围起始 |
 | `--end` | `-e` | 范围结束 |
-| `--radix` | `-r` | 进制格式 |
-| `--json` | | JSON 输出 |
-| `--fsdb` | | 显式指定波形路径（跳过自动检测） |
+| `--radix` | `-r` | 进制格式：bin/hex/oct/dec |
+
+### 示例
+
+```bash
+# 单信号 @ 时间点
+vwave get-value -s tb.intf.clk -t 500000
+
+# 多信号 @ 时间点（hex 格式）
+vwave get-value -s tb.intf.paddr -s tb.intf.pwdata -t 1500000 -r hex
+
+# 信号列表文件 @ 时间点
+vwave get-value -f signals.txt -t 1000 -r hex
+
+# 单信号 @ 时间范围（返回所有变化点）
+vwave get-value -s tb.intf.clk -b 0 -e 100000
+```
+
+---
+
+## vsignal — 网表信号追踪
+
+### 功能
+
+基于 NPI 网表 L1 API，对 VCS 编译生成的 KDB 数据库进行静态信号追踪分析。
+
+### KDB 数据库生成
+
+```bash
+# VCS 编译时加 -kdb 即可生成 KDB 数据库
+vcs -sverilog -kdb design.v -o simv
+# 生成 simv.daidir/kdb.elab++
+```
+
+### 命令参考
+
+```bash
+vsignal open  -dbdir <kdb_dir>             # 从 KDB 数据库加载设计
+vsignal open  <source.v> [...]             # 从 RTL 源文件加载设计
+vsignal close                              # 关闭设计
+vsignal status                             # 查看服务状态
+vsignal info                               # 查看设计信息
+
+vsignal driver  <signal>                   # 追踪信号驱动源
+vsignal load    <signal>                   # 追踪信号负载
+vsignal fanin   <signal>                   # FanIn 寄存器连接
+vsignal fanout  <signal>                   # FanOut 寄存器连接
+vsignal trace   <from_sig> <to_sig>        # 信号间路径追踪
+vsignal conn    <instance>                 # 实例端口连接
+```
+
+### 追踪选项
+
+| 选项 | 适用命令 | 说明 |
+|------|----------|------|
+| `--assign-cell` | driver, load, trace | 穿透 assign 单元 |
+| `--pass-mod` | driver, load | 穿透模块边界 |
+| `--stop-at-pin` | fanin, fanout | 在引脚处停止 |
+| `--report-primary-port` | fanin, fanout | 报告顶层端口 |
+| `--scope <name>` | fanin, fanout | 限定搜索范围 |
+| `--level high\|low` | conn | 连接层级（默认 high） |
+
+### 底层 NPI L1 API 映射
+
+| 命令 | NPI L1 函数 |
+|------|-------------|
+| `driver` | `npi_nl_trace_driver()` |
+| `load` | `npi_nl_trace_load()` |
+| `fanin` | `npi_nl_sig_2_fanIn_reg_conn()` |
+| `fanout` | `npi_nl_sig_2_fanOut_reg_conn()` |
+| `trace` | `npi_nl_sig_2_sig_conn()` |
+| `conn` | `npi_inst_port_2_high/low_conn_sig()` |
+
+---
 
 ## 工程结构
 
 ```
 tool_wave/
-├── Makefile                        构建系统
-├── README.md                       本文件
-├── spec.md                         需求规格文档
-├── src/
-│   ├── main.cpp                    入口：CLI 解析、fork 服务、客户端调度
+├── Makefile                            统一构建系统
+├── README.md                           本文件
+├── spec.md                             需求规格文档
+├── doc/
+│   └── proposal_driver_load_trace.md   vsignal 技术方案
+│
+├── src_vwave/                          vwave 源码
+│   ├── main.cpp                        入口：CLI 解析、fork 服务、命令分发
 │   ├── common/
-│   │   ├── protocol.h              JSON 协议定义、命令字、错误码
-│   │   ├── json_parser.h           轻量 JSON 解析器（零依赖）
-│   │   └── run_dir.h               运行时目录管理 + 自动检测
+│   │   ├── protocol.h                  JSON 协议、命令字、错误码
+│   │   ├── json_parser.h              轻量 JSON 解析器
+│   │   └── run_dir.h                  .wave_run/ 运行时目录管理
 │   ├── server/
-│   │   └── server_core.h           NPI 服务逻辑（FSDB 操作 + 请求分发）
+│   │   └── server_core.h              NPI 服务（FSDB 操作 + 请求分发）
 │   └── client/
-│       └── client_core.h           客户端逻辑（Socket 通信 + 输出格式化）
-├── test/
-│   ├── tb_top.fsdb                 测试波形文件
-│   └── run_test.sh                 自动化测试脚本（62 项测试）
-└── build/
-    └── bin/
-        └── vwave                   可执行文件
+│       └── client_core.h              UDS 通信 + 输出格式化
+│
+├── src_vsignal/                        vsignal 源码
+│   ├── main.cpp                        入口：CLI 解析、fork 服务、命令分发
+│   ├── common/
+│   │   ├── protocol.h                  JSON 协议（追踪命令定义）
+│   │   ├── json_parser.h              轻量 JSON 解析器（含 bool 支持）
+│   │   └── run_dir.h                  .vsignal_run/ 运行时目录管理
+│   ├── server/
+│   │   └── server_core.h              NPI 服务（KDB 加载 + L1 追踪）
+│   └── client/
+│       └── client_core.h              UDS 通信 + 输出格式化
+│
+├── test_vwave/                         vwave 测试（62 项）
+│   ├── tb_top.fsdb                     测试波形文件
+│   └── run_test.sh                     自动化测试脚本
+│
+├── test_vsignal/                       vsignal 测试（27 项）
+│   ├── example.v                       测试 RTL 设计
+│   └── run_test.sh                     自动化测试脚本（含 VCS 编译）
+│
+└── build/bin/
+    ├── vwave                           vwave 可执行文件
+    └── vsignal                         vsignal 可执行文件
 ```
 
-### 模块职责
+## 共享架构
 
-| 模块 | 文件 | NPI 依赖 | 职责 |
-|------|------|----------|------|
-| **入口** | `main.cpp` | 间接 | CLI 参数解析、`open`/`close` 命令处理、fork 管理 |
-| **协议** | `protocol.h` | 无 | `JsonObject` 构建器、命令字常量、错误码、响应封装 |
-| **解析** | `json_parser.h` | 无 | 最小 JSON 解析器（string/int/array） |
-| **运行目录** | `run_dir.h` | 无 | `.wave_run/` 路径管理、PID/Socket/Log/FSDB 持久化、自动检测 |
-| **服务** | `server_core.h` | 是 | NPI 初始化、FSDB 加载、所有查询 handler、事件循环 |
-| **客户端** | `client_core.h` | 无 | UDS 通信、JSON 请求构建、信号文件读取、输出格式化 |
-
-## 运行时文件
-
-所有运行时文件存放在 **执行 `vwave open` 时的当前工作目录** 下的 `.wave_run/` 子目录（而非 FSDB 文件所在目录），避免多用户共享只读路径时的写入冲突：
+两个工具采用相同的 C/S 架构模式：
 
 ```
-<cwd>/.wave_run/
-├── wave_server.pid          服务 PID（防止重复启动）
-├── wave_server.sock         Unix Domain Socket
-├── wave_server.log          服务日志（daemon stdout/stderr）
-└── fsdb_path                已加载的 FSDB 绝对路径（用于自动检测）
+┌─────────────────────┐     fork      ┌─────────────────────┐
+│  CLI (client)       │ ───────────── │  Server (daemon)     │
+│                     │               │                      │
+│  参数解析           │    UDS        │  NPI 初始化          │
+│  请求构建           │ ◄───────────► │  数据加载            │
+│  输出格式化         │   Socket      │  命令处理            │
+│                     │               │  事件循环            │
+└─────────────────────┘               └─────────────────────┘
+
+vwave:   加载 FSDB → 查询信号值/层次结构
+vsignal: 加载 KDB  → 追踪驱动/负载/FanIn/FanOut/路径
 ```
 
-- `open` 时自动创建，`close` 时清理（日志保留）
-- PID 文件用于检测服务是否存活
-- `fsdb_path` 文件使自动检测机制能找回关联的 FSDB 路径
-- 工作目录策略确保即使 FSDB 在不可写路径上，每个用户也能独立操作
+### 关键设计
 
-## 自动检测机制
+- **单一二进制**: 每个工具同时包含 server 和 client 代码，`open` 时 fork 出 daemon
+- **CWD 绑定**: 运行时文件在当前目录下（`.wave_run/` / `.vsignal_run/`），避免路径冲突
+- **自动检测**: 后续命令自动从 CWD 向上搜索运行时目录，无需重复指定参数
+- **互不干扰**: 两工具使用不同的运行时目录和 socket 文件，可同时运行
+- **JSON 模式**: 所有命令支持 `--json` 输出，便于脚本/AI Agent 集成
 
-后续命令不指定 `--fsdb` 时，`vwave` 从当前工作目录向上逐级搜索 `.wave_run/` 目录：
+## 全局选项
 
-1. 找到 `.wave_run/wave_server.pid`
-2. 检查 PID 进程是否存活
-3. 若存活，使用该目录的 socket 和 fsdb_path
-4. 若未找到，提示使用 `vwave open` 先加载波形
+两个工具共有的选项：
+
+| 选项 | 说明 |
+|------|------|
+| `--json` | JSON 输出模式 |
+| `--run-dir <path>` | 覆盖运行时目录路径 |
+| `-h, --help` | 显示帮助信息 |
 
 ## 依赖
 
-- Synopsys Verdi NPI (`VERDI_HOME` 环境变量，默认 `/opt/Synopsys/verdi/T-2022.06-SP2`)
+- Synopsys Verdi NPI (`VERDI_HOME`，默认 `/opt/Synopsys/verdi/T-2022.06-SP2`)
 - GCC 9+ (C++14)
 - Linux (Unix Domain Socket, fork/setsid)
-
-## 测试
-
-```bash
-# 运行全部测试（62 项）
-bash test/run_test.sh
-```
-
-测试覆盖：
-- T1~T2: 波形加载、重复加载（幂等）
-- T3: 自动检测（从子目录定位服务）
-- T4~T5: 服务状态、文件信息
-- T6~T8: 层次结构、信号列表、信号详情
-- T9~T11: 单/多信号取值、信号文件批量读取
-- T12: 时间范围取值（变化点列表）
-- T13: 进制格式（bin/oct/dec/hex）
-- T14: 错误处理（不存在的信号/层次）
-- T15: 关闭 + 重启
-- T16: 波形切换
+- VCS（仅 vsignal 测试需要，用于生成 KDB 数据库）
