@@ -88,8 +88,8 @@ if [[ -d "$RUNDIR" ]]; then pass; else fail "not found"; fi
 log_test "PID file created"
 if [[ -f "$RUNDIR/wave_server.pid" ]]; then pass; else fail "not found"; fi
 
-log_test "fsdb_path file created"
-if [[ -f "$RUNDIR/fsdb_path" ]]; then pass; else fail "not found"; fi
+log_test "source_info file created"
+if [[ -f "$RUNDIR/source_info" ]]; then pass; else fail "not found"; fi
 
 log_test "log file created"
 if [[ -f "$RUNDIR/wave_server.log" ]]; then pass; else fail "not found"; fi

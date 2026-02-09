@@ -17,6 +17,14 @@ INCLUDES      = -I$(NPI_INC) -I$(NPI_L1_INC)
 LDFLAGS       = -L$(NPI_LIB_DIR) -Wl,-rpath,$(NPI_LIB_DIR)
 LIBS          = -lNPI -lnpiL1 -lpthread -lrt -ldl
 
+# ─── Shared common library ────────────────────────────────────────────────────
+# Headers included as #include "tw/json.h" etc.  We create a build-time
+# symlink  build/include/tw → src_common  so -Ibuild/include resolves them.
+COMMON_DIR    = src_common
+COMMON_HDRS   = $(wildcard $(COMMON_DIR)/*.h)
+TW_INC_DIR    = $(BUILD_DIR)/include
+TW_INC        = -I$(TW_INC_DIR)
+
 # ─── Output ───────────────────────────────────────────────────────────────────
 BUILD_DIR     = build
 BIN_DIR       = $(BUILD_DIR)/bin
@@ -26,12 +34,12 @@ VSIGNAL_BIN   = $(BIN_DIR)/vsignal
 # vwave sources
 VWAVE_MAIN    = src_vwave/main.cpp
 VWAVE_HDRS    = $(wildcard src_vwave/common/*.h src_vwave/server/*.h src_vwave/client/*.h)
-VWAVE_INC     = -Isrc_vwave $(INCLUDES)
+VWAVE_INC     = -Isrc_vwave $(TW_INC) $(INCLUDES)
 
 # vsignal sources
 VSIGNAL_MAIN  = src_vsignal/main.cpp
 VSIGNAL_HDRS  = $(wildcard src_vsignal/common/*.h src_vsignal/server/*.h src_vsignal/client/*.h)
-VSIGNAL_INC   = -Isrc_vsignal $(INCLUDES)
+VSIGNAL_INC   = -Isrc_vsignal $(TW_INC) $(INCLUDES)
 
 # ─── Targets ──────────────────────────────────────────────────────────────────
 .PHONY: all clean help vwave vsignal test test-vwave test-vsignal
@@ -41,12 +49,17 @@ all: $(VWAVE_BIN) $(VSIGNAL_BIN)
 vwave: $(VWAVE_BIN)
 vsignal: $(VSIGNAL_BIN)
 
-$(VWAVE_BIN): $(VWAVE_MAIN) $(VWAVE_HDRS)
+# Symlink so #include "tw/xxx.h" resolves to src_common/xxx.h
+$(TW_INC_DIR)/tw: $(COMMON_HDRS)
+	@mkdir -p $(TW_INC_DIR)
+	@ln -sfn $(CURDIR)/$(COMMON_DIR) $@
+
+$(VWAVE_BIN): $(VWAVE_MAIN) $(VWAVE_HDRS) $(COMMON_HDRS) $(TW_INC_DIR)/tw
 	@mkdir -p $(BIN_DIR)
 	$(CXX) $(CXXFLAGS) $(VWAVE_INC) -o $@ $(VWAVE_MAIN) $(LDFLAGS) $(LIBS)
 	@echo "Built: $@"
 
-$(VSIGNAL_BIN): $(VSIGNAL_MAIN) $(VSIGNAL_HDRS)
+$(VSIGNAL_BIN): $(VSIGNAL_MAIN) $(VSIGNAL_HDRS) $(COMMON_HDRS) $(TW_INC_DIR)/tw
 	@mkdir -p $(BIN_DIR)
 	$(CXX) $(CXXFLAGS) $(VSIGNAL_INC) -o $@ $(VSIGNAL_MAIN) $(LDFLAGS) $(LIBS)
 	@echo "Built: $@"

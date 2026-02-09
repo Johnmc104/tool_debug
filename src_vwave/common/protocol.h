@@ -1,136 +1,58 @@
 /**
  * @file protocol.h
- * @brief JSON protocol definitions for wave_server <-> wave_cli communication
+ * @brief vwave protocol — commands, error codes, and response helpers.
+ *
+ * Imports shared tw:: infrastructure and adds vwave-specific constants.
  */
 #ifndef WAVE_PROTOCOL_H
 #define WAVE_PROTOCOL_H
 
-#include <string>
-#include <vector>
-#include <sstream>
-
-// ─── Simple JSON builder/parser (minimal, no external dependency) ────────────
+#include "tw/json.h"
+#include "tw/protocol.h"
 
 namespace wave {
 
-/**
- * Lightweight JSON value for protocol messages.
- * Supports string, int64, array-of-strings, and nested key-value pairs.
- */
-class JsonObject {
-public:
-    JsonObject() = default;
+// Re-export shared types so existing code compiles unchanged
+using JsonObject = tw::JsonObject;
 
-    void set(const std::string& key, const std::string& val) {
-        entries_.push_back({key, quote(val)});
-    }
-    void set(const std::string& key, int64_t val) {
-        entries_.push_back({key, std::to_string(val)});
-    }
-    void set_raw(const std::string& key, const std::string& raw_json) {
-        entries_.push_back({key, raw_json});
-    }
-    void set_array(const std::string& key, const std::vector<std::string>& arr) {
-        std::ostringstream os;
-        os << "[";
-        for (size_t i = 0; i < arr.size(); ++i) {
-            if (i) os << ",";
-            os << quote(arr[i]);
-        }
-        os << "]";
-        entries_.push_back({key, os.str()});
-    }
-
-    std::string dump() const {
-        std::ostringstream os;
-        os << "{";
-        for (size_t i = 0; i < entries_.size(); ++i) {
-            if (i) os << ",";
-            os << quote(entries_[i].key) << ":" << entries_[i].value;
-        }
-        os << "}";
-        return os.str();
-    }
-
-private:
-    struct Entry {
-        std::string key;
-        std::string value;
-    };
-    std::vector<Entry> entries_;
-
-    static std::string quote(const std::string& s) {
-        std::ostringstream os;
-        os << "\"";
-        for (char c : s) {
-            switch (c) {
-                case '"':  os << "\\\""; break;
-                case '\\': os << "\\\\"; break;
-                case '\n': os << "\\n";  break;
-                case '\t': os << "\\t";  break;
-                default:   os << c;      break;
-            }
-        }
-        os << "\"";
-        return os.str();
-    }
-};
-
-// ─── Protocol commands ───────────────────────────────────────────────────────
+// ─── vwave commands ──────────────────────────────────────────────────────────
 
 namespace cmd {
-    constexpr const char* STATUS      = "status";
-    constexpr const char* SHUTDOWN    = "shutdown";
-    constexpr const char* FILE_INFO   = "file_info";
-    constexpr const char* LIST_SCOPES = "list_scopes";
-    constexpr const char* LIST_SIGNALS = "list_signals";
-    constexpr const char* SIGNAL_INFO = "signal_info";
-    constexpr const char* GET_VALUE_AT = "get_value_at";
+    constexpr const char* STATUS            = "status";
+    constexpr const char* SHUTDOWN          = "shutdown";
+    constexpr const char* FILE_INFO         = "file_info";
+    constexpr const char* LIST_SCOPES       = "list_scopes";
+    constexpr const char* LIST_SIGNALS      = "list_signals";
+    constexpr const char* SIGNAL_INFO       = "signal_info";
+    constexpr const char* GET_VALUE_AT      = "get_value_at";
     constexpr const char* GET_VALUE_BETWEEN = "get_value_between";
-    constexpr const char* FIND_SIGNALS = "find_signals";
-    constexpr const char* FIND_VALUE  = "find_value";
-    constexpr const char* VC_COUNT    = "vc_count";
+    constexpr const char* FIND_SIGNALS      = "find_signals";
+    constexpr const char* FIND_VALUE        = "find_value";
+    constexpr const char* VC_COUNT          = "vc_count";
 }
 
-// ─── Error codes ─────────────────────────────────────────────────────────────
+// ─── vwave error codes (tool-specific additions) ─────────────────────────────
 
 namespace err {
-    constexpr const char* OK               = "OK";
+    // Re-export common codes
+    constexpr const char* OK               = tw::err::OK;
+    constexpr const char* INVALID_PARAMS   = tw::err::INVALID_PARAMS;
+    constexpr const char* INTERNAL_ERROR   = tw::err::INTERNAL_ERROR;
+    constexpr const char* SIGNAL_NOT_FOUND = tw::err::SIGNAL_NOT_FOUND;
+
+    // vwave-specific
     constexpr const char* FSDB_OPEN_FAILED = "FSDB_OPEN_FAILED";
     constexpr const char* SCOPE_NOT_FOUND  = "SCOPE_NOT_FOUND";
-    constexpr const char* SIGNAL_NOT_FOUND = "SIGNAL_NOT_FOUND";
     constexpr const char* INVALID_TIME     = "INVALID_TIME";
-    constexpr const char* INVALID_PARAMS   = "INVALID_PARAMS";
     constexpr const char* SERVER_BUSY      = "SERVER_BUSY";
     constexpr const char* FILE_READ_ERROR  = "FILE_READ_ERROR";
-    constexpr const char* INTERNAL_ERROR   = "INTERNAL_ERROR";
 }
 
-// ─── Response helpers ────────────────────────────────────────────────────────
+// ─── Response helpers (delegate to shared) ──────────────────────────────────
 
-inline std::string make_ok_response(int id, const std::string& data_json) {
-    std::ostringstream os;
-    os << "{\"id\":" << id
-       << ",\"status\":\"ok\""
-       << ",\"data\":" << data_json
-       << "}";
-    return os.str();
-}
+using tw::make_ok_response;
+using tw::make_error_response;
 
-inline std::string make_error_response(int id, const std::string& code,
-                                        const std::string& message) {
-    JsonObject err_obj;
-    err_obj.set("code", code);
-    err_obj.set("message", message);
+}  // namespace wave
 
-    std::ostringstream os;
-    os << "{\"id\":" << id
-       << ",\"status\":\"error\""
-       << ",\"error\":" << err_obj.dump()
-       << "}";
-    return os.str();
-}
-
-} // namespace wave
-
-#endif // WAVE_PROTOCOL_H
+#endif  // WAVE_PROTOCOL_H

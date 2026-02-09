@@ -1,82 +1,21 @@
 /**
  * @file protocol.h
- * @brief JSON protocol definitions for vsignal_server <-> vsignal_cli communication
+ * @brief vsignal protocol — commands, error codes, and response helpers.
+ *
+ * Imports shared tw:: infrastructure and adds vsignal-specific constants.
  */
 #ifndef VSIGNAL_PROTOCOL_H
 #define VSIGNAL_PROTOCOL_H
 
-#include <string>
-#include <vector>
-#include <sstream>
+#include "tw/json.h"
+#include "tw/protocol.h"
 
 namespace vsignal {
 
-/**
- * Lightweight JSON value for protocol messages.
- */
-class JsonObject {
-public:
-    JsonObject() = default;
+// Re-export shared types
+using JsonObject = tw::JsonObject;
 
-    void set(const std::string& key, const std::string& val) {
-        entries_.push_back({key, quote(val)});
-    }
-    void set(const std::string& key, int64_t val) {
-        entries_.push_back({key, std::to_string(val)});
-    }
-    void set_raw(const std::string& key, const std::string& raw_json) {
-        entries_.push_back({key, raw_json});
-    }
-    void set_array(const std::string& key, const std::vector<std::string>& arr) {
-        std::ostringstream os;
-        os << "[";
-        for (size_t i = 0; i < arr.size(); ++i) {
-            if (i) os << ",";
-            os << quote(arr[i]);
-        }
-        os << "]";
-        entries_.push_back({key, os.str()});
-    }
-    void set_bool(const std::string& key, bool val) {
-        entries_.push_back({key, val ? "true" : "false"});
-    }
-
-    std::string dump() const {
-        std::ostringstream os;
-        os << "{";
-        for (size_t i = 0; i < entries_.size(); ++i) {
-            if (i) os << ",";
-            os << quote(entries_[i].key) << ":" << entries_[i].value;
-        }
-        os << "}";
-        return os.str();
-    }
-
-private:
-    struct Entry {
-        std::string key;
-        std::string value;
-    };
-    std::vector<Entry> entries_;
-
-    static std::string quote(const std::string& s) {
-        std::ostringstream os;
-        os << "\"";
-        for (char c : s) {
-            switch (c) {
-                case '"':  os << "\\\""; break;
-                case '\\': os << "\\\\"; break;
-                case '\n': os << "\\n";  break;
-                case '\t': os << "\\t";  break;
-                default:   os << c;      break;
-            }
-        }
-        os << "\"";
-        return os.str();
-    }
-};
-
-// ─── Protocol commands ───────────────────────────────────────────────────────
+// ─── vsignal commands ────────────────────────────────────────────────────────
 
 namespace cmd {
     constexpr const char* STATUS       = "status";
@@ -90,43 +29,26 @@ namespace cmd {
     constexpr const char* INST_CONN    = "inst_conn";
 }
 
-// ─── Error codes ─────────────────────────────────────────────────────────────
+// ─── vsignal error codes ─────────────────────────────────────────────────────
 
 namespace err {
-    constexpr const char* OK                 = "OK";
+    // Re-export common
+    constexpr const char* OK                 = tw::err::OK;
+    constexpr const char* INVALID_PARAMS     = tw::err::INVALID_PARAMS;
+    constexpr const char* INTERNAL_ERROR     = tw::err::INTERNAL_ERROR;
+    constexpr const char* SIGNAL_NOT_FOUND   = tw::err::SIGNAL_NOT_FOUND;
+
+    // vsignal-specific
     constexpr const char* DESIGN_LOAD_FAILED = "DESIGN_LOAD_FAILED";
-    constexpr const char* SIGNAL_NOT_FOUND   = "SIGNAL_NOT_FOUND";
     constexpr const char* INSTANCE_NOT_FOUND = "INSTANCE_NOT_FOUND";
     constexpr const char* NO_PATH            = "NO_PATH";
-    constexpr const char* INVALID_PARAMS     = "INVALID_PARAMS";
-    constexpr const char* INTERNAL_ERROR     = "INTERNAL_ERROR";
 }
 
-// ─── Response helpers ────────────────────────────────────────────────────────
+// ─── Response helpers (delegate to shared) ──────────────────────────────────
 
-inline std::string make_ok_response(int id, const std::string& data_json) {
-    std::ostringstream os;
-    os << "{\"id\":" << id
-       << ",\"status\":\"ok\""
-       << ",\"data\":" << data_json
-       << "}";
-    return os.str();
-}
+using tw::make_ok_response;
+using tw::make_error_response;
 
-inline std::string make_error_response(int id, const std::string& code,
-                                        const std::string& message) {
-    JsonObject err_obj;
-    err_obj.set("code", code);
-    err_obj.set("message", message);
+}  // namespace vsignal
 
-    std::ostringstream os;
-    os << "{\"id\":" << id
-       << ",\"status\":\"error\""
-       << ",\"error\":" << err_obj.dump()
-       << "}";
-    return os.str();
-}
-
-} // namespace vsignal
-
-#endif // VSIGNAL_PROTOCOL_H
+#endif  // VSIGNAL_PROTOCOL_H
