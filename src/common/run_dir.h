@@ -30,6 +30,8 @@ namespace wave {
 
 class RunDir {
 public:
+    RunDir() = default;
+
     /**
      * Initialize run directory from an FSDB path.
      * @param fsdb_path  Path to the FSDB file
@@ -168,7 +170,6 @@ public:
     }
 
 private:
-    RunDir() = default;
     std::string run_dir_;
     std::string fsdb_abs_;
 

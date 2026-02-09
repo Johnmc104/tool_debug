@@ -38,9 +38,20 @@ inline std::string send_request(const std::string& socket_path,
         return "";
     }
 
+    // Set socket timeout to avoid blocking indefinitely
+    struct timeval tv;
+    tv.tv_sec = 10;
+    tv.tv_usec = 0;
+    setsockopt(fd, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv));
+    setsockopt(fd, SOL_SOCKET, SO_SNDTIMEO, &tv, sizeof(tv));
+
     struct sockaddr_un addr;
     memset(&addr, 0, sizeof(addr));
     addr.sun_family = AF_UNIX;
+    if (socket_path.size() >= sizeof(addr.sun_path)) {
+        close(fd);
+        return "";
+    }
     strncpy(addr.sun_path, socket_path.c_str(), sizeof(addr.sun_path) - 1);
 
     if (connect(fd, (struct sockaddr*)&addr, sizeof(addr)) < 0) {
@@ -51,19 +62,19 @@ inline std::string send_request(const std::string& socket_path,
     std::string data = request + "\n";
     send(fd, data.c_str(), data.size(), 0);
 
+    // Read response up to first '\n'
     std::string response;
     char buf[4096];
     while (true) {
-        ssize_t n = recv(fd, buf, sizeof(buf) - 1, 0);
+        ssize_t n = recv(fd, buf, sizeof(buf), 0);
         if (n <= 0) break;
-        buf[n] = 0;
-        response += buf;
-        if (response.find('\n') != std::string::npos) break;
+        for (ssize_t i = 0; i < n; ++i) {
+            if (buf[i] == '\n') goto done;
+            response += buf[i];
+        }
     }
+done:
     close(fd);
-
-    while (!response.empty() && (response.back() == '\n' || response.back() == '\r'))
-        response.pop_back();
     return response;
 }
 

@@ -47,7 +47,7 @@ namespace server {
 static npiFsdbFileHandle g_file_hdl = nullptr;
 static std::string       g_fsdb_path;
 static int               g_listen_fd = -1;
-static bool              g_running = true;
+static volatile sig_atomic_t g_running = 1;   // signal-safe flag
 static RunDir*           g_run_dir = nullptr;
 static std::chrono::steady_clock::time_point g_start_time;
 
@@ -55,7 +55,7 @@ static std::chrono::steady_clock::time_point g_start_time;
 
 static void signal_handler(int sig) {
     (void)sig;
-    g_running = false;
+    g_running = 0;
 }
 
 // ─── NPI helpers ─────────────────────────────────────────────────────────────
@@ -356,7 +356,7 @@ static std::string dispatch_request(const std::string& request_json) {
     }
 
     if (cmd_str == cmd::STATUS)            return handle_status(id);
-    if (cmd_str == cmd::SHUTDOWN)          { g_running = false; return make_ok_response(id, "{\"message\":\"shutting down\"}"); }
+    if (cmd_str == cmd::SHUTDOWN)          { g_running = 0; return make_ok_response(id, "{\"message\":\"shutting down\"}"); }
     if (cmd_str == cmd::FILE_INFO)         return handle_file_info(id);
     if (cmd_str == cmd::LIST_SCOPES)       return handle_list_scopes(id, params);
     if (cmd_str == cmd::LIST_SIGNALS)      return handle_list_signals(id, params);
@@ -371,12 +371,14 @@ static std::string dispatch_request(const std::string& request_json) {
 
 static std::string read_line(int fd) {
     std::string line;
-    char c;
+    char buf[4096];
     while (true) {
-        ssize_t n = recv(fd, &c, 1, 0);
+        ssize_t n = recv(fd, buf, sizeof(buf), 0);
         if (n <= 0) break;
-        if (c == '\n') break;
-        line += c;
+        for (ssize_t i = 0; i < n; ++i) {
+            if (buf[i] == '\n') return line;
+            line += buf[i];
+        }
     }
     return line;
 }
@@ -447,6 +449,18 @@ inline int run_server(int argc, char** argv,
     struct sockaddr_un addr;
     memset(&addr, 0, sizeof(addr));
     addr.sun_family = AF_UNIX;
+    if (run_dir.socket_path().size() >= sizeof(addr.sun_path)) {
+        std::cerr << "[vwave-server] ERROR: Socket path too long (" 
+                  << run_dir.socket_path().size() << " >= " 
+                  << sizeof(addr.sun_path) << "): " 
+                  << run_dir.socket_path() << "\n"
+                  << "Hint: use --run-dir to specify a shorter path.\n";
+        close(g_listen_fd);
+        run_dir.cleanup();
+        npi_fsdb_close(g_file_hdl);
+        npi_end();
+        return 1;
+    }
     strncpy(addr.sun_path, run_dir.socket_path().c_str(), sizeof(addr.sun_path) - 1);
 
     if (bind(g_listen_fd, (struct sockaddr*)&addr, sizeof(addr)) < 0) {
@@ -466,6 +480,9 @@ inline int run_server(int argc, char** argv,
         npi_end();
         return 1;
     }
+
+    // Restrict socket access to owner only
+    chmod(run_dir.socket_path().c_str(), 0600);
 
     std::cerr << "[vwave-server] Listening on: " << run_dir.socket_path() << "\n";
     std::cerr << "[vwave-server] PID: " << getpid() << "\n";

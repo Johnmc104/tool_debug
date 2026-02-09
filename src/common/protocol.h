@@ -22,13 +22,13 @@ public:
     JsonObject() = default;
 
     void set(const std::string& key, const std::string& val) {
-        entries_.push_back({key, quote(val), false});
+        entries_.push_back({key, quote(val)});
     }
     void set(const std::string& key, int64_t val) {
-        entries_.push_back({key, std::to_string(val), false});
+        entries_.push_back({key, std::to_string(val)});
     }
     void set_raw(const std::string& key, const std::string& raw_json) {
-        entries_.push_back({key, raw_json, false});
+        entries_.push_back({key, raw_json});
     }
     void set_array(const std::string& key, const std::vector<std::string>& arr) {
         std::ostringstream os;
@@ -38,7 +38,7 @@ public:
             os << quote(arr[i]);
         }
         os << "]";
-        entries_.push_back({key, os.str(), false});
+        entries_.push_back({key, os.str()});
     }
 
     std::string dump() const {
@@ -56,7 +56,6 @@ private:
     struct Entry {
         std::string key;
         std::string value;
-        bool is_raw;
     };
     std::vector<Entry> entries_;
 

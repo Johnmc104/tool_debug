@@ -40,7 +40,7 @@
 
 static void print_usage() {
     std::cerr <<
-R"(vwave — FSDB Waveform Reader v1.0
+R"(vwave — FSDB Waveform Reader v1.1
   by zhhe - Johnmc104@qq.com
 Usage:
   vwave open  <file.fsdb>                    Load waveform (start background server)
@@ -332,6 +332,10 @@ static int cmd_query(const wave::RunDir& run_dir, bool json_mode,
         }
 
         if (begin_time >= 0 && end_time >= 0) {
+            if (all_signals.size() > 1) {
+                std::cerr << "Warning: --begin/--end mode only supports one signal, "
+                          << "using '" << all_signals[0] << "'\n";
+            }
             wave::JsonObject p;
             p.set("signal", all_signals[0]);
             p.set("begin", begin_time);
@@ -440,7 +444,7 @@ int main(int argc, char** argv) {
     }
 
     // ── All other commands need a RunDir ──
-    wave::RunDir run_dir("_dummy_");  // placeholder, will be overwritten
+    wave::RunDir run_dir;
     if (!resolve_run_dir(fsdb_path, run_dir_override, run_dir))
         return 1;
 
