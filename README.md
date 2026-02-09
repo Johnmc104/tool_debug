@@ -1,4 +1,4 @@
-# tool_debug — FSDB 波形读取 & 网表信号追踪工具集
+# tool_wave — FSDB 波形读取 & 网表信号追踪工具集
 
 基于 Synopsys Verdi NPI 接口的命令行工具集，包含两个独立二进制：
 
@@ -7,7 +7,7 @@
 | **vwave** | FSDB 波形值读取 | `.fsdb` 波形文件 | `.wave_run/` |
 | **vsignal** | 网表信号驱动/负载追踪 | VCS KDB 数据库 或 RTL 源文件 | `.vsignal_run/` |
 
-两者共享相同的架构模式（fork 驻留服务 + UDS 通信），但功能完全独立，可同时运行互不干扰。
+两工具独立运行但共享统一的 **C/S 架构、通信协议、事件循环机制**，支持同时运行互不干扰。
 
 ## 快速开始
 
@@ -52,24 +52,7 @@ make test-vsignal    # 仅运行 vsignal 测试
 
 ## vwave — FSDB 波形读取
 
-### 功能
-
-从 FSDB 波形文件中读取信号值、层次结构信息，支持单点/范围/批量查询。
-
-### 命令参考
-
-```bash
-vwave open  <file.fsdb>                    # 加载波形（启动后台服务）
-vwave close                                # 关闭波形（停止服务）
-vwave status                               # 查看服务状态
-vwave info                                 # FSDB 文件信息（时间范围、版本等）
-vwave scopes  [<path>]                     # 列出层次作用域
-vwave signals <path>                       # 列出指定层次下的信号
-vwave signal-info <name>                   # 查看信号详情（位宽、方向）
-vwave get-value [options]                  # 读取信号值
-```
-
-### Get-value 选项
+### Get-value 选项（详见快速开始中的实际用法）
 
 | 长格式 | 缩写 | 说明 |
 |--------|------|------|
@@ -80,56 +63,19 @@ vwave get-value [options]                  # 读取信号值
 | `--end` | `-e` | 范围结束 |
 | `--radix` | `-r` | 进制格式：bin/hex/oct/dec |
 
-### 示例
-
-```bash
-# 单信号 @ 时间点
-vwave get-value -s tb.intf.clk -t 500000
-
-# 多信号 @ 时间点（hex 格式）
-vwave get-value -s tb.intf.paddr -s tb.intf.pwdata -t 1500000 -r hex
-
-# 信号列表文件 @ 时间点
-vwave get-value -f signals.txt -t 1000 -r hex
-
-# 单信号 @ 时间范围（返回所有变化点）
-vwave get-value -s tb.intf.clk -b 0 -e 100000
-```
-
 ---
 
 ## vsignal — 网表信号追踪
 
-### 功能
-
-基于 NPI 网表 L1 API，对 VCS 编译生成的 KDB 数据库进行静态信号追踪分析。
-
-### KDB 数据库生成
+### 前置准备：KDB 数据库
 
 ```bash
-# VCS 编译时加 -kdb 即可生成 KDB 数据库
+# VCS 编译时加 -kdb 生成 KDB 数据库
 vcs -sverilog -kdb design.v -o simv
 # 生成 simv.daidir/kdb.elab++
 ```
 
-### 命令参考
-
-```bash
-vsignal open  -dbdir <kdb_dir>             # 从 KDB 数据库加载设计
-vsignal open  <source.v> [...]             # 从 RTL 源文件加载设计
-vsignal close                              # 关闭设计
-vsignal status                             # 查看服务状态
-vsignal info                               # 查看设计信息
-
-vsignal driver  <signal>                   # 追踪信号驱动源
-vsignal load    <signal>                   # 追踪信号负载
-vsignal fanin   <signal>                   # FanIn 寄存器连接
-vsignal fanout  <signal>                   # FanOut 寄存器连接
-vsignal trace   <from_sig> <to_sig>        # 信号间路径追踪
-vsignal conn    <instance>                 # 实例端口连接
-```
-
-### 追踪选项
+### 追踪选项（详见快速开始中的实际用法）
 
 | 选项 | 适用命令 | 说明 |
 |------|----------|------|
@@ -140,10 +86,10 @@ vsignal conn    <instance>                 # 实例端口连接
 | `--scope <name>` | fanin, fanout | 限定搜索范围 |
 | `--level high\|low` | conn | 连接层级（默认 high） |
 
-### 底层 NPI L1 API 映射
+### NPI L1 API 映射
 
-| 命令 | NPI L1 函数 |
-|------|-------------|
+| 命令 | 底层接口 |
+|------|----------|
 | `driver` | `npi_nl_trace_driver()` |
 | `load` | `npi_nl_trace_load()` |
 | `fanin` | `npi_nl_sig_2_fanIn_reg_conn()` |
@@ -153,44 +99,46 @@ vsignal conn    <instance>                 # 实例端口连接
 
 ---
 
+## 全局选项
+
+两工具共有：
+
+| 选项 | 说明 |
+|------|------|
+| `--json` | JSON 输出模式 |
+| `--run-dir <path>` | 覆盖运行时目录路径 |
+| `-h, --help` | 显示帮助信息 |
+
+---
+
 ## 工程结构
 
 ```
 tool_wave/
-├── Makefile                            统一构建系统（支持 src_common 含义路径）
+├── Makefile                            统一构建系统
 ├── README.md                           本文件
 ├── spec.md                             需求规格文档
 ├── doc/
 │   └── proposal_driver_load_trace.md   vsignal 技术方案
 │
-├── src_common/                         ★ 共享库（tw:: 命名空间）
-│   ├── json.h                          统一 JSON 对象 + 解析器（bool 支持）
-│   ├── protocol.h                      编码响应、通用错误码
-│   ├── run_dir.h                       参数化运行时目录管理（.wave_run / .vsignal_run）
-│   ├── client.h                        RAII fd、EINTR 安全通信、请求生成、格式化输出
-│   └── server_loop.h                   事件循环（12h 空闲超时、按客户端超时、信号处理）
+├── src_common/                         ★ 共享库（tw:: 命名空间，951 行）
+│   ├── json.h                          统一 JSON 对象 + 解析器（含 bool）
+│   ├── protocol.h                      通用响应编码、错误码
+│   ├── run_dir.h                       参数化运行时目录管理
+│   ├── client.h                        RAII fd、EINTR 安全通信、请求生成
+│   └── server_loop.h                   事件循环（12h 空闲超时、per-client 超时）
 │
 ├── src_vwave/                          vwave 源码（薄封装层）
-│   ├── main.cpp                        入口：CLI 解析、fork 服务、命令分发
-│   ├── common/
-│   │   ├── protocol.h                  (◆ 转发至 tw:: + vwave 特定命令字)
-│   │   ├── json_parser.h              (◆ 转发至 tw::JsonParser)
-│   │   └── run_dir.h                  (◆ tw::RunDir 包装，预设 .wave_run/ / wave_server)
-│   ├── server/
-│   │   └── server_core.h              NPI FSDB 处理 + tw::server 事件循环
-│   └── client/
-│       └── client_core.h              (◆ 转发至 tw::client 通信)
+│   ├── main.cpp                        CLI 解析、fork 服务、命令分发
+│   ├── common/                         (◆ 转发至 tw:: + vwave 特定命令字)
+│   ├── server/server_core.h            NPI FSDB 处理 + 事件循环
+│   └── client/client_core.h            (◆ 转发至 tw::client)
 │
 ├── src_vsignal/                        vsignal 源码（薄封装层）
-│   ├── main.cpp                        入口：CLI 解析、fork 服务、命令分发
-│   ├── common/
-│   │   ├── protocol.h                  (◆ 转发至 tw:: + vsignal 特定命令字)
-│   │   ├── json_parser.h              (◆ 转发至 tw::JsonParser)
-│   │   └── run_dir.h                  (◆ tw::RunDir 包装，预设 .vsignal_run/ / vsignal_server)
-│   ├── server/
-│   │   └── server_core.h              NPI KDB L1 追踪 + tw::server 事件循环
-│   └── client/
-│       └── client_core.h              (◆ 转发至 tw::client 通信)
+│   ├── main.cpp                        CLI 解析、fork 服务、命令分发
+│   ├── common/                         (◆ 转发至 tw:: + vsignal 特定命令字)
+│   ├── server/server_core.h            NPI L1 追踪 + 事件循环
+│   └── client/client_core.h            (◆ 转发至 tw::client)
 │
 ├── test_vwave/                         vwave 测试（62 项）
 │   ├── tb_top.fsdb                     测试波形文件
@@ -201,65 +149,57 @@ tool_wave/
 │   └── run_test.sh                     自动化测试脚本（含 VCS 编译）
 │
 └── build/
-    ├── include/tw/ → src_common/       (◆ Makefile 自动建立符号链接)
+    ├── include/tw/ → src_common/       (Makefile 自动建立符号链接)
     └── bin/
-        ├── vwave                       vwave 可执行文件
-        └── vsignal                     vsignal 可执行文件
+        ├── vwave                       可执行文件
+        └── vsignal                     可执行文件
 ```
 
 **图例**: ◆ = 转发至共享库 | ★ = 新增共享库
 
-## 共享架构
+---
 
-两个工具采用相同的 C/S 架构模式：
+## 架构设计
+
+### 模式
 
 ```
-┌─────────────────────┐     fork      ┌─────────────────────┐
-│  CLI (client)       │ ───────────── │  Server (daemon)     │
-│                     │               │                      │
-│  参数解析           │    UDS        │  NPI 初始化          │
-│  请求构建           │ ◄───────────► │  数据加载            │
-│  输出格式化         │   Socket      │  命令处理            │
-│                     │               │  事件循环            │
-└─────────────────────┘               └─────────────────────┘
-
-vwave:   加载 FSDB → 查询信号值/层次结构
-vsignal: 加载 KDB  → 追踪驱动/负载/FanIn/FanOut/路径
+┌──────────────────┐  fork   ┌──────────────────┐
+│  CLI (client)    │ ─────── │ Server (daemon)  │
+│                  │  UDS    │                  │
+│ • 参数解析       │◄────────│ • NPI 初始化      │
+│ • 请求构建       │ Socket  │ • 数据加载        │
+│ • 输出格式化     │         │ • 命令处理        │
+└──────────────────┘         │ • 事件循环        │
+                             └──────────────────┘
 ```
 
-### 关键设计
+### 关键特性
 
-#### 架构模式
-- **单一二进制**: 每个工具同时包含 server 和 client 代码，`open` 时 fork 出 daemon
-- **CWD 绑定**: 运行时文件在当前目录下（`.wave_run/` / `.vsignal_run/`），避免路径冲突
-- **自动检测**: 后续命令自动从 CWD 向上搜索运行时目录，无需重复指定参数
-- **互不干扰**: 两工具使用不同的运行时目录和 socket 文件，可同时运行
-- **JSON 模式**: 所有命令支持 `--json` 输出，便于脚本/AI Agent 集成
+**架构与可靠性**
+- **单一二进制**: server + client 合并，`open` 时 fork daemon，独立运行互不干扰
+- **CWD 驱动**: 运行时文件存储于当前目录（`.wave_run/` / `.vsignal_run/`），避免路径冲突
+- **自动检测**: 后续命令自动搜索 CWD 及父目录，无需重复指定参数
 
-#### 健壮性增强
-- **12h 空闲超时**: 驻留服务在 12 小时无操作后自动关闭，防止僵尸进程
-- **RAII 文件描述符**: ScopedFd 保证所有退出路径均关闭 fd，防止泄漏
-- **EINTR 安全**: 所有 send/recv 调用自动重试，处理信号中断
-- **OOM 防护**: read_line 限制单行 4MB，防止恶意输入导致内存爆炸
+**健壮性保障**
+- **12h 空闲超时**: 驻留服务 12 小时无操作自动关闭，防止僵尸进程
+- **RAII 文件描述符**: ScopedFd 保证所有退出路径均关闭，防止描述符泄漏
+- **EINTR 安全**: send/recv 自动重试，处理信号中断
+- **OOM 防护**: read_line 限制单行 4MB，防止恶意输入触发内存爆炸
 - **按客户端超时**: SO_RCVTIMEO/SO_SNDTIMEO (vwave 30s, vsignal 60s)，防止挂死
-- **信号处理**: 使用 sigaction() 替代 signal()，避免平台差异，SIGPIPE 防护
-- **空指针检查**: vsignal NPI 句柄验证，npi_str() 安全包装
+- **信号处理**: sigaction() 替代 signal()，避免平台差异，SIGPIPE 防护
+- **空指针检查**: NPI 句柄验证，npi_str() 安全包装
 
-#### 代码共享
+**代码复用**
 - **src_common 统一库**: 951 行共享代码（JSON、协议、通信、事件循环）
-- **薄封装层**: vwave/vsignal 各文件 15-75 行，纯转发至 tw:: 命名空间
 - **消除重复**: 净减少 ~195 行代码（1542 删除，1347 添加）
-- **维护性**: 错误修复、性能优化、安全补丁仅需修改 src_common
+- **薄封装**: vwave/vsignal 各模块 15-75 行，纯转发至 tw:: 命名空间
+- **易维护**: 错误修复、性能优化、安全补丁仅需修改 src_common
 
-## 全局选项
+**与 AI 集成**
+- **JSON 模式**: 所有命令支持 `--json` 输出，便于脚本及 Agent 集成
 
-两个工具共有的选项：
-
-| 选项 | 说明 |
-|------|------|
-| `--json` | JSON 输出模式 |
-| `--run-dir <path>` | 覆盖运行时目录路径 |
-| `-h, --help` | 显示帮助信息 |
+---
 
 ## 依赖
 
