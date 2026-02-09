@@ -157,33 +157,40 @@ vsignal conn    <instance>                 # 实例端口连接
 
 ```
 tool_wave/
-├── Makefile                            统一构建系统
+├── Makefile                            统一构建系统（支持 src_common 含义路径）
 ├── README.md                           本文件
 ├── spec.md                             需求规格文档
 ├── doc/
 │   └── proposal_driver_load_trace.md   vsignal 技术方案
 │
-├── src_vwave/                          vwave 源码
-│   ├── main.cpp                        入口：CLI 解析、fork 服务、命令分发
-│   ├── common/
-│   │   ├── protocol.h                  JSON 协议、命令字、错误码
-│   │   ├── json_parser.h              轻量 JSON 解析器
-│   │   └── run_dir.h                  .wave_run/ 运行时目录管理
-│   ├── server/
-│   │   └── server_core.h              NPI 服务（FSDB 操作 + 请求分发）
-│   └── client/
-│       └── client_core.h              UDS 通信 + 输出格式化
+├── src_common/                         ★ 共享库（tw:: 命名空间）
+│   ├── json.h                          统一 JSON 对象 + 解析器（bool 支持）
+│   ├── protocol.h                      编码响应、通用错误码
+│   ├── run_dir.h                       参数化运行时目录管理（.wave_run / .vsignal_run）
+│   ├── client.h                        RAII fd、EINTR 安全通信、请求生成、格式化输出
+│   └── server_loop.h                   事件循环（12h 空闲超时、按客户端超时、信号处理）
 │
-├── src_vsignal/                        vsignal 源码
+├── src_vwave/                          vwave 源码（薄封装层）
 │   ├── main.cpp                        入口：CLI 解析、fork 服务、命令分发
 │   ├── common/
-│   │   ├── protocol.h                  JSON 协议（追踪命令定义）
-│   │   ├── json_parser.h              轻量 JSON 解析器（含 bool 支持）
-│   │   └── run_dir.h                  .vsignal_run/ 运行时目录管理
+│   │   ├── protocol.h                  (◆ 转发至 tw:: + vwave 特定命令字)
+│   │   ├── json_parser.h              (◆ 转发至 tw::JsonParser)
+│   │   └── run_dir.h                  (◆ tw::RunDir 包装，预设 .wave_run/ / wave_server)
 │   ├── server/
-│   │   └── server_core.h              NPI 服务（KDB 加载 + L1 追踪）
+│   │   └── server_core.h              NPI FSDB 处理 + tw::server 事件循环
 │   └── client/
-│       └── client_core.h              UDS 通信 + 输出格式化
+│       └── client_core.h              (◆ 转发至 tw::client 通信)
+│
+├── src_vsignal/                        vsignal 源码（薄封装层）
+│   ├── main.cpp                        入口：CLI 解析、fork 服务、命令分发
+│   ├── common/
+│   │   ├── protocol.h                  (◆ 转发至 tw:: + vsignal 特定命令字)
+│   │   ├── json_parser.h              (◆ 转发至 tw::JsonParser)
+│   │   └── run_dir.h                  (◆ tw::RunDir 包装，预设 .vsignal_run/ / vsignal_server)
+│   ├── server/
+│   │   └── server_core.h              NPI KDB L1 追踪 + tw::server 事件循环
+│   └── client/
+│       └── client_core.h              (◆ 转发至 tw::client 通信)
 │
 ├── test_vwave/                         vwave 测试（62 项）
 │   ├── tb_top.fsdb                     测试波形文件
@@ -193,10 +200,14 @@ tool_wave/
 │   ├── example.v                       测试 RTL 设计
 │   └── run_test.sh                     自动化测试脚本（含 VCS 编译）
 │
-└── build/bin/
-    ├── vwave                           vwave 可执行文件
-    └── vsignal                         vsignal 可执行文件
+└── build/
+    ├── include/tw/ → src_common/       (◆ Makefile 自动建立符号链接)
+    └── bin/
+        ├── vwave                       vwave 可执行文件
+        └── vsignal                     vsignal 可执行文件
 ```
+
+**图例**: ◆ = 转发至共享库 | ★ = 新增共享库
 
 ## 共享架构
 
@@ -218,11 +229,27 @@ vsignal: 加载 KDB  → 追踪驱动/负载/FanIn/FanOut/路径
 
 ### 关键设计
 
+#### 架构模式
 - **单一二进制**: 每个工具同时包含 server 和 client 代码，`open` 时 fork 出 daemon
 - **CWD 绑定**: 运行时文件在当前目录下（`.wave_run/` / `.vsignal_run/`），避免路径冲突
 - **自动检测**: 后续命令自动从 CWD 向上搜索运行时目录，无需重复指定参数
 - **互不干扰**: 两工具使用不同的运行时目录和 socket 文件，可同时运行
 - **JSON 模式**: 所有命令支持 `--json` 输出，便于脚本/AI Agent 集成
+
+#### 健壮性增强
+- **12h 空闲超时**: 驻留服务在 12 小时无操作后自动关闭，防止僵尸进程
+- **RAII 文件描述符**: ScopedFd 保证所有退出路径均关闭 fd，防止泄漏
+- **EINTR 安全**: 所有 send/recv 调用自动重试，处理信号中断
+- **OOM 防护**: read_line 限制单行 4MB，防止恶意输入导致内存爆炸
+- **按客户端超时**: SO_RCVTIMEO/SO_SNDTIMEO (vwave 30s, vsignal 60s)，防止挂死
+- **信号处理**: 使用 sigaction() 替代 signal()，避免平台差异，SIGPIPE 防护
+- **空指针检查**: vsignal NPI 句柄验证，npi_str() 安全包装
+
+#### 代码共享
+- **src_common 统一库**: 951 行共享代码（JSON、协议、通信、事件循环）
+- **薄封装层**: vwave/vsignal 各文件 15-75 行，纯转发至 tw:: 命名空间
+- **消除重复**: 净减少 ~195 行代码（1542 删除，1347 添加）
+- **维护性**: 错误修复、性能优化、安全补丁仅需修改 src_common
 
 ## 全局选项
 
