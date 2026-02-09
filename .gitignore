@@ -1,0 +1,6 @@
+build/
+.wave_run/
+*.o
+*.d
+test/tb_top.fsdb
+vwaveLog
