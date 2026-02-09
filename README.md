@@ -127,10 +127,10 @@ tool_wave/
 
 ## 运行时文件
 
-所有运行时文件存放在 **FSDB 文件所在目录** 下的 `.wave_run/` 子目录：
+所有运行时文件存放在 **执行 `vwave open` 时的当前工作目录** 下的 `.wave_run/` 子目录（而非 FSDB 文件所在目录），避免多用户共享只读路径时的写入冲突：
 
 ```
-<fsdb_dir>/.wave_run/
+<cwd>/.wave_run/
 ├── wave_server.pid          服务 PID（防止重复启动）
 ├── wave_server.sock         Unix Domain Socket
 ├── wave_server.log          服务日志（daemon stdout/stderr）
@@ -140,6 +140,7 @@ tool_wave/
 - `open` 时自动创建，`close` 时清理（日志保留）
 - PID 文件用于检测服务是否存活
 - `fsdb_path` 文件使自动检测机制能找回关联的 FSDB 路径
+- 工作目录策略确保即使 FSDB 在不可写路径上，每个用户也能独立操作
 
 ## 自动检测机制
 

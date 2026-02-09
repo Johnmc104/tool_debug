@@ -8,7 +8,9 @@
  *   3. `vwave close`            — stops the server
  *   4. `vwave open <other.fsdb>`— switches to a different waveform (close + reopen)
  *
- * The server socket / PID / log are managed under  <fsdb_dir>/.wave_run/
+ * The server socket / PID / log are managed under  <cwd>/.wave_run/
+ * This ensures the runtime dir is always writable, even when the FSDB
+ * resides on a shared or read-only filesystem.
  * Auto-detect searches upward from CWD for a live .wave_run/ directory.
  */
 

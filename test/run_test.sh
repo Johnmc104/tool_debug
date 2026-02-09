@@ -12,7 +12,7 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 VWAVE="$PROJECT_DIR/build/bin/vwave"
 FSDB="$PROJECT_DIR/test/tb_top.fsdb"
-RUNDIR="$PROJECT_DIR/test/.wave_run"
+RUNDIR="$PROJECT_DIR/.wave_run"
 TIMEOUT_CMD="timeout 10"
 
 # Counters
