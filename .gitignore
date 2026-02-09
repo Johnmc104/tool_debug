@@ -4,3 +4,4 @@ build/
 *.d
 test/tb_top.fsdb
 vwaveLog
+verdiLog
