@@ -31,6 +31,12 @@ BIN_DIR       = $(BUILD_DIR)/bin
 VWAVE_BIN     = $(BIN_DIR)/vwave
 VSIGNAL_BIN   = $(BIN_DIR)/vsignal
 
+# ─── Distribution ─────────────────────────────────────────────────────────────
+VERSION      ?= $(shell git describe --tags --always 2>/dev/null || echo dev)
+DIST_NAME     = tool_wave-$(VERSION)
+DIST_DIR      = $(BUILD_DIR)/$(DIST_NAME)
+SKILL_DIR     = .github/skills/tool-wave
+
 # vwave sources
 VWAVE_MAIN    = src_vwave/main.cpp
 VWAVE_HDRS    = $(wildcard src_vwave/common/*.h src_vwave/server/*.h src_vwave/client/*.h)
@@ -42,7 +48,7 @@ VSIGNAL_HDRS  = $(wildcard src_vsignal/common/*.h src_vsignal/server/*.h src_vsi
 VSIGNAL_INC   = -Isrc_vsignal $(TW_INC) $(INCLUDES)
 
 # ─── Targets ──────────────────────────────────────────────────────────────────
-.PHONY: all clean help vwave vsignal test test-vwave test-vsignal
+.PHONY: all clean help vwave vsignal test test-vwave test-vsignal dist
 
 all: $(VWAVE_BIN) $(VSIGNAL_BIN)
 
@@ -75,6 +81,21 @@ test-vsignal: $(VSIGNAL_BIN)
 	@echo "\n══════ Running vsignal tests ══════"
 	bash test_vsignal/run_test.sh
 
+# ─── Distribution target ──────────────────────────────────────────────────────
+dist: $(VWAVE_BIN) $(VSIGNAL_BIN)
+	@rm -rf $(DIST_DIR)
+	@mkdir -p $(DIST_DIR)/bin
+	@mkdir -p $(DIST_DIR)/skills/tool-wave/references
+	@mkdir -p $(DIST_DIR)/skills/tool-wave/scripts
+	cp $(VWAVE_BIN) $(VSIGNAL_BIN) $(DIST_DIR)/bin/
+	cp $(SKILL_DIR)/SKILL.md               $(DIST_DIR)/skills/tool-wave/
+	cp $(SKILL_DIR)/references/vwave.md    $(DIST_DIR)/skills/tool-wave/references/
+	cp $(SKILL_DIR)/references/vsignal.md  $(DIST_DIR)/skills/tool-wave/references/
+	cp $(SKILL_DIR)/scripts/check-tools.sh $(DIST_DIR)/skills/tool-wave/scripts/
+	cp README.md $(DIST_DIR)/
+	@cd $(BUILD_DIR) && tar czf $(DIST_NAME).tar.gz $(DIST_NAME)/
+	@echo "Package: $(BUILD_DIR)/$(DIST_NAME).tar.gz"
+
 clean:
 	rm -rf $(BUILD_DIR)
 	@echo "Cleaned."
@@ -87,6 +108,7 @@ help:
 	@echo "  make vwave         Build vwave only"
 	@echo "  make vsignal       Build vsignal only"
 	@echo "  make clean         Remove build artifacts"
+	@echo "  make dist          Package binaries + skill + README"
 	@echo ""
 	@echo "Test:"
 	@echo "  make test          Run all tests (vwave + vsignal)"
