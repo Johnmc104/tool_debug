@@ -1,30 +1,4 @@
----
-name: vsignal-netlist-tracer
-description: Trace signal drivers, loads, fanin/fanout, and paths in Verilog netlists using the vsignal CLI tool. Use this skill when the user asks to trace signal connectivity, find drivers or loads of a signal, analyze fanin/fanout register connections, trace paths between signals, or inspect instance port connections. Requires a compiled vsignal binary, Synopsys Verdi NPI, and a VCS KDB database or RTL source files.
----
-
-# vsignal — Netlist Signal Tracer
-
-vsignal performs static signal tracing on VCS-compiled netlists (KDB) or RTL
-source files via Synopsys NPI L1 APIs, through a fork-based daemon (UDS communication).
-
-> **Convention:** Always append `--json` to every vsignal command. All examples
-> below omit it for brevity — you must add it yourself.
-
-## Prerequisites
-
-- `vsignal` binary on PATH or at `<project>/build/bin/vsignal`
-- `VERDI_HOME` environment variable pointing to Synopsys Verdi installation
-  (the tool auto-configures `LD_LIBRARY_PATH` and `NOVAS_HOME` at startup)
-- Design source: VCS KDB database (`vcs -kdb`) or RTL Verilog files
-
-## Workflow
-
-```
-open → trace (driver / load / fanin / fanout / trace / conn) → close
-```
-
-Design loading is expensive; the daemon stays resident for fast subsequent queries.
+# vsignal — Netlist Signal Tracer Reference
 
 ## Commands
 
@@ -45,7 +19,7 @@ Open response:
 
 Parent waits up to **30s** for init (KDB loading can be slow). Check exit code.
 
-### Trace driver — what drives a signal
+### Trace Driver — What Drives a Signal
 
 ```bash
 vsignal driver top.data_out
@@ -60,7 +34,7 @@ vsignal driver top.data_out --assign-cell --pass-mod # Both
 ]}}
 ```
 
-### Trace load — what a signal drives
+### Trace Load — What a Signal Drives
 
 ```bash
 vsignal load top.data_in
@@ -70,7 +44,7 @@ vsignal load top.data_in --pass-mod
 
 Same format as driver, with `"loads"` array.
 
-### FanIn — source registers
+### FanIn — Source Registers
 
 ```bash
 vsignal fanin top.q_reg
@@ -82,7 +56,7 @@ vsignal fanin top.q_reg --scope top.u_sub
 {"id":1,"status":"ok","data":{"signal":"top.q_reg","count":3,"fanin":[...]}}
 ```
 
-### FanOut — destination registers
+### FanOut — Destination Registers
 
 ```bash
 vsignal fanout top.clk
@@ -94,7 +68,7 @@ vsignal fanout top.clk --scope top.u_sub
 {"id":1,"status":"ok","data":{"signal":"top.clk","count":5,"fanout":[...]}}
 ```
 
-### Trace path between two signals
+### Trace Path Between Two Signals
 
 ```bash
 vsignal trace top.data_in top.data_out
@@ -104,7 +78,7 @@ vsignal trace top.data_in top.data_out --assign-cell
 {"id":1,"status":"ok","data":{"from":"top.data_in","to":"top.data_out","count":4,"path":[...]}}
 ```
 
-### Instance port connections
+### Instance Port Connections
 
 ```bash
 vsignal conn top.u_sub                       # High-level (default)
@@ -117,7 +91,7 @@ vsignal conn top.u_sub --level low           # Low-level
 ]}}
 ```
 
-## Trace options
+## Trace Options
 
 | Option | Commands | Description |
 |--------|----------|-------------|
@@ -128,7 +102,7 @@ vsignal conn top.u_sub --level low           # Low-level
 | `--scope <name>` | fanin, fanout | Limit search scope |
 | `--level high\|low` | conn | Connection detail level |
 
-## Result object format
+## Result Object Format
 
 Each element in `drivers`, `loads`, `fanin`, `fanout`, `path` arrays:
 
@@ -141,24 +115,13 @@ Each element in `drivers`, `loads`, `fanin`, `fanout`, `path` arrays:
 | `direction` | port | `input` / `output` / `inout` / `none` |
 | `size` | port/net | Bit width |
 
-## Error handling
+## Error Codes
 
-- Exit **0** = success, **1** = error
-- Error response: `{"id":1,"status":"error","error":{"code":"SIGNAL_NOT_FOUND","message":"..."}}`
-- Codes: `INVALID_PARAMS`, `INTERNAL_ERROR`, `SIGNAL_NOT_FOUND`, `DESIGN_LOAD_FAILED`, `INSTANCE_NOT_FOUND`, `NO_PATH`
-
-## Runtime directory
-
-`.vtool/vsignal_run/` under CWD — contains PID, socket, log, source_info.
-Auto-detected upward from CWD. Override: `--run-dir <path>`.
-
-## Agent tips
-
-1. Check `vsignal status` first — reuse running daemon when possible
-2. Start with `driver`/`load` for basic connectivity, then `fanin`/`fanout` for register-level
-3. Use `--assign-cell` to see through assigns (usually needed for real designs)
-4. Use `--pass-mod` to trace across module boundaries
-5. `trace` finds paths between signals — useful for timing/connectivity
-6. `conn` shows all ports of an instance — good for interface understanding
-7. Client timeout is 60s — large designs may be slow
-8. Server auto-closes after 12h idle; call `close` to free resources earlier
+| Code | Description |
+|------|-------------|
+| `INVALID_PARAMS` | Missing or invalid parameters |
+| `INTERNAL_ERROR` | Server internal error |
+| `SIGNAL_NOT_FOUND` | Signal path does not exist |
+| `DESIGN_LOAD_FAILED` | Cannot load KDB/RTL design |
+| `INSTANCE_NOT_FOUND` | Instance path does not exist |
+| `NO_PATH` | No path found between signals |

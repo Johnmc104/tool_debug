@@ -118,7 +118,17 @@ tool_wave/
 ├── Makefile                            统一构建系统
 ├── README.md                           本文件
 ├── spec.md                             需求规格文档
+│
+├── .github/skills/tool-wave/           ★ AI Agent Skill（单一入口）
+│   ├── SKILL.md                        统一技能描述（自动发现入口）
+│   ├── references/
+│   │   ├── vwave.md                    vwave 命令详细参考
+│   │   └── vsignal.md                  vsignal 命令详细参考
+│   └── scripts/
+│       └── check-tools.sh             环境检查脚本
+│
 ├── doc/
+│   ├── analysis_debug_ai_support.md    调试场景与 AI 支持分析
 │   └── proposal_driver_load_trace.md   vsignal 技术方案
 │
 ├── src_common/                         ★ 共享库（tw:: 命名空间）
