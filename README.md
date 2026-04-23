@@ -4,8 +4,8 @@
 
 | 工具 | 用途 | 数据源 | 运行时目录 |
 |------|------|--------|------------|
-| **vwave** | FSDB 波形值读取 | `.fsdb` 波形文件 | `.wave_run/` |
-| **vsignal** | 网表信号驱动/负载追踪 | VCS KDB 数据库 或 RTL 源文件 | `.vsignal_run/` |
+| **vwave** | FSDB 波形值读取 | `.fsdb` 波形文件 | `.vtool/wave_run/` |
+| **vsignal** | 网表信号驱动/负载追踪 | VCS KDB 数据库 或 RTL 源文件 | `.vtool/vsignal_run/` |
 
 两工具独立运行但共享统一的 **C/S 架构、通信协议、事件循环机制**，支持同时运行互不干扰。
 
@@ -121,10 +121,11 @@ tool_wave/
 ├── doc/
 │   └── proposal_driver_load_trace.md   vsignal 技术方案
 │
-├── src_common/                         ★ 共享库（tw:: 命名空间，951 行）
+├── src_common/                         ★ 共享库（tw:: 命名空间）
 │   ├── json.h                          统一 JSON 对象 + 解析器（含 bool）
 │   ├── protocol.h                      通用响应编码、错误码
-│   ├── run_dir.h                       参数化运行时目录管理
+│   ├── run_dir.h                       参数化运行时目录管理（.vtool/子目录）
+│   ├── npi_env.h                       NPI 环境自动配置（VERDI_HOME → LD_LIBRARY_PATH）
 │   ├── client.h                        RAII fd、EINTR 安全通信、请求生成
 │   └── server_loop.h                   事件循环（12h 空闲超时、per-client 超时）
 │
@@ -178,7 +179,7 @@ tool_wave/
 
 **架构与可靠性**
 - **单一二进制**: server + client 合并，`open` 时 fork daemon，独立运行互不干扰
-- **CWD 驱动**: 运行时文件存储于当前目录（`.wave_run/` / `.vsignal_run/`），避免路径冲突
+- **CWD 驱动**: 运行时文件存储于当前目录（`.vtool/wave_run/` / `.vtool/vsignal_run/`），避免路径冲突
 - **自动检测**: 后续命令自动搜索 CWD 及父目录，无需重复指定参数
 
 **健壮性保障**
@@ -203,7 +204,7 @@ tool_wave/
 
 ## 依赖
 
-- Synopsys Verdi NPI (`VERDI_HOME`，默认 `/opt/Synopsys/verdi/T-2022.06-SP2`)
+- Synopsys Verdi NPI（设置 `VERDI_HOME` 环境变量即可，工具自动配置 `LD_LIBRARY_PATH` 和 `NOVAS_HOME`）
 - GCC 9+ (C++14)
 - Linux (Unix Domain Socket, fork/setsid)
 - VCS（仅 vsignal 测试需要，用于生成 KDB 数据库）

@@ -12,7 +12,7 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 VWAVE="$PROJECT_DIR/build/bin/vwave"
 FSDB="$PROJECT_DIR/test_vwave/tb_top.fsdb"
-RUNDIR="$PROJECT_DIR/.wave_run"
+RUNDIR="$PROJECT_DIR/.vtool/wave_run"
 TIMEOUT_CMD="timeout 10"
 
 # Counters
@@ -49,6 +49,7 @@ cleanup_server() {
         fi
     fi
     rm -rf "$RUNDIR"
+    rmdir "$PROJECT_DIR/.vtool" 2>/dev/null || true
 }
 
 cleanup_server
@@ -82,7 +83,7 @@ if assert_has "$OUT" '"status":"ok"'; then pass; else fail "$OUT"; fi
 log_test "open reports pid"
 if assert_has "$OUT" '"pid":'; then pass; else fail "$OUT"; fi
 
-log_test ".wave_run directory created"
+log_test ".vtool/wave_run directory created"
 if [[ -d "$RUNDIR" ]]; then pass; else fail "not found"; fi
 
 log_test "PID file created"
@@ -117,7 +118,7 @@ if assert_has "$OUT" "\"pid\":$PID"; then pass; else fail "$OUT"; fi
 
 log_section "T3: Auto-detect"
 
-# Run from test_vwave/ dir (parent of .wave_run)
+# Run from test_vwave/ dir (parent of .vtool/wave_run)
 cd "$PROJECT_DIR/test_vwave"
 
 OUT=$($TIMEOUT_CMD "$VWAVE" status --json 2>/dev/null || true)
@@ -416,6 +417,7 @@ if assert_has "$OUT" '"status":"ok"'; then pass; else fail "$OUT"; fi
 $TIMEOUT_CMD "$VWAVE" close --fsdb "$FSDB" --json >/dev/null 2>&1 || true
 sleep 1
 rm -rf "$RUNDIR"
+rmdir "$PROJECT_DIR/.vtool" 2>/dev/null || true
 
 # ─── Summary ─────────────────────────────────────────────────────────────────
 

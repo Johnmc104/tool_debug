@@ -64,7 +64,7 @@ echo "── Step 1: Build KDB database ──"
 cd "$SCRIPT_DIR"
 
 # Clean previous artifacts
-rm -rf simv simv.daidir csrc .vsignal_run
+rm -rf simv simv.daidir csrc .vtool
 
 echo "  Running: vcs -sverilog -kdb -q example.v"
 if ! vcs -sverilog -kdb -q example.v -o simv 2>&1 | tail -3; then
@@ -193,7 +193,7 @@ echo -e " Results: ${GREEN}$PASS passed${NC}, ${RED}$FAIL failed${NC}, $TOTAL to
 echo "═══════════════════════════════════════════════════════"
 
 # Cleanup
-rm -rf .vsignal_run
+rm -rf .vtool
 
 if [ $FAIL -eq 0 ]; then
     echo -e "${GREEN}All tests passed!${NC}"

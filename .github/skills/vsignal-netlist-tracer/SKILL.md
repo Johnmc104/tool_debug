@@ -14,7 +14,8 @@ source files via Synopsys NPI L1 APIs, through a fork-based daemon (UDS communic
 ## Prerequisites
 
 - `vsignal` binary on PATH or at `<project>/build/bin/vsignal`
-- Synopsys Verdi NPI environment (`VERDI_HOME`, `LD_LIBRARY_PATH`)
+- `VERDI_HOME` environment variable pointing to Synopsys Verdi installation
+  (the tool auto-configures `LD_LIBRARY_PATH` and `NOVAS_HOME` at startup)
 - Design source: VCS KDB database (`vcs -kdb`) or RTL Verilog files
 
 ## Workflow
@@ -148,7 +149,7 @@ Each element in `drivers`, `loads`, `fanin`, `fanout`, `path` arrays:
 
 ## Runtime directory
 
-`.vsignal_run/` under CWD — contains PID, socket, log, source_info.
+`.vtool/vsignal_run/` under CWD — contains PID, socket, log, source_info.
 Auto-detected upward from CWD. Override: `--run-dir <path>`.
 
 ## Agent tips

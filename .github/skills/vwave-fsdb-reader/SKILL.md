@@ -13,7 +13,8 @@ vwave reads Synopsys FSDB waveform files via a fork-based daemon (UDS communicat
 ## Prerequisites
 
 - `vwave` binary on PATH or at `<project>/build/bin/vwave`
-- Synopsys Verdi NPI environment (`VERDI_HOME`, `LD_LIBRARY_PATH`)
+- `VERDI_HOME` environment variable pointing to Synopsys Verdi installation
+  (the tool auto-configures `LD_LIBRARY_PATH` and `NOVAS_HOME` at startup)
 
 ## Workflow
 
@@ -106,7 +107,7 @@ vwave get-value -s tb.intf.clk -b 0 -e 100000
 
 ## Runtime directory
 
-`.wave_run/` under CWD — contains PID, socket, log, source_info.
+`.vtool/wave_run/` under CWD — contains PID, socket, log, source_info.
 Auto-detected upward from CWD. Override: `--run-dir <path>`.
 
 ## Agent tips

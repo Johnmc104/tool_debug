@@ -3,7 +3,7 @@
  * @brief vsignal runtime directory — thin wrapper over tw::RunDir.
  *
  * Configures the shared RunDir for vsignal:
- *   dot_dir  = ".vsignal_run"
+ *   sub_dir  = "vsignal_run"   (inside .vtool/)
  *   prefix   = "vsignal_server"
  */
 #ifndef VSIGNAL_RUN_DIR_H
@@ -15,7 +15,7 @@ namespace vsignal {
 
 class RunDir {
 public:
-    static constexpr const char* DOT_DIR = ".vsignal_run";
+    static constexpr const char* DOT_DIR = "vsignal_run";
     static constexpr const char* PREFIX  = "vsignal_server";
 
     RunDir() = default;
@@ -25,7 +25,7 @@ public:
         : base_(DOT_DIR, PREFIX, design_src, run_dir_override)
     {}
 
-    /** Reconstruct from a known .vsignal_run directory. */
+    /** Reconstruct from a known .vtool/vsignal_run directory. */
     static RunDir from_dir(const std::string& run_dir_path) {
         RunDir rd;
         rd.base_ = tw::RunDir::from_dir(run_dir_path, DOT_DIR, PREFIX);

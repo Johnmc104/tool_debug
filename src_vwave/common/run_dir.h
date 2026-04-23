@@ -3,7 +3,7 @@
  * @brief vwave runtime directory — thin wrapper over tw::RunDir.
  *
  * Configures the shared RunDir for vwave:
- *   dot_dir  = ".wave_run"
+ *   sub_dir  = "wave_run"   (inside .vtool/)
  *   prefix   = "wave_server"
  */
 #ifndef WAVE_RUN_DIR_H
@@ -15,7 +15,7 @@ namespace wave {
 
 class RunDir {
 public:
-    static constexpr const char* DOT_DIR = ".wave_run";
+    static constexpr const char* DOT_DIR = "wave_run";
     static constexpr const char* PREFIX  = "wave_server";
 
     RunDir() = default;
@@ -25,7 +25,7 @@ public:
         : base_(DOT_DIR, PREFIX, fsdb_path, run_dir_override)
     {}
 
-    /** Reconstruct from a known .wave_run directory (used by auto-detect). */
+    /** Reconstruct from a known .vtool/wave_run directory (used by auto-detect). */
     static RunDir from_dir(const std::string& run_dir_path) {
         RunDir rd;
         rd.base_ = tw::RunDir::from_dir(run_dir_path, DOT_DIR, PREFIX);

@@ -8,10 +8,10 @@
  *   3. `vwave close`            — stops the server
  *   4. `vwave open <other.fsdb>`— switches to a different waveform (close + reopen)
  *
- * The server socket / PID / log are managed under  <cwd>/.wave_run/
+ * The server socket / PID / log are managed under  <cwd>/.vtool/wave_run/
  * This ensures the runtime dir is always writable, even when the FSDB
  * resides on a shared or read-only filesystem.
- * Auto-detect searches upward from CWD for a live .wave_run/ directory.
+ * Auto-detect searches upward from CWD for a live .vtool/wave_run/ directory.
  */
 
 #include <iostream>
@@ -35,6 +35,9 @@
 
 // Server-side code (NPI-dependent, only executes in forked child)
 #include "server/server_core.h"
+
+// NPI environment auto-setup (shared)
+#include "tw/npi_env.h"
 
 // ─── Usage ───────────────────────────────────────────────────────────────────
 
@@ -372,6 +375,9 @@ static int cmd_query(const wave::RunDir& run_dir, bool json_mode,
 // ─── Main ────────────────────────────────────────────────────────────────────
 
 int main(int argc, char** argv) {
+    // Auto-configure NPI environment from VERDI_HOME
+    tw::ensure_npi_env(argc, argv);
+
     // ── Parse arguments ──
     std::string fsdb_path;
     std::string run_dir_override;

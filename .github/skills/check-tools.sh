@@ -42,8 +42,8 @@ else
 fi
 
 # Check running servers
-if [[ -f .wave_run/wave_server.pid ]]; then
-    pid=$(cat .wave_run/wave_server.pid)
+if [[ -f .vtool/wave_run/wave_server.pid ]]; then
+    pid=$(cat .vtool/wave_run/wave_server.pid)
     if kill -0 "$pid" 2>/dev/null; then
         ok "vwave server running (PID $pid)"
     else
@@ -53,8 +53,8 @@ else
     echo "  vwave server: not running"
 fi
 
-if [[ -f .vsignal_run/vsignal_server.pid ]]; then
-    pid=$(cat .vsignal_run/vsignal_server.pid)
+if [[ -f .vtool/vsignal_run/vsignal_server.pid ]]; then
+    pid=$(cat .vtool/vsignal_run/vsignal_server.pid)
     if kill -0 "$pid" 2>/dev/null; then
         ok "vsignal server running (PID $pid)"
     else

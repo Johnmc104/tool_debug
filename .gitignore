@@ -1,6 +1,5 @@
 build/
-.wave_run/
-.vsignal_run/
+.vtool/
 *.o
 *.d
 test_vwave/tb_top.fsdb
@@ -10,3 +9,4 @@ test_vsignal/csrc/
 vwaveLog/
 verdiLog/
 vsignalLog/
+.wave_run
