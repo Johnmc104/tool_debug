@@ -3,7 +3,7 @@
  * @brief vsignal server core — NPI netlist integration and request handling.
  *
  * Uses shared tw::server event loop infrastructure for:
- *   - Socket I/O, signal handling, idle timeout (12 h)
+ *   - Socket I/O, signal handling, idle timeout (1 h)
  *   - RAII, EINTR-safe reads, per-client timeout
  *
  * Tool-specific logic:
@@ -429,7 +429,7 @@ inline int run_server(int argc, char** argv,
 
     tw::server::ServerConfig cfg;
     cfg.log_tag            = "vsignal-server";
-    cfg.idle_timeout_sec   = 12 * 3600;   // 12 hours
+    cfg.idle_timeout_sec   = 3600;        // 1 hour
     cfg.client_timeout_sec = 60;           // netlist tracing can be slow
 
     int rc = tw::server::create_and_run_loop(

@@ -5,7 +5,7 @@
  * Provides:
  *   - RAII ScopedFd
  *   - Robust read_line / send_line (EINTR-safe, length-capped)
- *   - ServerConfig: idle timeout, log tag, per-client timeout
+ *   - ServerConfig: idle timeout (1 h default), log tag, per-client timeout
  *   - run_event_loop(): non-blocking accept loop with idle-timeout auto-shutdown
  *   - signal_handler for clean shutdown
  *
@@ -121,7 +121,7 @@ inline bool send_line(int fd, const std::string& msg) {
 
 struct ServerConfig {
     std::string log_tag       = "server";      ///< e.g. "vwave-server"
-    int  idle_timeout_sec     = 12 * 3600;     ///< Auto-shutdown after idle (default 12 h)
+    int  idle_timeout_sec     = 3600;          ///< Auto-shutdown after idle (default 1 h)
     int  client_timeout_sec   = 60;            ///< Per-client recv/send timeout
 };
 

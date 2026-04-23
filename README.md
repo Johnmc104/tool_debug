@@ -137,7 +137,7 @@ tool_wave/
 │   ├── run_dir.h                       参数化运行时目录管理（.vtool/子目录）
 │   ├── npi_env.h                       NPI 环境自动配置（VERDI_HOME → LD_LIBRARY_PATH）
 │   ├── client.h                        RAII fd、EINTR 安全通信、请求生成
-│   └── server_loop.h                   事件循环（12h 空闲超时、per-client 超时）
+│   └── server_loop.h                   事件循环（1h 空闲超时、per-client 超时）
 │
 ├── src_vwave/                          vwave 源码（薄封装层）
 │   ├── main.cpp                        CLI 解析、fork 服务、命令分发
@@ -193,7 +193,7 @@ tool_wave/
 - **自动检测**: 后续命令自动搜索 CWD 及父目录，无需重复指定参数
 
 **健壮性保障**
-- **12h 空闲超时**: 驻留服务 12 小时无操作自动关闭，防止僵尸进程
+- **1h 空闲超时**: 驻留服务 1 小时无操作自动关闭，防止僵尸进程
 - **RAII 文件描述符**: ScopedFd 保证所有退出路径均关闭，防止描述符泄漏
 - **EINTR 安全**: send/recv 自动重试，处理信号中断
 - **OOM 防护**: read_line 限制单行 4MB，防止恶意输入触发内存爆炸

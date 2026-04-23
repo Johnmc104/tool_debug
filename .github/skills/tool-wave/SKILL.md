@@ -93,5 +93,5 @@ Auto-detected upward from CWD. Override: `--run-dir <path>`.
 1. Check `status` first — reuse running daemon when possible
 2. **vwave**: Explore hierarchy `scopes` → `signals` → `get-value`; batch reads with `-s` multiple times or `-f` for signal list file
 3. **vsignal**: Start with `driver`/`load`, then `fanin`/`fanout` for register-level; use `--assign-cell` for real designs
-4. Both servers auto-close after 12h idle; call `close` to free resources earlier
+4. Both servers auto-close after 1h idle; call `close` to free resources earlier
 5. vwave client timeout: 30s; vsignal client timeout: 60s (large designs may be slow)

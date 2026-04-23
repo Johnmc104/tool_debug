@@ -3,7 +3,7 @@
  * @brief vwave server core — FSDB NPI integration and request handling.
  *
  * Uses shared tw::server event loop infrastructure for:
- *   - Socket I/O, signal handling, idle timeout (12 h default)
+ *   - Socket I/O, signal handling, idle timeout (1 h default)
  *
  * Tool-specific logic:
  *   - FSDB file open/close via NPI
@@ -413,7 +413,7 @@ inline int run_server(int argc, char** argv,
 
     tw::server::ServerConfig cfg;
     cfg.log_tag           = "vwave-server";
-    cfg.idle_timeout_sec  = 12 * 3600;   // 12 hours
+    cfg.idle_timeout_sec  = 3600;        // 1 hour
     cfg.client_timeout_sec = 30;
 
     int rc = tw::server::create_and_run_loop(
