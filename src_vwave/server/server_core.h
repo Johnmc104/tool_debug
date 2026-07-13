@@ -373,13 +373,19 @@ static std::string handle_get_value_between(int id, const JsonParser& params) {
 
     npiFsdbTime begin_t = static_cast<npiFsdbTime>(begin);
     npiFsdbTime end_t   = static_cast<npiFsdbTime>(end);
+    int64_t limit = params.get_int("limit", 1000);
+    if (limit < 1) limit = 1;
+    if (limit > 100000) limit = 100000;
 
     fsdbTimeValPairVec_t vcVec;
     if (npi_fsdb_sig_value_between(g_file_hdl, sig_name.c_str(),
                                     begin_t, end_t, vcVec, format)) {
+        int64_t total = static_cast<int64_t>(vcVec.size());
+        size_t output_count = (total <= limit) ? vcVec.size() :
+                              static_cast<size_t>(limit);
         std::ostringstream arr;
         arr << "[";
-        for (size_t i = 0; i < vcVec.size(); ++i) {
+        for (size_t i = 0; i < output_count; ++i) {
             if (i) arr << ",";
             JsonObject vc;
             vc.set("time", static_cast<int64_t>(vcVec[i].first));
@@ -392,13 +398,16 @@ static std::string handle_get_value_between(int id, const JsonParser& params) {
         data.set("signal", sig_name);
         data.set("begin", static_cast<int64_t>(begin));
         data.set("end", static_cast<int64_t>(end));
+        data.set("total_changes", total);
         data.set_raw("changes", arr.str());
+        if (total > limit) data.set("truncated", static_cast<int64_t>(1));
         return make_ok_response(id, data.dump());
     } else {
         JsonObject data;
         data.set("signal", sig_name);
         data.set("begin", static_cast<int64_t>(begin));
         data.set("end", static_cast<int64_t>(end));
+        data.set("total_changes", static_cast<int64_t>(0));
         data.set_raw("changes", "[]");
         return make_ok_response(id, data.dump());
     }
@@ -495,7 +504,7 @@ static std::string handle_find_signals(int id, const JsonParser& params) {
     return make_ok_response(id, data.dump());
 }
 
-// ─── Edge navigation ────────────────────────────────────────────────────────
+// ─── Edge navigation (VCT iterator — O(log n) seek) ─────────────────────────
 
 static std::string handle_next_edge(int id, const JsonParser& params) {
     if (!g_file_hdl)
@@ -517,54 +526,52 @@ static std::string handle_next_edge(int id, const JsonParser& params) {
         return make_error_response(id, err::SIGNAL_NOT_FOUND,
                                    "Signal '" + sig_name + "' not found");
 
-    npiFsdbTime search_start = static_cast<npiFsdbTime>(from_time);
-    npiFsdbTime max_t = 0;
-    npi_fsdb_max_time(g_file_hdl, &max_t);
-
-    // Use value_between to find next change
-    npiFsdbTime begin_t, end_t;
-    if (dir == "backward") {
-        begin_t = 0;
-        end_t = search_start > 0 ? search_start - 1 : 0;
-    } else {
-        begin_t = search_start + 1;
-        end_t = max_t;
-    }
-
-    fsdbTimeValPairVec_t vcVec;
+    npiFsdbTime search_t = static_cast<npiFsdbTime>(from_time);
     bool found = false;
     int64_t found_time = -1;
     std::string found_value;
 
-    if (begin_t <= end_t && npi_fsdb_sig_value_between(
-            g_file_hdl, sig_name.c_str(), begin_t, end_t, vcVec, npiFsdbBinStrVal)) {
+    if (edge == "rising" || edge == "falling") {
+        // Use find_value API — directly seeks target value, O(log n)
+        const char* target = (edge == "rising") ? "1" : "0";
+        npiFsdbTime vcTime = 0;
+        int ret;
         if (dir == "backward") {
-            // Last change before from_time
-            for (int i = static_cast<int>(vcVec.size()) - 1; i >= 0; --i) {
-                std::string& v = vcVec[i].second;
-                bool match = (edge == "any") ||
-                    (edge == "rising" && !v.empty() && v.back() == '1') ||
-                    (edge == "falling" && !v.empty() && v.back() == '0');
-                if (match) {
-                    found = true;
-                    found_time = static_cast<int64_t>(vcVec[i].first);
-                    found_value = v;
-                    break;
-                }
-            }
+            ret = npi_fsdb_sig_find_value_backward(
+                g_file_hdl, sig_name.c_str(), target,
+                search_t, vcTime, npiFsdbBinStrVal);
         } else {
-            for (size_t i = 0; i < vcVec.size(); ++i) {
-                std::string& v = vcVec[i].second;
-                bool match = (edge == "any") ||
-                    (edge == "rising" && !v.empty() && v.back() == '1') ||
-                    (edge == "falling" && !v.empty() && v.back() == '0');
-                if (match) {
-                    found = true;
-                    found_time = static_cast<int64_t>(vcVec[i].first);
-                    found_value = v;
-                    break;
-                }
+            ret = npi_fsdb_sig_find_value_forward(
+                g_file_hdl, sig_name.c_str(), target,
+                search_t + 1, vcTime, npiFsdbBinStrVal);
+        }
+        if (ret) {
+            found = true;
+            found_time = static_cast<int64_t>(vcTime);
+            found_value = target;
+        }
+    } else {
+        // "any" edge — use VCT iterator: goto_time + next/prev
+        npiFsdbVctHandle vct = npi_fsdb_create_vct(sig);
+        if (vct) {
+            npi_fsdb_goto_time(vct, search_t);
+            int ret;
+            if (dir == "backward")
+                ret = npi_fsdb_goto_prev(vct);
+            else
+                ret = npi_fsdb_goto_next(vct);
+            if (ret) {
+                npiFsdbTime t = 0;
+                npi_fsdb_vct_time(vct, &t);
+                found = true;
+                found_time = static_cast<int64_t>(t);
+                // Read value at found time
+                npiFsdbValue val;
+                val.format = npiFsdbBinStrVal;
+                if (npi_fsdb_vct_value(vct, &val) && val.value.str)
+                    found_value = val.value.str;
             }
+            npi_fsdb_release_vct(vct);
         }
     }
 
@@ -582,7 +589,7 @@ static std::string handle_next_edge(int id, const JsonParser& params) {
     return make_ok_response(id, data.dump());
 }
 
-// ─── VC count ───────────────────────────────────────────────────────────────
+// ─── VC count (native API — O(1), no data loading) ──────────────────────────
 
 static std::string handle_vc_count(int id, const JsonParser& params) {
     if (!g_file_hdl)
@@ -606,21 +613,15 @@ static std::string handle_vc_count(int id, const JsonParser& params) {
         return make_error_response(id, err::SIGNAL_NOT_FOUND,
                                    "Signal '" + sig_name + "' not found");
 
-    // Count changes via value_between
-    fsdbTimeValPairVec_t vcVec;
-    int64_t count = 0;
-    npiFsdbTime bt = static_cast<npiFsdbTime>(begin);
-    npiFsdbTime et = static_cast<npiFsdbTime>(end);
-    if (npi_fsdb_sig_value_between(g_file_hdl, sig_name.c_str(),
-                                    bt, et, vcVec, npiFsdbBinStrVal)) {
-        count = static_cast<int64_t>(vcVec.size());
-    }
+    signed long long count = npi_fsdb_sig_vc_count(
+        g_file_hdl, sig_name.c_str(),
+        static_cast<npiFsdbTime>(begin), static_cast<npiFsdbTime>(end));
 
     JsonObject data;
     data.set("signal", sig_name);
     data.set("begin", begin);
     data.set("end", end);
-    data.set("count", count);
+    data.set("count", static_cast<int64_t>(count));
     return make_ok_response(id, data.dump());
 }
 

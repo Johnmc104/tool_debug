@@ -316,7 +316,8 @@ static int cmd_query(const wave::RunDir& run_dir, bool json_mode,
                      const std::string& find_scope,
                      int depth,
                      const std::string& edge_type,
-                     const std::string& edge_dir) {
+                     const std::string& edge_dir,
+                     int64_t limit_val) {
     if (!run_dir.is_server_alive()) {
         std::cerr << "Error: No active waveform.\n"
                   << "Use 'vwave open <file.fsdb>' first.\n";
@@ -393,6 +394,7 @@ static int cmd_query(const wave::RunDir& run_dir, bool json_mode,
             p.set("begin", begin_time);
             p.set("end", end_time);
             p.set("radix", radix);
+            if (limit_val != 1000) p.set("limit", limit_val);
             request = wave::client::build_request(req_id, "get_value_between", p.dump());
         } else if (time_val >= 0) {
             wave::JsonObject p;
@@ -476,6 +478,7 @@ int main(int argc, char** argv) {
     int depth = 1;
     std::string edge_type = "any";
     std::string edge_dir = "forward";
+    int64_t limit_val = 1000;
     std::vector<std::string> extra_signals;
 
     for (int i = 1; i < argc; ++i) {
@@ -513,6 +516,8 @@ int main(int argc, char** argv) {
             end_time = std::strtoll(argv[++i], nullptr, 10);
         } else if ((arg == "-r" || arg == "--radix") && i + 1 < argc) {
             radix = argv[++i];
+        } else if ((arg == "-l" || arg == "--limit") && i + 1 < argc) {
+            limit_val = std::strtoll(argv[++i], nullptr, 10);
         } else if (arg == "--scope" && i + 1 < argc) {
             find_scope = argv[++i];
         } else if (arg == "--depth" && i + 1 < argc) {
@@ -579,5 +584,5 @@ int main(int argc, char** argv) {
     return cmd_query(run_dir, json_mode, command,
                      scope_path, signal_name, extra_signals, signal_file,
                      time_val, begin_time, end_time, radix, compact_mode,
-                     find_scope, depth, edge_type, edge_dir);
+                     find_scope, depth, edge_type, edge_dir, limit_val);
 }
