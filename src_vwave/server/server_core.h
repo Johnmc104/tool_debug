@@ -392,6 +392,97 @@ static std::string handle_get_value_between(int id, const JsonParser& params) {
     }
 }
 
+// ─── Find signals (recursive wildcard search) ───────────────────────────────
+
+static bool wildcard_match(const char* pattern, const char* str) {
+    while (*pattern && *str) {
+        if (*pattern == '*') {
+            ++pattern;
+            if (!*pattern) return true;
+            while (*str) {
+                if (wildcard_match(pattern, str)) return true;
+                ++str;
+            }
+            return false;
+        } else if (*pattern == '?' || *pattern == *str) {
+            ++pattern; ++str;
+        } else {
+            return false;
+        }
+    }
+    while (*pattern == '*') ++pattern;
+    return !*pattern && !*str;
+}
+
+static void find_signals_recursive(npiFsdbScopeHandle scope,
+                                   const std::string& pattern,
+                                   std::vector<std::string>& results,
+                                   int depth, int max_depth) {
+    if (depth > max_depth) return;
+    npiFsdbSigIter sig_iter = npi_fsdb_iter_sig(scope);
+    if (sig_iter) {
+        npiFsdbSigHandle sig;
+        while ((sig = npi_fsdb_iter_sig_next(sig_iter)) != nullptr) {
+            const char* sn = npi_fsdb_sig_property_str(npiFsdbSigName, sig);
+            const char* fn = npi_fsdb_sig_property_str(npiFsdbSigFullName, sig);
+            if (sn && wildcard_match(pattern.c_str(), sn)) {
+                if (fn) results.push_back(fn);
+            }
+            if (results.size() >= 200) break;
+        }
+        npi_fsdb_iter_sig_stop(sig_iter);
+    }
+    if (results.size() >= 200) return;
+    npiFsdbScopeIter child_iter = npi_fsdb_iter_child_scope(scope);
+    if (child_iter) {
+        npiFsdbScopeHandle child;
+        while ((child = npi_fsdb_iter_scope_next(child_iter)) != nullptr) {
+            find_signals_recursive(child, pattern, results, depth+1, max_depth);
+            if (results.size() >= 200) break;
+        }
+        npi_fsdb_iter_scope_stop(child_iter);
+    }
+}
+
+static std::string handle_find_signals(int id, const JsonParser& params) {
+    if (!g_file_hdl)
+        return make_error_response(id, err::FSDB_OPEN_FAILED, "No FSDB file loaded");
+
+    std::string pattern = params.get_string("pattern");
+    std::string scope   = params.get_string("scope");
+    if (pattern.empty())
+        return make_error_response(id, err::INVALID_PARAMS, "Missing 'pattern'");
+
+    std::vector<std::string> results;
+    npiFsdbScopeHandle start_scope = nullptr;
+
+    if (!scope.empty()) {
+        start_scope = npi_fsdb_scope_by_name(g_file_hdl, scope.c_str(), nullptr);
+        if (!start_scope)
+            return make_error_response(id, err::SCOPE_NOT_FOUND,
+                                       "Scope '" + scope + "' not found");
+        find_signals_recursive(start_scope, pattern, results, 0, 20);
+    } else {
+        npiFsdbScopeIter top_iter = npi_fsdb_iter_top_scope(g_file_hdl);
+        if (top_iter) {
+            npiFsdbScopeHandle ts;
+            while ((ts = npi_fsdb_iter_scope_next(top_iter)) != nullptr) {
+                find_signals_recursive(ts, pattern, results, 0, 20);
+                if (results.size() >= 200) break;
+            }
+            npi_fsdb_iter_scope_stop(top_iter);
+        }
+    }
+
+    JsonObject data;
+    data.set("pattern", pattern);
+    if (!scope.empty()) data.set("scope", scope);
+    data.set_array("signals", results);
+    data.set("count", static_cast<int64_t>(results.size()));
+    if (results.size() >= 200) data.set("truncated", static_cast<int64_t>(1));
+    return make_ok_response(id, data.dump());
+}
+
 // ─── Request dispatcher ──────────────────────────────────────────────────────
 
 static std::string dispatch_request(const std::string& request_json) {
@@ -420,6 +511,7 @@ static std::string dispatch_request(const std::string& request_json) {
     if (cmd_str == cmd::SIGNAL_INFO)       return handle_signal_info(id, params);
     if (cmd_str == cmd::GET_VALUE_AT)      return handle_get_value_at(id, params);
     if (cmd_str == cmd::GET_VALUE_BETWEEN) return handle_get_value_between(id, params);
+    if (cmd_str == cmd::FIND_SIGNALS)      return handle_find_signals(id, params);
 
     return make_error_response(id, err::INVALID_PARAMS,
                                "Unknown command: " + cmd_str);

@@ -49,7 +49,26 @@ Full signals response:
 {"id":1,"status":"ok","data":{"path":"tb.intf","signals":[{"name":"clk","full_name":"tb.intf.clk","left":0,"right":0,"direction":"input"}]}}
 ```
 
-### Read Values
+### Find (Wildcard Search)
+
+```bash
+vwave find "*clk*" --scope tb.top_inst    # Recursive wildcard in subtree
+vwave find "*paddr*" --scope tb.dut       # Substring match
+vwave find "HRESETn" --scope tb.dut       # Exact short name match
+vwave find "*gpio*out*"                   # Global search (all top scopes)
+```
+```json
+{"pattern":"*clk*","scope":"tb.top_inst","signals":["tb.top_inst.dut.clk","tb.top_inst.dut.u_clkctrl.FCLK"],"count":2}
+```
+
+Notes:
+- Pattern matches signal **short name** (not full path) using `*` (any) and `?` (single char)
+- Without `*`, pattern is exact match — use `*name*` for substring search
+- Search is recursive through all child scopes
+- Results capped at 200 signals (`"truncated":1` if hit)
+- Use `--scope` to narrow search and reduce noise
+
+
 
 **At a time point** (supports multiple signals):
 ```bash

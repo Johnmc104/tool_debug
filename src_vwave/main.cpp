@@ -53,6 +53,7 @@ Usage:
   vwave scopes  [<path>]                     List hierarchy scopes
   vwave signals <path>                       List signals in scope
   vwave signal-info <name>                   Show signal details
+  vwave find <pattern> [--scope <path>]      Search signals by wildcard
   vwave get [options]                        Read signal value(s)
 
 Get options:
@@ -303,7 +304,8 @@ static int cmd_query(const wave::RunDir& run_dir, bool json_mode,
                      const std::string& signal_file,
                      int64_t time_val, int64_t begin_time, int64_t end_time,
                      const std::string& radix,
-                     bool compact_mode) {
+                     bool compact_mode,
+                     const std::string& find_scope) {
     if (!run_dir.is_server_alive()) {
         std::cerr << "Error: No active waveform.\n"
                   << "Use 'vwave open <file.fsdb>' first.\n";
@@ -343,6 +345,18 @@ static int cmd_query(const wave::RunDir& run_dir, bool json_mode,
         wave::JsonObject p;
         p.set("signal", signal_name);
         request = wave::client::build_request(req_id, "signal_info", p.dump());
+
+    } else if (command == "find") {
+        std::string pattern = scope_path;
+        if (pattern.empty() && !signal_name.empty()) pattern = signal_name;
+        if (pattern.empty()) {
+            std::cerr << "Error: Pattern required.\nUsage: vwave find <pattern> [--scope <path>]\n";
+            return 1;
+        }
+        wave::JsonObject p;
+        p.set("pattern", pattern);
+        if (!find_scope.empty()) p.set("scope", find_scope);
+        request = wave::client::build_request(req_id, "find_signals", p.dump());
 
     } else if (command == "get-value") {
         std::vector<std::string> all_signals;
@@ -415,6 +429,7 @@ int main(int argc, char** argv) {
     bool json_mode = false;
     int open_timeout_sec = 30;
     bool compact_mode = false;
+    std::string find_scope;
     std::vector<std::string> extra_signals;
 
     for (int i = 1; i < argc; ++i) {
@@ -452,6 +467,8 @@ int main(int argc, char** argv) {
             end_time = std::strtoll(argv[++i], nullptr, 10);
         } else if ((arg == "-r" || arg == "--radix") && i + 1 < argc) {
             radix = argv[++i];
+        } else if (arg == "--scope" && i + 1 < argc) {
+            find_scope = argv[++i];
         } else if (arg == "--path" && i + 1 < argc) {
             // backward compatibility
             scope_or_positional = argv[++i];
@@ -504,5 +521,6 @@ int main(int argc, char** argv) {
     // ── Query commands ──
     return cmd_query(run_dir, json_mode, command,
                      scope_path, signal_name, extra_signals, signal_file,
-                     time_val, begin_time, end_time, radix, compact_mode);
+                     time_val, begin_time, end_time, radix, compact_mode,
+                     find_scope);
 }
