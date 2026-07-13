@@ -43,7 +43,7 @@
 
 static void print_usage() {
     std::cerr <<
-R"(vwave — FSDB Waveform Reader v1.2
+R"(vwave — FSDB Waveform Reader v1.3
   by zhhe - Johnmc104@qq.com
 Usage:
   vwave open  <file.fsdb> [--timeout <sec>]  Load waveform (start background server)
