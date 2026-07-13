@@ -55,6 +55,8 @@ Usage:
   vwave signal-info <name>                   Show signal details
   vwave find <pattern> [--scope <path>]      Search signals by wildcard
   vwave get [options]                        Read signal value(s)
+  vwave edge -s <sig> -t <time> [options]    Find next/prev signal edge
+  vwave vc-count -s <sig> [-b <t> -e <t>]   Count value changes
 
 Get options:
   -s, --signal <name>       Signal path (repeatable for multi-signal)
@@ -64,11 +66,17 @@ Get options:
   -e, --end <t>             Range end time (with --begin)
   -r, --radix <fmt>         Value format: bin|hex|oct|dec (default: bin)
 
+Edge options:
+  --rising                  Find rising edge only
+  --falling                 Find falling edge only
+  --dir <forward|backward>  Search direction (default: forward)
+
 Global options:
   --fsdb <path>             Explicit FSDB path (skip auto-detect)
   --run-dir <path>          Override runtime directory
   --timeout <sec>           Server start timeout (default: 30, open only)
   --compact, -c             Compact output (short names, less tokens)
+  --depth <N>               Recursive depth for scopes (default: 1)
   --json                    JSON output mode
   -h, --help                Show this help
 
@@ -305,7 +313,10 @@ static int cmd_query(const wave::RunDir& run_dir, bool json_mode,
                      int64_t time_val, int64_t begin_time, int64_t end_time,
                      const std::string& radix,
                      bool compact_mode,
-                     const std::string& find_scope) {
+                     const std::string& find_scope,
+                     int depth,
+                     const std::string& edge_type,
+                     const std::string& edge_dir) {
     if (!run_dir.is_server_alive()) {
         std::cerr << "Error: No active waveform.\n"
                   << "Use 'vwave open <file.fsdb>' first.\n";
@@ -325,6 +336,7 @@ static int cmd_query(const wave::RunDir& run_dir, bool json_mode,
         wave::JsonObject p;
         if (!scope_path.empty()) p.set("path", scope_path);
         if (compact_mode) p.set_bool("compact", true);
+        if (depth > 1) p.set("depth", static_cast<int64_t>(depth));
         request = wave::client::build_request(req_id, "list_scopes", p.dump());
 
     } else if (command == "signals") {
@@ -393,6 +405,37 @@ static int cmd_query(const wave::RunDir& run_dir, bool json_mode,
             return 1;
         }
 
+    } else if (command == "edge") {
+        std::string sig = signal_name;
+        if (sig.empty() && !scope_path.empty()) sig = scope_path;
+        if (sig.empty()) {
+            std::cerr << "Error: Signal required.\nUsage: vwave edge -s <sig> -t <time> [--rising|--falling]\n";
+            return 1;
+        }
+        if (time_val < 0) {
+            std::cerr << "Error: --time required for edge command\n";
+            return 1;
+        }
+        wave::JsonObject p;
+        p.set("signal", sig);
+        p.set("time", time_val);
+        p.set("edge", edge_type);
+        p.set("dir", edge_dir);
+        request = wave::client::build_request(req_id, "next_edge", p.dump());
+
+    } else if (command == "vc-count") {
+        std::string sig = signal_name;
+        if (sig.empty() && !scope_path.empty()) sig = scope_path;
+        if (sig.empty()) {
+            std::cerr << "Error: Signal required.\nUsage: vwave vc-count -s <sig> [-b <begin> -e <end>]\n";
+            return 1;
+        }
+        wave::JsonObject p;
+        p.set("signal", sig);
+        if (begin_time >= 0) p.set("begin", begin_time);
+        if (end_time >= 0) p.set("end", end_time);
+        request = wave::client::build_request(req_id, "vc_count", p.dump());
+
     } else {
         std::cerr << "Unknown command: " << command << "\n";
         print_usage();
@@ -430,6 +473,9 @@ int main(int argc, char** argv) {
     int open_timeout_sec = 30;
     bool compact_mode = false;
     std::string find_scope;
+    int depth = 1;
+    std::string edge_type = "any";
+    std::string edge_dir = "forward";
     std::vector<std::string> extra_signals;
 
     for (int i = 1; i < argc; ++i) {
@@ -469,6 +515,17 @@ int main(int argc, char** argv) {
             radix = argv[++i];
         } else if (arg == "--scope" && i + 1 < argc) {
             find_scope = argv[++i];
+        } else if (arg == "--depth" && i + 1 < argc) {
+            depth = std::atoi(argv[++i]);
+            if (depth < 1) depth = 1;
+        } else if (arg == "--edge" && i + 1 < argc) {
+            edge_type = argv[++i];
+        } else if (arg == "--dir" && i + 1 < argc) {
+            edge_dir = argv[++i];
+        } else if (arg == "--rising") {
+            edge_type = "rising";
+        } else if (arg == "--falling") {
+            edge_type = "falling";
         } else if (arg == "--path" && i + 1 < argc) {
             // backward compatibility
             scope_or_positional = argv[++i];
@@ -522,5 +579,5 @@ int main(int argc, char** argv) {
     return cmd_query(run_dir, json_mode, command,
                      scope_path, signal_name, extra_signals, signal_file,
                      time_val, begin_time, end_time, radix, compact_mode,
-                     find_scope);
+                     find_scope, depth, edge_type, edge_dir);
 }

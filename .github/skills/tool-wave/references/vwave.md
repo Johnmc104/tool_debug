@@ -34,6 +34,7 @@ vwave info
 vwave scopes                   # Top-level scopes
 vwave scopes tb.intf           # Sub-scopes under tb.intf
 vwave scopes tb.intf -c        # Compact: short names only
+vwave scopes tb.dut --depth 3 -c  # 3-level recursive, compact
 vwave signals tb.intf          # Signals under tb.intf
 vwave signals tb.intf -c       # Compact: "name[L:R] dir" strings
 vwave signal-info tb.intf.clk  # Single signal detail
@@ -106,10 +107,35 @@ vwave get -s tb.intf.clk -b 0 -e 100000
 | Flag | Description |
 |------|-------------|
 | `--compact`, `-c` | Compact output (short names, fewer tokens) |
+| `--depth <N>` | Recursive depth for scopes (default: 1, max: 10) |
 | `--json` | Full JSON-RPC envelope output |
 | `--fsdb <path>` | Explicit FSDB path (skip auto-detect) |
 | `--run-dir <path>` | Override runtime directory |
 | `--timeout <sec>` | Server start timeout (default: 30, open only) |
+
+### Edge Navigation
+
+```bash
+vwave edge -s tb.dut.HRESETn -t 0 --rising          # Next rising edge after t=0
+vwave edge -s tb.dut.clk -t 500000 --falling         # Next falling edge
+vwave edge -s tb.dut.clk -t 500000                   # Any next edge
+vwave edge -s tb.dut.HRESETn -t 855000000 --dir backward --falling  # Previous falling
+```
+```json
+{"signal":"tb.dut.HRESETn","from_time":0,"edge":"rising","dir":"forward","found_time":572880,"value":"1"}
+```
+
+Edge options: `--rising`, `--falling` (default: any), `--dir forward|backward` (default: forward)
+
+### Value Change Count
+
+```bash
+vwave vc-count -s tb.dut.clk                         # Full sim range
+vwave vc-count -s tb.dut.clk -b 0 -e 100000000      # Specific range
+```
+```json
+{"signal":"tb.dut.clk","begin":0,"end":855164656,"count":82102}
+```
 
 ## Error Codes
 

@@ -98,12 +98,31 @@ static std::string handle_file_info(int id) {
     return make_ok_response(id, data.dump());
 }
 
+static void collect_scopes_depth(npiFsdbScopeHandle parent,
+                                 std::vector<std::string>& out,
+                                 int cur_depth, int max_depth) {
+    npiFsdbScopeIter iter = npi_fsdb_iter_child_scope(parent);
+    if (!iter) return;
+    npiFsdbScopeHandle scope;
+    while ((scope = npi_fsdb_iter_scope_next(iter)) != nullptr) {
+        const char* name = npi_fsdb_scope_property_str(npiFsdbScopeFullName, scope);
+        if (name) out.push_back(name);
+        if (cur_depth < max_depth)
+            collect_scopes_depth(scope, out, cur_depth + 1, max_depth);
+        if (out.size() >= 500) break;
+    }
+    npi_fsdb_iter_scope_stop(iter);
+}
+
 static std::string handle_list_scopes(int id, const JsonParser& params) {
     if (!g_file_hdl)
         return make_error_response(id, err::FSDB_OPEN_FAILED, "No FSDB file loaded");
 
     std::string path = params.get_string("path");
     bool compact = params.get_bool("compact", false);
+    int depth = static_cast<int>(params.get_int("depth", 1));
+    if (depth < 1) depth = 1;
+    if (depth > 10) depth = 10;
     std::vector<std::string> scope_names;
 
     if (path.empty()) {
@@ -114,6 +133,8 @@ static std::string handle_list_scopes(int id, const JsonParser& params) {
                 const char* name = npi_fsdb_scope_property_str(
                     npiFsdbScopeFullName, scope);
                 if (name) scope_names.push_back(name);
+                if (depth > 1)
+                    collect_scopes_depth(scope, scope_names, 2, depth);
             }
             npi_fsdb_iter_scope_stop(iter);
         }
@@ -123,19 +144,9 @@ static std::string handle_list_scopes(int id, const JsonParser& params) {
         if (!parent)
             return make_error_response(id, err::SCOPE_NOT_FOUND,
                                        "Scope '" + path + "' not found");
-        npiFsdbScopeIter iter = npi_fsdb_iter_child_scope(parent);
-        if (iter) {
-            npiFsdbScopeHandle scope;
-            while ((scope = npi_fsdb_iter_scope_next(iter)) != nullptr) {
-                const char* name = npi_fsdb_scope_property_str(
-                    npiFsdbScopeFullName, scope);
-                if (name) scope_names.push_back(name);
-            }
-            npi_fsdb_iter_scope_stop(iter);
-        }
+        collect_scopes_depth(parent, scope_names, 1, depth);
     }
 
-    // Compact mode: strip common prefix, return short names only
     if (compact && !path.empty()) {
         std::string prefix = path + ".";
         for (auto& s : scope_names) {
@@ -148,6 +159,7 @@ static std::string handle_list_scopes(int id, const JsonParser& params) {
     data.set("path", path.empty() ? "/" : path);
     data.set_array("scopes", scope_names);
     data.set("count", static_cast<int64_t>(scope_names.size()));
+    if (scope_names.size() >= 500) data.set("truncated", static_cast<int64_t>(1));
     return make_ok_response(id, data.dump());
 }
 
@@ -483,6 +495,135 @@ static std::string handle_find_signals(int id, const JsonParser& params) {
     return make_ok_response(id, data.dump());
 }
 
+// ─── Edge navigation ────────────────────────────────────────────────────────
+
+static std::string handle_next_edge(int id, const JsonParser& params) {
+    if (!g_file_hdl)
+        return make_error_response(id, err::FSDB_OPEN_FAILED, "No FSDB file loaded");
+
+    std::string sig_name = params.get_string("signal");
+    int64_t from_time = params.get_int("time", -1);
+    std::string edge = params.get_string("edge", "any");
+    std::string dir = params.get_string("dir", "forward");
+
+    if (sig_name.empty())
+        return make_error_response(id, err::INVALID_PARAMS, "Missing 'signal'");
+    if (from_time < 0)
+        return make_error_response(id, err::INVALID_TIME, "Missing 'time'");
+
+    npiFsdbSigHandle sig = npi_fsdb_sig_by_name(
+        g_file_hdl, sig_name.c_str(), nullptr);
+    if (!sig)
+        return make_error_response(id, err::SIGNAL_NOT_FOUND,
+                                   "Signal '" + sig_name + "' not found");
+
+    npiFsdbTime search_start = static_cast<npiFsdbTime>(from_time);
+    npiFsdbTime max_t = 0;
+    npi_fsdb_max_time(g_file_hdl, &max_t);
+
+    // Use value_between to find next change
+    npiFsdbTime begin_t, end_t;
+    if (dir == "backward") {
+        begin_t = 0;
+        end_t = search_start > 0 ? search_start - 1 : 0;
+    } else {
+        begin_t = search_start + 1;
+        end_t = max_t;
+    }
+
+    fsdbTimeValPairVec_t vcVec;
+    bool found = false;
+    int64_t found_time = -1;
+    std::string found_value;
+
+    if (begin_t <= end_t && npi_fsdb_sig_value_between(
+            g_file_hdl, sig_name.c_str(), begin_t, end_t, vcVec, npiFsdbBinStrVal)) {
+        if (dir == "backward") {
+            // Last change before from_time
+            for (int i = static_cast<int>(vcVec.size()) - 1; i >= 0; --i) {
+                std::string& v = vcVec[i].second;
+                bool match = (edge == "any") ||
+                    (edge == "rising" && !v.empty() && v.back() == '1') ||
+                    (edge == "falling" && !v.empty() && v.back() == '0');
+                if (match) {
+                    found = true;
+                    found_time = static_cast<int64_t>(vcVec[i].first);
+                    found_value = v;
+                    break;
+                }
+            }
+        } else {
+            for (size_t i = 0; i < vcVec.size(); ++i) {
+                std::string& v = vcVec[i].second;
+                bool match = (edge == "any") ||
+                    (edge == "rising" && !v.empty() && v.back() == '1') ||
+                    (edge == "falling" && !v.empty() && v.back() == '0');
+                if (match) {
+                    found = true;
+                    found_time = static_cast<int64_t>(vcVec[i].first);
+                    found_value = v;
+                    break;
+                }
+            }
+        }
+    }
+
+    JsonObject data;
+    data.set("signal", sig_name);
+    data.set("from_time", from_time);
+    data.set("edge", edge);
+    data.set("dir", dir);
+    if (found) {
+        data.set("found_time", found_time);
+        data.set("value", found_value);
+    } else {
+        data.set("found_time", static_cast<int64_t>(-1));
+    }
+    return make_ok_response(id, data.dump());
+}
+
+// ─── VC count ───────────────────────────────────────────────────────────────
+
+static std::string handle_vc_count(int id, const JsonParser& params) {
+    if (!g_file_hdl)
+        return make_error_response(id, err::FSDB_OPEN_FAILED, "No FSDB file loaded");
+
+    std::string sig_name = params.get_string("signal");
+    if (sig_name.empty())
+        return make_error_response(id, err::INVALID_PARAMS, "Missing 'signal'");
+
+    int64_t begin = params.get_int("begin", 0);
+    int64_t end = params.get_int("end", -1);
+    if (end < 0) {
+        npiFsdbTime mt = 0;
+        npi_fsdb_max_time(g_file_hdl, &mt);
+        end = static_cast<int64_t>(mt);
+    }
+
+    npiFsdbSigHandle sig = npi_fsdb_sig_by_name(
+        g_file_hdl, sig_name.c_str(), nullptr);
+    if (!sig)
+        return make_error_response(id, err::SIGNAL_NOT_FOUND,
+                                   "Signal '" + sig_name + "' not found");
+
+    // Count changes via value_between
+    fsdbTimeValPairVec_t vcVec;
+    int64_t count = 0;
+    npiFsdbTime bt = static_cast<npiFsdbTime>(begin);
+    npiFsdbTime et = static_cast<npiFsdbTime>(end);
+    if (npi_fsdb_sig_value_between(g_file_hdl, sig_name.c_str(),
+                                    bt, et, vcVec, npiFsdbBinStrVal)) {
+        count = static_cast<int64_t>(vcVec.size());
+    }
+
+    JsonObject data;
+    data.set("signal", sig_name);
+    data.set("begin", begin);
+    data.set("end", end);
+    data.set("count", count);
+    return make_ok_response(id, data.dump());
+}
+
 // ─── Request dispatcher ──────────────────────────────────────────────────────
 
 static std::string dispatch_request(const std::string& request_json) {
@@ -512,6 +653,8 @@ static std::string dispatch_request(const std::string& request_json) {
     if (cmd_str == cmd::GET_VALUE_AT)      return handle_get_value_at(id, params);
     if (cmd_str == cmd::GET_VALUE_BETWEEN) return handle_get_value_between(id, params);
     if (cmd_str == cmd::FIND_SIGNALS)      return handle_find_signals(id, params);
+    if (cmd_str == cmd::NEXT_EDGE)         return handle_next_edge(id, params);
+    if (cmd_str == cmd::VC_COUNT)          return handle_vc_count(id, params);
 
     return make_error_response(id, err::INVALID_PARAMS,
                                "Unknown command: " + cmd_str);

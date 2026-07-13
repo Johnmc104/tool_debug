@@ -29,6 +29,7 @@ namespace cmd {
     constexpr const char* FIND_SIGNALS      = "find_signals";
     constexpr const char* FIND_VALUE        = "find_value";
     constexpr const char* VC_COUNT          = "vc_count";
+    constexpr const char* NEXT_EDGE         = "next_edge";
 }
 
 // ─── vwave error codes (tool-specific additions) ─────────────────────────────
