@@ -186,6 +186,11 @@ static int cmd_open(int argc, char** argv,
         // ── Child: become daemon, then run server ──
         setsid();
 
+        // chdir to run_dir so NPI logs (vwaveLog/) stay contained
+        if (chdir(run_dir.dir().c_str()) != 0) {
+            perror("chdir to run_dir");
+        }
+
         // Redirect stdout/stderr to log file
         int log_fd = open(run_dir.log_path().c_str(),
                           O_WRONLY | O_CREAT | O_TRUNC, 0644);
