@@ -103,6 +103,7 @@ static std::string handle_list_scopes(int id, const JsonParser& params) {
         return make_error_response(id, err::FSDB_OPEN_FAILED, "No FSDB file loaded");
 
     std::string path = params.get_string("path");
+    bool compact = params.get_bool("compact", false);
     std::vector<std::string> scope_names;
 
     if (path.empty()) {
@@ -134,6 +135,15 @@ static std::string handle_list_scopes(int id, const JsonParser& params) {
         }
     }
 
+    // Compact mode: strip common prefix, return short names only
+    if (compact && !path.empty()) {
+        std::string prefix = path + ".";
+        for (auto& s : scope_names) {
+            if (s.compare(0, prefix.size(), prefix) == 0)
+                s = s.substr(prefix.size());
+        }
+    }
+
     JsonObject data;
     data.set("path", path.empty() ? "/" : path);
     data.set_array("scopes", scope_names);
@@ -150,12 +160,54 @@ static std::string handle_list_signals(int id, const JsonParser& params) {
         return make_error_response(id, err::INVALID_PARAMS,
                                    "Missing 'path' parameter");
 
+    bool compact = params.get_bool("compact", false);
+
     npiFsdbScopeHandle scope = npi_fsdb_scope_by_name(
         g_file_hdl, path.c_str(), nullptr);
     if (!scope)
         return make_error_response(id, err::SCOPE_NOT_FOUND,
                                    "Scope '" + path + "' not found");
 
+    if (compact) {
+        // Compact mode: return array of "shortname[L:R] d" strings
+        std::vector<std::string> compact_sigs;
+        npiFsdbSigIter iter = npi_fsdb_iter_sig(scope);
+        if (iter) {
+            npiFsdbSigHandle sig;
+            while ((sig = npi_fsdb_iter_sig_next(iter)) != nullptr) {
+                const char* sig_full = npi_fsdb_sig_property_str(npiFsdbSigFullName, sig);
+                NPI_INT32 left = 0, right = 0, dir = 0;
+                npi_fsdb_sig_property(npiFsdbSigLeftRange, sig, &left);
+                npi_fsdb_sig_property(npiFsdbSigRightRange, sig, &right);
+                npi_fsdb_sig_property(npiFsdbSigDirection, sig, &dir);
+
+                // Always extract short name from full_name
+                std::string name;
+                if (sig_full) {
+                    std::string fn(sig_full);
+                    auto dot = fn.rfind('.');
+                    name = (dot != std::string::npos) ? fn.substr(dot+1) : fn;
+                }
+
+                std::ostringstream entry;
+                entry << name;
+                if (left != 0 || right != 0)
+                    entry << "[" << left << ":" << right << "]";
+                if (dir == npiFsdbDirInput) entry << " i";
+                else if (dir == npiFsdbDirOutput) entry << " o";
+                else if (dir == npiFsdbDirInout) entry << " io";
+                compact_sigs.push_back(entry.str());
+            }
+            npi_fsdb_iter_sig_stop(iter);
+        }
+        JsonObject data;
+        data.set("path", path);
+        data.set_array("signals", compact_sigs);
+        data.set("count", static_cast<int64_t>(compact_sigs.size()));
+        return make_ok_response(id, data.dump());
+    }
+
+    // Full mode (original behavior)
     std::ostringstream arr;
     arr << "[";
     npiFsdbSigIter iter = npi_fsdb_iter_sig(scope);

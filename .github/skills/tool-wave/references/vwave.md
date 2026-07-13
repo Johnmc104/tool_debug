@@ -5,9 +5,9 @@
 ### Lifecycle
 
 ```bash
-vwave open <file.fsdb>         # Start daemon, load FSDB
-vwave status                   # Check if daemon is running
-vwave close                    # Stop daemon
+vwave open <file.fsdb> [--timeout <sec>]  # Start daemon, load FSDB (default timeout: 30s)
+vwave status                              # Check if daemon is running
+vwave close                               # Stop daemon
 ```
 
 Open response:
@@ -17,7 +17,7 @@ Open response:
 
 Already running → `{"status":"ok","message":"Server already running","pid":12345}`
 
-Parent waits up to 10s for init. Check exit code on large files.
+Exit code 2 = server still loading (not a hard failure, retry with `vwave status`).
 
 ### File Info
 
@@ -33,11 +33,18 @@ vwave info
 ```bash
 vwave scopes                   # Top-level scopes
 vwave scopes tb.intf           # Sub-scopes under tb.intf
+vwave scopes tb.intf -c        # Compact: short names only
 vwave signals tb.intf          # Signals under tb.intf
+vwave signals tb.intf -c       # Compact: "name[L:R] dir" strings
 vwave signal-info tb.intf.clk  # Single signal detail
 ```
 
-Signals response:
+Compact signals response (88% smaller):
+```json
+{"path":"tb.intf","signals":["clk i","rst_n i","paddr[31:0] o","pwdata[31:0] o"],"count":4}
+```
+
+Full signals response:
 ```json
 {"id":1,"status":"ok","data":{"path":"tb.intf","signals":[{"name":"clk","full_name":"tb.intf.clk","left":0,"right":0,"direction":"input"}]}}
 ```
@@ -46,9 +53,9 @@ Signals response:
 
 **At a time point** (supports multiple signals):
 ```bash
-vwave get-value -s tb.intf.clk -t 500000
-vwave get-value -s tb.intf.clk -s tb.intf.paddr -t 500000 -r hex
-vwave get-value -f signals.txt -t 1000 -r hex     # From file (one signal/line, # = comment)
+vwave get -s tb.intf.clk -t 500000
+vwave get -s tb.intf.clk -s tb.intf.paddr -t 500000 -r hex
+vwave get -f signals.txt -t 1000 -r hex     # From file (one signal/line, # = comment)
 ```
 ```json
 {"id":1,"status":"ok","data":{"time":500000,"values":[{"signal":"tb.intf.clk","value":"1","actual_time":500000}]}}
@@ -58,13 +65,13 @@ Signal not found → `{"signal":"tb.intf.xxx","error":"not found"}` in values ar
 
 **Over a time range** (single signal only):
 ```bash
-vwave get-value -s tb.intf.clk -b 0 -e 100000
+vwave get -s tb.intf.clk -b 0 -e 100000
 ```
 ```json
 {"id":1,"status":"ok","data":{"signal":"tb.intf.clk","begin":0,"end":100000,"changes":[{"time":0,"value":"0"},{"time":50000,"value":"1"}]}}
 ```
 
-### Get-value Options
+### Get Options
 
 | Flag | Long | Description |
 |------|------|-------------|
@@ -74,6 +81,16 @@ vwave get-value -s tb.intf.clk -b 0 -e 100000
 | `-b` | `--begin` | Range start (requires `-e`) |
 | `-e` | `--end` | Range end (requires `-b`) |
 | `-r` | `--radix` | `bin` (default) / `hex` / `oct` / `dec` |
+
+### Global Options
+
+| Flag | Description |
+|------|-------------|
+| `--compact`, `-c` | Compact output (short names, fewer tokens) |
+| `--json` | Full JSON-RPC envelope output |
+| `--fsdb <path>` | Explicit FSDB path (skip auto-detect) |
+| `--run-dir <path>` | Override runtime directory |
+| `--timeout <sec>` | Server start timeout (default: 30, open only) |
 
 ## Error Codes
 

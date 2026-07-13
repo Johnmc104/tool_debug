@@ -43,19 +43,19 @@
 
 static void print_usage() {
     std::cerr <<
-R"(vwave — FSDB Waveform Reader v1.1
+R"(vwave — FSDB Waveform Reader v1.2
   by zhhe - Johnmc104@qq.com
 Usage:
-  vwave open  <file.fsdb>                    Load waveform (start background server)
+  vwave open  <file.fsdb> [--timeout <sec>]  Load waveform (start background server)
   vwave close                                Close waveform (stop server)
   vwave status                               Show server status
   vwave info                                 Show FSDB file info
   vwave scopes  [<path>]                     List hierarchy scopes
   vwave signals <path>                       List signals in scope
   vwave signal-info <name>                   Show signal details
-  vwave get-value [options]                  Read signal value(s)
+  vwave get [options]                        Read signal value(s)
 
-Get-value options:
+Get options:
   -s, --signal <name>       Signal path (repeatable for multi-signal)
   -f, --signal-file <file>  Read signals from file (one per line)
   -t, --time <t>            Read value at time t
@@ -66,6 +66,8 @@ Get-value options:
 Global options:
   --fsdb <path>             Explicit FSDB path (skip auto-detect)
   --run-dir <path>          Override runtime directory
+  --timeout <sec>           Server start timeout (default: 30, open only)
+  --compact, -c             Compact output (short names, less tokens)
   --json                    JSON output mode
   -h, --help                Show this help
 
@@ -75,10 +77,10 @@ Examples:
   vwave scopes
   vwave scopes tb
   vwave signals tb.intf
-  vwave get-value -s tb.intf.clk -t 500000
-  vwave get-value -s tb.intf.paddr -t 1500000 -r hex
-  vwave get-value -s tb.intf.clk -b 0 -e 100000
-  vwave get-value -f signals.txt -t 500000 -r hex
+  vwave get -s tb.intf.clk -t 500000
+  vwave get -s tb.intf.clk -s tb.intf.paddr -t 1500000 -r hex
+  vwave get -s tb.intf.clk -b 0 -e 100000
+  vwave get -f signals.txt -t 500000 -r hex
   vwave close
 )";
 }
@@ -111,7 +113,8 @@ static bool resolve_run_dir(const std::string& fsdb_path,
 static int cmd_open(int argc, char** argv,
                     const std::string& fsdb_path,
                     const std::string& run_dir_override,
-                    bool json_mode) {
+                    bool json_mode,
+                    int open_timeout_sec) {
     if (fsdb_path.empty()) {
         std::cerr << "Error: Missing FSDB file path.\n"
                   << "Usage: vwave open <file.fsdb>\n";
@@ -192,7 +195,8 @@ static int cmd_open(int argc, char** argv,
     // ── Parent: wait for server to become ready ──
     // Poll for socket file + verify child is alive
     bool ready = false;
-    for (int i = 0; i < 100; ++i) {  // up to 10s
+    int max_polls = open_timeout_sec * 10;  // 100ms per poll
+    for (int i = 0; i < max_polls; ++i) {
         usleep(100000);
         // Check child didn't crash
         int wstatus;
@@ -216,7 +220,23 @@ static int cmd_open(int argc, char** argv,
     }
 
     if (!ready) {
-        std::cerr << "Error: Server did not become ready within 10s.\n"
+        // Check if child is still running (loading, not crashed)
+        int wstatus;
+        pid_t w = waitpid(pid, &wstatus, WNOHANG);
+        if (w == 0) {
+            // Process still alive — likely still loading
+            if (json_mode) {
+                std::cout << "{\"status\":\"loading\",\"message\":\"Server still starting\","
+                          << "\"pid\":" << pid
+                          << ",\"timeout\":" << open_timeout_sec << "}" << std::endl;
+            } else {
+                std::cerr << "Warning: Server still loading (PID " << pid
+                          << ", waited " << open_timeout_sec << "s).\n"
+                          << "Use 'vwave status' to check when ready.\n";
+            }
+            return 2;  // Distinct from hard failure (exit code 1)
+        }
+        std::cerr << "Error: Server process exited during startup.\n"
                   << "Check log: " << run_dir.log_path() << "\n";
         return 1;
     }
@@ -282,7 +302,8 @@ static int cmd_query(const wave::RunDir& run_dir, bool json_mode,
                      const std::vector<std::string>& extra_signals,
                      const std::string& signal_file,
                      int64_t time_val, int64_t begin_time, int64_t end_time,
-                     const std::string& radix) {
+                     const std::string& radix,
+                     bool compact_mode) {
     if (!run_dir.is_server_alive()) {
         std::cerr << "Error: No active waveform.\n"
                   << "Use 'vwave open <file.fsdb>' first.\n";
@@ -301,6 +322,7 @@ static int cmd_query(const wave::RunDir& run_dir, bool json_mode,
     } else if (command == "scopes") {
         wave::JsonObject p;
         if (!scope_path.empty()) p.set("path", scope_path);
+        if (compact_mode) p.set_bool("compact", true);
         request = wave::client::build_request(req_id, "list_scopes", p.dump());
 
     } else if (command == "signals") {
@@ -310,6 +332,7 @@ static int cmd_query(const wave::RunDir& run_dir, bool json_mode,
         }
         wave::JsonObject p;
         p.set("path", scope_path);
+        if (compact_mode) p.set_bool("compact", true);
         request = wave::client::build_request(req_id, "list_signals", p.dump());
 
     } else if (command == "signal-info") {
@@ -390,6 +413,8 @@ int main(int argc, char** argv) {
     int64_t begin_time = -1;
     int64_t end_time = -1;
     bool json_mode = false;
+    int open_timeout_sec = 30;
+    bool compact_mode = false;
     std::vector<std::string> extra_signals;
 
     for (int i = 1; i < argc; ++i) {
@@ -400,8 +425,13 @@ int main(int argc, char** argv) {
             fsdb_path = argv[++i];
         } else if (arg == "--run-dir" && i + 1 < argc) {
             run_dir_override = argv[++i];
+        } else if (arg == "--timeout" && i + 1 < argc) {
+            open_timeout_sec = std::atoi(argv[++i]);
+            if (open_timeout_sec < 1) open_timeout_sec = 30;
         } else if (arg == "--json") {
             json_mode = true;
+        } else if (arg == "--compact" || arg == "-c") {
+            compact_mode = true;
         } else if (arg == "-h" || arg == "--help") {
             print_usage();
             return 0;
@@ -446,8 +476,12 @@ int main(int argc, char** argv) {
         // The positional after "open" is the FSDB path
         if (fsdb_path.empty() && !scope_or_positional.empty())
             fsdb_path = scope_or_positional;
-        return cmd_open(argc, argv, fsdb_path, run_dir_override, json_mode);
+        return cmd_open(argc, argv, fsdb_path, run_dir_override, json_mode,
+                        open_timeout_sec);
     }
+
+    // ── Normalize command aliases ──
+    if (command == "get") command = "get-value";
 
     // ── All other commands need a RunDir ──
     wave::RunDir run_dir;
@@ -470,5 +504,5 @@ int main(int argc, char** argv) {
     // ── Query commands ──
     return cmd_query(run_dir, json_mode, command,
                      scope_path, signal_name, extra_signals, signal_file,
-                     time_val, begin_time, end_time, radix);
+                     time_val, begin_time, end_time, radix, compact_mode);
 }
