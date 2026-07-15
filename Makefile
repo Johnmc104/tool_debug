@@ -14,7 +14,7 @@ NPI_LIB_DIR   = $(VERDI_HOME)/share/NPI/lib/linux64
 CXX          ?= g++
 CXXFLAGS      = -std=c++14 -Wall -Wextra -O2
 INCLUDES      = -I$(NPI_INC) -I$(NPI_L1_INC)
-LDFLAGS       = -L$(NPI_LIB_DIR) -Wl,-rpath,$(NPI_LIB_DIR)
+LDFLAGS       = -L$(NPI_LIB_DIR) -Wl,--enable-new-dtags,-rpath,$(NPI_LIB_DIR)
 LIBS          = -lNPI -lnpiL1 -lpthread -lrt -ldl
 
 # ─── Shared common library ────────────────────────────────────────────────────
