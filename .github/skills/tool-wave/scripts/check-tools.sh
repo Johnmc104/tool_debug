@@ -41,6 +41,15 @@ else
     ((errors++))
 fi
 
+# Check LD_LIBRARY_PATH contains NPI lib dir
+npi_lib="${VERDI_HOME:-}/share/NPI/lib/linux64"
+if [[ -n "${VERDI_HOME:-}" && ":${LD_LIBRARY_PATH:-}:" == *":${npi_lib}:"* ]]; then
+    ok "LD_LIBRARY_PATH contains $npi_lib"
+elif [[ -n "${VERDI_HOME:-}" ]]; then
+    fail "LD_LIBRARY_PATH missing $npi_lib (add: export LD_LIBRARY_PATH=\$VERDI_HOME/share/NPI/lib/linux64:\$LD_LIBRARY_PATH)"
+    ((errors++))
+fi
+
 # Check running servers
 if [[ -f .vtool/wave_run/wave_server.pid ]]; then
     pid=$(cat .vtool/wave_run/wave_server.pid)

@@ -36,8 +36,6 @@
 // Server-side code (NPI-dependent, only executes in forked child)
 #include "server/server_core.h"
 
-// NPI environment auto-setup (shared)
-#include "tw/npi_env.h"
 
 // ─── Usage ───────────────────────────────────────────────────────────────────
 
@@ -462,9 +460,6 @@ static int cmd_query(const wave::RunDir& run_dir, bool json_mode,
 // ─── Main ────────────────────────────────────────────────────────────────────
 
 int main(int argc, char** argv) {
-    // Auto-configure NPI environment from VERDI_HOME
-    tw::ensure_npi_env(argc, argv);
-
     // ── Parse arguments ──
     std::string fsdb_path;
     std::string run_dir_override;

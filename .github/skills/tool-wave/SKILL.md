@@ -18,7 +18,7 @@ description: 'Read FSDB waveforms and trace netlist signals using vwave/vsignal 
 ## Prerequisites
 
 - `vwave` / `vsignal` binary on PATH or at `<project>/build/bin/`
-- `VERDI_HOME` environment variable（工具自动配置 `LD_LIBRARY_PATH` / `NOVAS_HOME`）
+- `VERDI_HOME` + `LD_LIBRARY_PATH` 包含 `$VERDI_HOME/share/NPI/lib/linux64`（或通过 `module load` 设置）
 - 环境检查: [check-tools.sh](./scripts/check-tools.sh)
 
 ## Workflow

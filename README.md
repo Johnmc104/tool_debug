@@ -135,7 +135,6 @@ tool_wave/
 │   ├── json.h                          统一 JSON 对象 + 解析器（含 bool）
 │   ├── protocol.h                      通用响应编码、错误码
 │   ├── run_dir.h                       参数化运行时目录管理（.vtool/子目录）
-│   ├── npi_env.h                       NPI 环境自动配置（VERDI_HOME → LD_LIBRARY_PATH）
 │   ├── client.h                        RAII fd、EINTR 安全通信、请求生成
 │   └── server_loop.h                   事件循环（1h 空闲超时、per-client 超时）
 │
@@ -214,7 +213,12 @@ tool_wave/
 
 ## 依赖
 
-- Synopsys Verdi NPI（设置 `VERDI_HOME` 环境变量即可，工具自动配置 `LD_LIBRARY_PATH` 和 `NOVAS_HOME`）
+- Synopsys Verdi NPI — 需要在 shell 环境中正确设置以下变量：
+  ```bash
+  export VERDI_HOME=/path/to/verdi           # Verdi 安装根目录
+  export LD_LIBRARY_PATH=$VERDI_HOME/share/NPI/lib/linux64:$LD_LIBRARY_PATH
+  ```
+  如使用 module 系统则 `module load synopsys/verdi` 即可自动完成。
 - GCC 9+ (C++14)
 - Linux (Unix Domain Socket, fork/setsid)
 - VCS（仅 vsignal 测试需要，用于生成 KDB 数据库）
