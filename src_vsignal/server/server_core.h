@@ -413,7 +413,9 @@ inline int run_server(int argc, char** argv,
     int load_ret = npi_load_design(static_cast<int>(c_args.size()), c_args.data());
     if (load_ret < 0) {
         std::cerr << "[vsignal-server] ERROR: npi_load_design failed (rc="
-                  << load_ret << ")\n";
+                  << load_ret << ")\n"
+                  << "[vsignal-server] Check: " << run_dir.dir()
+                  << "/vsignalLog/compiler.log\n";
         npi_end();
         return 1;
     }

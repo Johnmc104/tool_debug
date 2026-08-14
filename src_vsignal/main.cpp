@@ -453,12 +453,19 @@ int main(int argc, char** argv) {
         std::vector<std::string> design_args;
 
         if (!dbdir.empty()) {
-            // KDB mode: -dbdir <path>
-            design_source = dbdir;
+            // KDB mode: resolve to absolute path before fork+chdir
+            char resolved[PATH_MAX];
+            std::string abs_dbdir = dbdir;
+            if (realpath(dbdir.c_str(), resolved)) abs_dbdir = resolved;
+            design_source = abs_dbdir;
             design_args.push_back("-dbdir");
-            design_args.push_back(dbdir);
+            design_args.push_back(abs_dbdir);
         } else if (!source_files.empty()) {
-            // RTL source mode
+            // RTL source mode: resolve all paths to absolute
+            for (auto& f : source_files) {
+                char resolved[PATH_MAX];
+                if (realpath(f.c_str(), resolved)) f = resolved;
+            }
             design_source = source_files[0];
             for (auto& f : source_files) design_args.push_back(f);
         }
