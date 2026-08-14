@@ -404,8 +404,35 @@ static int cmd_query(const wave::RunDir& run_dir, bool json_mode,
 
         if (begin_time >= 0 && end_time >= 0) {
             if (all_signals.size() > 1) {
-                std::cerr << "Warning: --begin/--end mode only supports one signal, "
-                          << "using '" << all_signals[0] << "'\n";
+                // Multi-signal range: send N requests, aggregate results
+                std::ostringstream agg;
+                agg << "{\"id\":1,\"status\":\"ok\",\"data\":{\"begin\":"
+                    << begin_time << ",\"end\":" << end_time
+                    << ",\"signals\":[";
+                for (size_t si = 0; si < all_signals.size(); ++si) {
+                    if (si) agg << ",";
+                    wave::JsonObject p;
+                    p.set("signal", all_signals[si]);
+                    p.set("begin", begin_time);
+                    p.set("end", end_time);
+                    p.set("radix", radix);
+                    if (limit_val != 1000) p.set("limit", limit_val);
+                    std::string req = wave::client::build_request(
+                        static_cast<int>(si + 1), "get_value_between", p.dump());
+                    std::string resp = wave::client::send_request(
+                        run_dir.socket_path(), req);
+                    wave::JsonParser rp;
+                    if (!resp.empty() && rp.parse(resp)
+                        && rp.get_string("status") == "ok") {
+                        agg << rp.get_string("data");
+                    } else {
+                        agg << "{\"signal\":\"" << all_signals[si]
+                            << "\",\"error\":\"QUERY_FAILED\"}";
+                    }
+                }
+                agg << "]}}";
+                wave::client::print_response(agg.str(), json_mode);
+                return 0;
             }
             wave::JsonObject p;
             p.set("signal", all_signals[0]);
