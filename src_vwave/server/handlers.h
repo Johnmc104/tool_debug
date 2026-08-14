@@ -32,6 +32,30 @@ namespace server {
 
 // ─── NPI helpers ────────────────────────────────────────────────────────────
 
+// Extract leaf name from full_name (e.g. "tb.u_cpu.clk" → "clk")
+static std::string leaf_name(const char* full) {
+    if (!full) return "";
+    std::string fn(full);
+    auto dot = fn.rfind('.');
+    return (dot != std::string::npos) ? fn.substr(dot + 1) : fn;
+}
+
+// Safe signal name: use npiFsdbSigName, fall back to leaf of full_name
+// if it contains non-ASCII bytes (T-2022 NPI bug on first signal).
+static std::string safe_sig_name(npiFsdbSigHandle sig) {
+    const char* name = npi_fsdb_sig_property_str(npiFsdbSigName, sig);
+    if (name) {
+        for (const unsigned char* p = (const unsigned char*)name; *p; ++p)
+            if (*p > 0x7E || (*p < 0x20 && *p != '\t')) {
+                const char* full = npi_fsdb_sig_property_str(npiFsdbSigFullName, sig);
+                return leaf_name(full);
+            }
+        return name;
+    }
+    const char* full = npi_fsdb_sig_property_str(npiFsdbSigFullName, sig);
+    return leaf_name(full);
+}
+
 static const char* direction_str(int dir) {
     switch (dir) {
         case npiFsdbDirInput:  return "input";
@@ -231,7 +255,7 @@ static std::string handle_list_signals(int id, const JsonParser& params) {
     if (iter) {
         npiFsdbSigHandle sig;
         while ((sig = npi_fsdb_iter_sig_next(iter)) != nullptr) {
-            const char* sig_name = npi_fsdb_sig_property_str(npiFsdbSigName, sig);
+            std::string sig_name = safe_sig_name(sig);
             const char* sig_full = npi_fsdb_sig_property_str(npiFsdbSigFullName, sig);
             NPI_INT32 left = 0, right = 0, dir = 0;
             npi_fsdb_sig_property(npiFsdbSigLeftRange, sig, &left);
@@ -241,7 +265,7 @@ static std::string handle_list_signals(int id, const JsonParser& params) {
             if (!first) arr << ",";
             first = false;
             JsonObject sig_obj;
-            sig_obj.set("name", sig_name ? sig_name : "");
+            sig_obj.set("name", sig_name);
             sig_obj.set("full_name", sig_full ? sig_full : "");
             sig_obj.set("left", static_cast<int64_t>(left));
             sig_obj.set("right", static_cast<int64_t>(right));
@@ -271,7 +295,7 @@ static std::string handle_signal_info(int id, const JsonParser& params) {
         return make_error_response(id, err::SIGNAL_NOT_FOUND,
                                    "Signal '" + sig_name + "' not found");
 
-    const char* name = npi_fsdb_sig_property_str(npiFsdbSigName, sig);
+    std::string name = safe_sig_name(sig);
     const char* full = npi_fsdb_sig_property_str(npiFsdbSigFullName, sig);
     NPI_INT32 left = 0, right = 0, dir = 0;
     npi_fsdb_sig_property(npiFsdbSigLeftRange, sig, &left);
@@ -279,7 +303,7 @@ static std::string handle_signal_info(int id, const JsonParser& params) {
     npi_fsdb_sig_property(npiFsdbSigDirection, sig, &dir);
 
     JsonObject data;
-    data.set("name", name ? name : "");
+    data.set("name", name);
     data.set("full_name", full ? full : "");
     data.set("left", static_cast<int64_t>(left));
     data.set("right", static_cast<int64_t>(right));
@@ -418,9 +442,9 @@ static void find_signals_recursive(npiFsdbScopeHandle scope,
     if (sig_iter) {
         npiFsdbSigHandle sig;
         while ((sig = npi_fsdb_iter_sig_next(sig_iter)) != nullptr) {
-            const char* sn = npi_fsdb_sig_property_str(npiFsdbSigName, sig);
+            std::string sn = safe_sig_name(sig);
             const char* fn = npi_fsdb_sig_property_str(npiFsdbSigFullName, sig);
-            if (sn && wildcard_match(pattern.c_str(), sn))
+            if (!sn.empty() && wildcard_match(pattern.c_str(), sn.c_str()))
                 if (fn) results.push_back(fn);
             if (results.size() >= 200) break;
         }
