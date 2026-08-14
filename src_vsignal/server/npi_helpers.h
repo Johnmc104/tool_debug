@@ -85,6 +85,14 @@ static std::string nl_handle_to_json(npiNlHandle hdl, bool compact = false) {
             int size = npi_nl_get(npiNlSize, hdl);
             if (size > 0) obj.set("size", static_cast<int64_t>(size));
         }
+
+        // Source location — actual RTL file and line numbers
+        const char* file = npi_nl_get_str(npiNlFile, hdl);
+        int line_begin   = npi_nl_get(npiNlBeginLineNo, hdl);
+        int line_end     = npi_nl_get(npiNlEndLineNo, hdl);
+        if (file && file[0]) obj.set("file", file);
+        if (line_begin > 0)  obj.set("line_begin", static_cast<int64_t>(line_begin));
+        if (line_end > 0)    obj.set("line_end", static_cast<int64_t>(line_end));
     }
 
     return obj.dump();
