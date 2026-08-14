@@ -102,7 +102,8 @@ Multi-signal (driver, load, fanin, fanout):
   -f, --signal-file <file>   Read signal names from file, one per line
 
 Output control:
-  --full                     Full output (type, full_name, direction, size)
+  --full                     Full output (type, full_name, direction, size,
+                             file, line_begin, line_end — source location)
   --compact, -c              Compact output — DEFAULT (leaf names only)
   --limit <N>, -l <N>        Max results per signal (default: 50, 0=all)
 
