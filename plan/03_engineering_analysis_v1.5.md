@@ -256,15 +256,17 @@ cli/
 
 **总效果**：vsignal main.cpp 623 → 568 行（-9%），cmd_query 签名从 12 参数缩减为 `(RunDir&, CliOptions&)`。
 
-### Phase 2：server_core.h 拆分
+### Phase 2：server_core.h 拆分 — 已完成
 
-| 任务 | 工具 | 变更 |
-|------|------|------|
-| 提取 npi_helpers.h | vsignal | nl_handle_to_json 等迁移 |
-| 提取 handlers.h | 两工具 | 各 handler 函数迁移 |
-| server_core.h 瘦身 | 两工具 | 仅保留 run_server + dispatch |
+| 任务 | 工具 | 状态 | 实际效果 |
+|------|------|------|---------|
+| 提取 npi_helpers.h | vsignal | **已完成** | 113 行独立文件 |
+| 提取 handlers.h | vsignal | **已完成** | 242 行（8 handlers） |
+| server_core.h 瘦身 | vsignal | **已完成** | 479 → 137 行（-71%） |
+| 提取 handlers.h | vwave | **已完成** | 582 行（10 handlers） |
+| server_core.h 瘦身 | vwave | **已完成** | 724 → 133 行（-82%） |
 
-**验收**：server_core.h 降至 100 行以内。
+**总效果**：两工具 server_core.h 均降至 ~135 行，职责清晰分离。
 
 ### Phase 3：main.cpp 拆分 + cmd_open 共享
 
