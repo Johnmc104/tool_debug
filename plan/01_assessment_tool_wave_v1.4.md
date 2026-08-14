@@ -1,232 +1,233 @@
-# tool_wave v1.4 Assessment — Usability, Performance, Optimization Directions
+# tool_wave v1.4 工程评估报告
 
-Date: 2026-08-14
-Test environment: M0V1 SoC (Cortex-M0), sim_pre directory
-EDA versions tested: VCS/Verdi Y-2026.03 (compile-time), W-2024.09 (cross-version)
-
----
-
-## 1. Cross-Version Adaptability
-
-### Current State
-
-Binary compiled with Verdi Y-2026.03, RUNPATH hardcoded to that version's NPI lib.
-RUNPATH (not RPATH) used via `--enable-new-dtags`, so `LD_LIBRARY_PATH` can override at runtime.
-
-| Scenario | vwave | vsignal |
-|----------|-------|---------|
-| Binary=Y-2026.03, Data=Y-2026.03 | OK | OK |
-| Binary=Y-2026.03, Data=W-2024.09 | OK | OK (needs `LD_LIBRARY_PATH`) |
-| FSDB version compatibility | v6.1 ↔ v6.4 both work | N/A |
-
-### Issues Found
-
-- **vsignal requires extra `LD_LIBRARY_PATH`**: `npi_load_design` dynamically loads `liblpinstrumentdb.so` from `$VERDI_HOME/platform/linux64/bin/`, which is NOT in the RUNPATH. vwave does not need this because `npi_fsdb_open` only uses libs from `NPI/lib/`.
-- **User friction**: `module load synopsys/verdi/X` sets `LD_LIBRARY_PATH` to `NPI/lib/LINUXAMD64`, not `NPI/lib/linux64` or `platform/linux64/bin`. User must manually add paths.
-
-### Optimization Direction
-
-- [ ] Add `$VERDI_HOME/platform/linux64/bin` to RUNPATH at link time (covers transitive deps)
-- [ ] Or: vsignal startup could prepend `$VERDI_HOME`-derived paths to `LD_LIBRARY_PATH` before fork, similar to the old `npi_env` re-exec approach (removed in b630951)
-- [ ] Document the `LD_LIBRARY_PATH` requirement clearly in `--help` and error messages
+日期：2026-08-14
+测试环境：M0V1 SoC (Cortex-M0)，sim_pre 目录
+EDA 版本：VCS/Verdi Y-2026.03（编译时）、W-2024.09（跨版本验证）
 
 ---
 
-## 2. Usability Assessment
+## 1. 评估目标
 
-### What Works Well
+基于实际芯片验证项目（M0V1 Cortex-M0 SoC），从以下维度评估 vwave 和 vsignal：
 
-1. **Daemon model**: open-once-query-many avoids repeated design load (10+ seconds for KDB)
-2. **Auto-detect**: server found by searching upward from CWD for `.vtool/` — no manual socket paths
-3. **`--json` mode**: structured output for programmatic use, all commands support it
-4. **`--compact` mode** (vwave): reduces `signals` output from 2362 → 296 chars (87% reduction)
-5. **Design switch detection**: correctly detects and restarts when opening a different file
-
-### Pain Points
-
-1. **No batch trace in vsignal**: each `driver`/`load`/`fanin` call is one signal. Tracing 10 signals = 10 separate invocations (10 round-trips, 10 process forks for client).
-2. **Range query single-signal limit** (vwave): `get -b -e` only supports one signal. Multi-signal time-range dump requires N separate calls.
-3. **No pagination/cursor** for large results: `find "*gpio*"` returns 175 matches in one 14 KB response. No way to request page 2 or stream incrementally.
-4. **Signal path verbosity**: full hierarchical paths like `tb_top.top_inst.u_digit_top.u_system.u_cortexm0integration.HCLK` are repeated in every response field, inflating output significantly.
+- 芯片分析和问题定位的完整工作流是否顺畅
+- 多步查询操作中是否存在可合并的冗余操作
+- 返回数据格式和字符量对 AI agent 的适配性
+- 大数据量和多信号列表场景的表现
+- 跨 EDA 版本的自适应能力
 
 ---
 
-## 3. Response Size Analysis
+## 2. 跨版本自适应验证
 
-### vwave
+### 测试方案
 
-| Command | Typical Size | Notes |
-|---------|-------------|-------|
-| status | 137 chars | Minimal |
-| info | 184 chars | Minimal |
-| get (1 signal, 1 time) | 128 chars | Compact |
-| get (5 signals, 1 time) | 424 chars | Linear growth with signal count |
-| get (1 signal, time range, limit=1000) | 29 KB | Dominated by change array |
-| get (1 signal, time range, limit=10) | ~500 chars | `--limit` effective |
-| edge | 145 chars | Minimal |
-| find (broad pattern) | 14 KB / 175 matches | No pagination |
-| signals (normal) | 2362 chars | Full metadata |
-| signals (compact) | 296 chars | 87% reduction |
+二进制用 Verdi Y-2026.03 编译（RUNPATH 硬编码为该版本 NPI lib 路径），然后用 `module switch` 切换到 W-2024.09 重新仿真，再用原始二进制加载 W-2024.09 产出的 FSDB/KDB。
 
-### vsignal
+### 结果
 
-| Command | Typical Size | Notes |
-|---------|-------------|-------|
-| driver | 266 chars | Minimal |
-| driver --pass-mod | 918 chars | Grows with cross-module depth |
-| load --pass-mod --assign-cell | ~5 KB / 56 loads | No limit mechanism |
-| fanout | 42 KB / 173 registers | **Large**, no truncation |
-| conn | 4.5 KB / 57 ports | Moderate |
-| trace | 439 chars | Path usually short |
+| 场景 | vwave | vsignal |
+|------|-------|---------|
+| 二进制 Y-2026.03 + 数据 Y-2026.03 | 正常 | 正常 |
+| 二进制 Y-2026.03 + 数据 W-2024.09 | 正常 | 正常（需手动设置 LD_LIBRARY_PATH） |
+| FSDB 版本兼容性 | v6.1 ↔ v6.4 均正常 | N/A |
 
-### Key Observation
+### 问题
 
-vsignal has **no `--limit` or `--compact` mechanism**. A fanout query returning 173 registers produces 42 KB of JSON with full hierarchical paths. For AI agent context windows, this is significant.
+1. **vsignal 需要额外 LD_LIBRARY_PATH**：`npi_load_design` 运行时 dlopen 加载 `liblpinstrumentdb.so`，该库在 `$VERDI_HOME/platform/linux64/bin/`，不在 RUNPATH 指向的 `NPI/lib/linux64/` 中。vwave 不需要是因为 `npi_fsdb_open` 只依赖 NPI/lib/ 内的库。
+2. **module 环境不完整**：`module load synopsys/verdi/X` 设置的 `LD_LIBRARY_PATH` 指向 `NPI/lib/LINUXAMD64`，缺少 `platform/linux64/bin`，用户需手动补充。
+3. **错误提示不透明**：加载失败时只提示"check log"，用户需手动翻日志才能发现是缺库还是缺 KDB。
 
 ---
 
-## 4. Optimization Directions
+## 3. 芯片问题定位工作流评估
 
-### P0 — High Impact, Required for AI Agent Use
+以 M0V1 SoC 的实际调试场景逐个评估工具在真实工作流中的表现。
 
-#### 4.1 vsignal: Add `--compact` and `--limit`
+### 场景 A：时钟信号异常排查
 
-vsignal lacks both features that vwave already has. For large fanout/fanin results:
-- `--compact`: return short names (leaf only) instead of `full_name`
-- `--limit N`: cap result count, report `total` vs `returned` (like vwave's range query)
+**背景**：仿真失败日志显示 CPU 挂死，怀疑 HCLK 未正常翻转。
 
-Expected savings: 42 KB fanout → ~5 KB with compact + limit=20.
-
-#### 4.2 Batch Query Support
-
-Add multi-signal batch for common vsignal operations:
-
+**操作流**：
 ```
-vsignal driver -s sig1 -s sig2 -s sig3 --json
-vsignal driver -f signal_list.txt --json
+vwave open tb_top.fsdb
+vwave info --json                        # 获取仿真时间范围
+vwave get -s tb_top.intf.intf_dut.clk -t 100000 --json   # 确认时钟值
+vwave vc-count -s tb_top.intf.intf_dut.clk --json         # 确认翻转次数
+vwave edge -s tb_top.intf.intf_dut.clk -t 0 --rising --json  # 第一个上升沿
 ```
 
-Reduces N round-trips to 1. Matches vwave's multi-signal `get -s ... -s ...` pattern.
+**评估**：
+- 流畅度：5 条命令逐步缩小范围，每条 < 150 字符返回，AI agent 可高效处理。
+- 痛点：如果还需同时查看 rstn、NRST 等相关信号，需要分别执行 `vc-count` 和 `edge`，无法批量查询边沿和翻转计数。
 
-Similarly for vwave, extend range query to support multiple signals:
+### 场景 B：CPU HCLK 驱动链根因追溯
 
+**背景**：HCLK 频率异常，需找到时钟源和门控路径。
+
+**操作流**：
 ```
-vwave get -s sig1 -s sig2 -b T0 -e T1 --json
-```
-
-### P1 — Usability Improvements
-
-#### 4.3 Error Messages with Recovery Hints
-
-When vsignal fails due to missing `LD_LIBRARY_PATH`, the error is:
-```
-Error: Server process exited unexpectedly.
-Check log: .vtool/vsignal_run/vsignal_server.log
-```
-
-Should parse the log and surface the root cause:
-```
-Error: Design load failed — liblpinstrumentdb.so not found.
-Hint: export LD_LIBRARY_PATH=$VERDI_HOME/platform/linux64/bin:$LD_LIBRARY_PATH
+vsignal open -dbdir simv.daidir
+vsignal driver tb_top.top_inst.u_digit_top.u_system.u_cortexm0integration.HCLK --json
+  → 结果：1 个驱动（端口本身）
+vsignal driver ... --pass-mod --json
+  → 结果：4 个驱动源，包括 PMU 门控输出
+vsignal fanin ... --json
+  → 结果：定位到 u_pmu.u_hclk_gate 的 Latch
 ```
 
-#### 4.4 Signal Path Shortening in Output
+**评估**：
+- 流畅度：3 步定位到门控来源，效率高。
+- 痛点 1：信号路径 `tb_top.top_inst.u_digit_top.u_system.u_cortexm0integration.HCLK` 长达 74 字符，每次手动输入或在 JSON 中重复传输都很浪费。
+- 痛点 2：拿到 4 个驱动后，如果要逐个追踪每个驱动的 fanin，需要 4 次独立调用，无法批量。
+- 痛点 3：返回的 42 KB fanout JSON 没有截断机制，直接涌入 AI context window。
 
-For repeated paths sharing a common prefix, consider:
-- A `prefix` field at the response level, with signals using relative paths
-- Or `--compact` mode using leaf names only
+### 场景 C：波形 + 结构联合定位
 
-Example (current):
-```json
-{"full_name": "tb_top.top_inst.u_digit_top.u_system.u_cortexm0integration.HCLK"}
-{"full_name": "tb_top.top_inst.u_digit_top.u_system.u_cortexm0integration.u_top.hclk"}
+**背景**：GPIO 输出值错误，需定位是固件问题还是硬件连接问题。
+
+**操作流**：
+```
+# 时域：确认 GPIO 输出值
+vwave get -s tb_top.top_inst.u_digit_top.u_system.u_periph_subsys.u_ahb_gpio0.u_iop_gpio.GPIODATA -t 500000 -r hex --json
+
+# 结构域：追踪 GPIO 数据来源
+vsignal driver tb_top.top_inst.u_digit_top.u_system.u_periph_subsys.u_ahb_gpio0.u_iop_gpio.GPIODATA --pass-mod --json
+
+# 时域：验证驱动源在同一时刻的值
+vwave get -s <driver_signal_from_above> -t 500000 -r hex --json
 ```
 
-With prefix extraction:
-```json
-{"prefix": "tb_top.top_inst.u_digit_top.u_system.u_cortexm0integration",
- "signals": [{"name": "HCLK"}, {"name": "u_top.hclk"}]}
-```
+**评估**：
+- 这是最有价值的使用模式——波形与结构交替分析。
+- 痛点 1：跨工具信号路径需要手动对齐，AI 必须自己从 vsignal 输出中提取 full_name 然后拼接成 vwave 的 -s 参数。
+- 痛点 2：整个流程在 AI agent 中需要 3 次工具调用 + 中间结果解析 + 重新构造命令，如果能提供"给定信号列表 + 时间点，一次返回所有值"的批量模式会大幅减少轮次。
 
-### P2 — Completeness Gaps
+### 场景 D：模块端口快速摸底
 
-#### 4.5 vwave: Multi-Signal Range Query
-
-Current limitation: `get -b -e` accepts only one signal. For waveform comparison workflows (e.g. comparing clock vs reset over a window), the agent must make N calls.
-
-#### 4.6 vsignal: Design Info Enrichment
-
-`vsignal info` currently returns only `design_source` and `pid`. Could include:
-- Top module name
-- Total instance/net/port counts
-- Design hierarchy depth
-
-This helps AI agents understand the design scope without exploratory queries.
-
-#### 4.7 vwave: Scope-Filtered Signal Listing
-
-`vwave find` searches globally. For large designs, a scope-filtered listing with metadata would reduce the need for multi-step discovery:
+**背景**：接手不熟悉的 IP（如 Cortex-M0 Integration），需快速理解其接口。
 
 ```
-vwave signals tb_top.u_cpu --recursive --compact --json
+vsignal conn tb_top.top_inst.u_digit_top.u_system.u_cortexm0integration --json
+  → 返回：57 个端口连接，4.5 KB
 ```
 
-### P3 — Future Considerations
-
-#### 4.8 Streaming/Pagination for Large Results
-
-For results > 10 KB, consider:
-- `--offset N --limit M` pagination
-- Or a cursor-based approach for iterative exploration
-
-#### 4.9 Multi-Command Pipeline
-
-A single request containing multiple queries, returning results in one response:
-
-```json
-{"commands": [
-  {"cmd": "get", "signal": "clk", "time": 1000},
-  {"cmd": "get", "signal": "rst", "time": 1000},
-  {"cmd": "edge", "signal": "clk", "time": 1000, "edge": "rising"}
-]}
-```
-
-This would eliminate per-command process spawn overhead (currently each CLI invocation forks a client process, connects to socket, sends request, receives response).
+**评估**：
+- 一条命令获取完整端口映射，效率高。
+- 对 AI agent 来说 4.5 KB 是可接受的，但如果 IP 有 200+ 端口（如 AXI interconnect），数据量会膨胀到 20-50 KB，此时需要 compact 或分页能力。
 
 ---
 
-## 5. Test Matrix Summary
+## 4. 数据量与返回格式分析
 
-### vwave (18/18 passed)
+### 4.1 vwave 响应字符量
 
-| Category | Tests | Status |
-|----------|-------|--------|
-| Lifecycle (open/close/status) | 4 | PASS |
-| Hierarchy (scopes/signals/find) | 5 | PASS |
-| Value queries (get single/multi/range/file) | 4 | PASS |
-| Analysis (edge/vc-count/signal-info) | 3 | PASS |
-| Cross-version (W-2024.09 FSDB) | 2 | PASS |
+| 命令 | 典型大小 | AI 消耗评估 |
+|------|---------|------------|
+| status | 137 字符 | 极小，无关注 |
+| info | 184 字符 | 极小 |
+| get（1 信号 1 时间点） | 128 字符 | 极小 |
+| get（5 信号 1 时间点） | 424 字符 | 可接受 |
+| get（时间范围 limit=1000） | 29 KB | **偏大**，建议默认降至 100 或 200 |
+| get（时间范围 limit=10） | ~500 字符 | 合适 |
+| edge | 145 字符 | 极小 |
+| find（广泛模式） | 14 KB / 175 条 | **偏大**，无分页 |
+| signals（普通） | 2362 字符 | 中等 |
+| signals（compact） | 296 字符 | **减少 87%**，compact 效果显著 |
 
-### vsignal (12/12 passed)
+### 4.2 vsignal 响应字符量
 
-| Category | Tests | Status |
-|----------|-------|--------|
-| Lifecycle (open/close/status/info) | 4 | PASS |
-| Trace (driver/load/fanin/fanout/trace/conn) | 7 | PASS |
-| Cross-version (W-2024.09 KDB) | 1 | PASS |
+| 命令 | 典型大小 | AI 消耗评估 |
+|------|---------|------------|
+| driver（无选项） | 266 字符 | 极小 |
+| driver（--pass-mod） | 918 字符 | 可接受 |
+| load（--pass-mod --assign-cell） | ~5 KB / 56 条 | 中等，无截断 |
+| fanout | **42 KB** / 173 条 | **过大**，无 limit 和 compact |
+| conn | 4.5 KB / 57 条 | 中等 |
+| trace | 439 字符 | 小 |
 
-### Bugs Fixed During This Session
+### 4.3 关键发现
 
-1. **Design-switch self-comparison** (both tools): `source()` compared with itself, switch path unreachable
-2. **Relative path after chdir** (vsignal): `-dbdir simv.daidir` broken by chdir to run_dir
-3. **NPI logs not contained** (vsignal): vsignalLog/ scattered in CWD
+1. **vwave 的 compact 模式效果显著**：signals 从 2362 → 296 字符（-87%）。vsignal 完全缺失此能力。
+2. **vsignal fanout 是最大的数据膨胀点**：173 条寄存器结果，每条包含完整层次路径（60-120 字符），总计 42 KB。这在 AI 4K-8K token 的有效工作区间内是不可接受的。
+3. **信号路径重复**是主要的字符浪费源：同一 fanout 结果中，前缀 `tb_top.top_inst.u_digit_top.u_system.u_cortexm0integration.u_top.` 重复 173 次。
 
 ---
 
-## 6. Iteration Plan
+## 5. 多查询操作合并分析
 
-This is the first assessment (v1). Planned follow-up iterations:
+当前工具都是"单命令单结果"模式。在实际调试工作流中，以下操作模式频繁出现：
 
-- **v2**: Implement P0 items (--compact/--limit for vsignal, batch query), re-assess
-- **v3**: Measure AI agent end-to-end workflow (Claude Code skill integration), identify remaining friction
-- **v4**: Large design stress test (100K+ instances, deep hierarchy)
+### 5.1 可合并的重复操作
+
+| 场景 | 当前操作次数 | 可优化方向 |
+|------|-------------|-----------|
+| 同一时间点查 5 个信号的值 | 1 次（已支持 -s 重复） | 无需优化 |
+| 同一时间范围查 3 个信号的变化 | 3 次（range 仅支持单信号） | 支持多信号 range |
+| 对 N 个信号做 driver/fanin/fanout | N 次 | 支持 -s 重复或 -f 文件 |
+| 先 driver 再对每个结果 fanin | 1 + N 次 | 可考虑 `--depth 2` 递归深度 |
+| 先 vsignal 追踪再 vwave 取值 | 2 次（跨工具） | 需上层编排，暂不在工具层解决 |
+
+### 5.2 每次命令的固有开销
+
+每次 CLI 调用的固定开销：
+- 进程 fork: ~2ms
+- Socket 连接 + 发送 + 接收: ~5ms
+- JSON 解析: ~1ms
+
+单次开销不大，但 20 次串行调用（典型调试会话）累计 ~160ms + AI 轮次等待时间。批量模式主要不是为了省 latency，而是为了减少 AI agent 的思考-执行轮次。
+
+---
+
+## 6. 测试矩阵
+
+### 6.1 vwave（18/18 通过）
+
+| 类别 | 用例数 | 状态 |
+|------|-------|------|
+| 生命周期（open/close/status） | 4 | 通过 |
+| 层次浏览（scopes/signals/find） | 5 | 通过 |
+| 值查询（get 单点/多信号/范围/文件） | 4 | 通过 |
+| 分析（edge/vc-count/signal-info） | 3 | 通过 |
+| 跨版本（W-2024.09 FSDB） | 2 | 通过 |
+
+### 6.2 vsignal（12/12 通过）
+
+| 类别 | 用例数 | 状态 |
+|------|-------|------|
+| 生命周期（open/close/status/info） | 4 | 通过 |
+| 追踪（driver/load/fanin/fanout/trace/conn） | 7 | 通过 |
+| 跨版本（W-2024.09 KDB） | 1 | 通过 |
+
+### 6.3 本次修复的缺陷
+
+| 缺陷 | 影响 | 修复方式 |
+|------|------|---------|
+| 设计切换自比较（两工具共有） | 切换设计路径永远不可达 | 从磁盘读 source_info 文件 |
+| chdir 后相对路径断裂（vsignal） | -dbdir 用相对路径时 NPI 加载失败 | fork 前 realpath 转绝对路径 |
+| NPI 日志未约束（vsignal） | vsignalLog/ 散落 CWD | chdir 到 run_dir（对齐 vwave） |
+
+---
+
+## 7. 总体评估结论
+
+### 可用性
+
+- vwave 已达生产可用状态，CLI 体验流畅，compact 模式对 AI agent 有明确价值。
+- vsignal 功能完整但缺少输出控制（compact/limit），大结果场景对 AI agent 不友好。
+
+### 完整性
+
+- 时域观测（vwave）+ 结构追踪（vsignal）覆盖了芯片调试最核心的两类查询。
+- 缺口在批量操作和跨工具编排：无法在单次调用中完成多信号追踪或跨域联合查询。
+
+### AI 适配性
+
+- JSON 格式统一、错误码语义清晰、daemon 复用设计天然适合 AI agent。
+- 主要瓶颈是大结果的数据量膨胀（fanout 42 KB）和信号路径重复冗余。
+- compact 模式是解决这一问题的最直接手段，且 vwave 已有成熟实现可参考。
+
+### 版本自适应
+
+- RUNPATH + LD_LIBRARY_PATH 方案可行，跨 T/W/Y 三个大版本均正常。
+- vsignal 的额外库依赖是唯一的摩擦点，需文档或自动化解决。
