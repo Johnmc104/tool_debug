@@ -41,53 +41,68 @@
 
 static void print_usage() {
     std::cerr <<
-R"(vwave — FSDB Waveform Reader v1.4
-  by zhhe - Johnmc104@qq.com
-Usage:
-  vwave open  <file.fsdb> [--timeout <sec>]  Load waveform (start background server)
-  vwave close                                Close waveform (stop server)
-  vwave status                               Show server status
-  vwave info                                 Show FSDB file info
-  vwave scopes  [<path>]                     List hierarchy scopes
-  vwave signals <path>                       List signals in scope
-  vwave signal-info <name>                   Show signal details
-  vwave find <pattern> [--scope <path>]      Search signals by wildcard
-  vwave get [options]                        Read signal value(s)
-  vwave edge -s <sig> -t <time> [options]    Find next/prev signal edge
-  vwave vc-count -s <sig> [-b <t> -e <t>]   Count value changes
+R"(vwave — Read FSDB waveform files via background server
 
-Get options:
+Architecture: "vwave open" starts a daemon; subsequent commands query it via
+  Unix socket. Auto-detects running server by searching upward from CWD for
+  .vtool/wave_run/. All query commands support --json for structured output.
+
+Commands:
+  open   <file.fsdb>                   Load waveform (start server daemon)
+  close                                Stop server and clean up
+  status                               Server uptime, PID, loaded file
+  info                                 FSDB time range and scope count
+
+Hierarchy:
+  scopes  [<path>] [--depth N]         List child scopes (default depth: 1)
+  signals <scope>                      List signals in a scope
+  signal-info <signal>                 Signal metadata (type, size, bit range)
+  find <pattern> [--scope <path>]      Glob search (e.g. "tb.*.clk")
+
+Value queries:
+  get -s <signal> -t <time>            Value at a single time point
+  get -s <sig1> -s <sig2> -t <time>    Multiple signals at same time
+  get -s <signal> -b <t0> -e <t1>      All value changes in time range
+  get -f <file> -t <time>              Batch read from signal-list file
+
+Signal analysis:
+  edge -s <signal> -t <time>           Find next edge from time t
+  vc-count -s <signal> [-b <t> -e <t>] Count value changes in range
+
+Value options (get):
   -s, --signal <name>       Signal path (repeatable for multi-signal)
-  -f, --signal-file <file>  Read signals from file (one per line)
-  -t, --time <t>            Read value at time t
-  -b, --begin <t>           Range start time (with --end)
-  -e, --end <t>             Range end time (with --begin)
-  -r, --radix <fmt>         Value format: bin|hex|oct|dec (default: bin)
+  -f, --signal-file <file>  Read signal names from file, one per line
+  -t, --time <t>            Read at time t (integer, simulation time units)
+  -b, --begin <t>           Range start time (requires --end)
+  -e, --end <t>             Range end time (requires --begin)
+  -r, --radix <fmt>         Output format: bin|hex|oct|dec (default: bin)
+  --limit <N>               Max samples for range query (default: 1000)
 
 Edge options:
-  --rising                  Find rising edge only
-  --falling                 Find falling edge only
-  --dir <forward|backward>  Search direction (default: forward)
+  --rising                  Rising edges only
+  --falling                 Falling edges only
+  --dir forward|backward    Search direction (default: forward)
 
 Global options:
+  --json                    JSON output (recommended for programmatic use)
+  --compact, -c             Compact output (shorter keys, fewer tokens)
+  --depth <N>               Scope recursion depth (default: 1)
   --fsdb <path>             Explicit FSDB path (skip auto-detect)
-  --run-dir <path>          Override runtime directory
+  --run-dir <path>          Override runtime directory (.vtool/wave_run/)
   --timeout <sec>           Server start timeout (default: 30, open only)
-  --compact, -c             Compact output (short names, less tokens)
-  --depth <N>               Recursive depth for scopes (default: 1)
-  --json                    JSON output mode
   -h, --help                Show this help
 
+Signal paths use dot-separated hierarchy: tb.u_cpu.core.clk
+
 Examples:
-  vwave open test/tb_top.fsdb
-  vwave info
-  vwave scopes
-  vwave scopes tb
-  vwave signals tb.intf
-  vwave get -s tb.intf.clk -t 500000
-  vwave get -s tb.intf.clk -s tb.intf.paddr -t 1500000 -r hex
-  vwave get -s tb.intf.clk -b 0 -e 100000
-  vwave get -f signals.txt -t 500000 -r hex
+  vwave open sim/tb_top.fsdb
+  vwave scopes tb --depth 2 --json
+  vwave signals tb.u_cpu --json
+  vwave get -s tb.u_cpu.clk -t 1000 --json
+  vwave get -s tb.u_cpu.clk -s tb.u_cpu.rst -t 5000 -r hex --json
+  vwave get -s tb.u_cpu.data -b 0 -e 50000 -r hex --json
+  vwave edge -s tb.u_cpu.clk -t 1000 --rising --json
+  vwave vc-count -s tb.u_cpu.clk -b 0 -e 100000 --json
   vwave close
 )";
 }

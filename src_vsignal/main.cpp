@@ -38,44 +38,51 @@
 
 static void print_usage() {
     std::cerr <<
-R"(vsignal — Netlist Signal Trace Tool v1.0
-  by zhhe - Johnmc104@qq.com
-Usage:
-  vsignal open  -dbdir <kdb_dir>             Load design from VCS KDB database
-  vsignal open  <source.v> [source2.v ...]   Load design from RTL source files
-  vsignal close                              Close design (stop server)
-  vsignal status                             Show server status
-  vsignal info                               Show design info
+R"(vsignal — Trace netlist signal drivers, loads, and register connectivity
 
-  vsignal driver  <signal>                   Trace signal drivers
-  vsignal load    <signal>                   Trace signal loads
-  vsignal fanin   <signal>                   FanIn register connections
-  vsignal fanout  <signal>                   FanOut register connections
-  vsignal trace   <from_sig> <to_sig>        Signal-to-signal path trace
-  vsignal conn    <instance>                 Instance port connections
+Architecture: "vsignal open" starts a daemon that loads a VCS KDB database or
+  RTL sources via Verdi NPI. Subsequent trace commands query the loaded netlist.
+  Auto-detects running server by searching upward from CWD for
+  .vtool/vsignal_run/. All query commands support --json for structured output.
 
-Trace options:
-  --assign-cell                Pass through assign cells (driver/load)
-  --pass-mod                   Pass through module boundaries (driver/load)
-  --stop-at-pin                Stop at pin (fanin/fanout)
-  --report-primary-port        Report primary ports (fanin/fanout)
-  --scope <name>               Limit scope for fanin/fanout
-  --level high|low             Connection level for conn (default: high)
+Commands:
+  open  -dbdir <kdb_dir>               Load design from VCS KDB (e.g. simv.daidir)
+  open  <file.v> [file2.v ...]         Load design from Verilog source files
+  close                                Stop server and clean up
+  status                               Server uptime, PID, loaded design
+  info                                 Loaded design metadata
+
+Trace commands:
+  driver  <signal>                     What drives this signal
+  load    <signal>                     What this signal drives (fanout)
+  fanin   <signal>                     Trace backward to source registers
+  fanout  <signal>                     Trace forward to destination registers
+  trace   <from_sig> <to_sig>          Combinational path between two signals
+  conn    <instance>                   All port connections of an instance
+
+Trace options (parentheses = applicable commands):
+  --assign-cell              Follow through assign cells (driver, load, trace)
+  --pass-mod                 Cross module boundaries (driver, load)
+  --stop-at-pin              Stop at instance pins (fanin, fanout)
+  --report-primary-port      Include primary I/O ports (fanin, fanout)
+  --scope <name>             Limit search scope (fanin, fanout)
+  --level high|low           Connection abstraction for conn (default: high)
 
 Global options:
-  --run-dir <path>             Override runtime directory
-  --json                       JSON output mode
-  -h, --help                   Show this help
+  --json                     JSON output (recommended for programmatic use)
+  --run-dir <path>           Override runtime directory (.vtool/vsignal_run/)
+  -h, --help                 Show this help
+
+Signal paths use dot-separated hierarchy: top.u_sub.sig_a
 
 Examples:
   vsignal open -dbdir simv.daidir
-  vsignal open rtl/top.v rtl/sub.v
-  vsignal driver top.u_sub.sig_a
-  vsignal load   top.u_sub.sig_b
-  vsignal fanin  top.u_sub.q_reg
-  vsignal fanout top.clk
-  vsignal trace  top.data_in top.data_out
-  vsignal conn   top.u_sub
+  vsignal driver top.u_sub.sig_a --json
+  vsignal load top.u_sub.sig_b --assign-cell --json
+  vsignal fanin top.u_sub.q_reg --stop-at-pin --json
+  vsignal fanout top.clk --scope top.u_sub --json
+  vsignal trace top.data_in top.data_out --json
+  vsignal conn top.u_sub --level low --json
   vsignal close
 )";
 }
