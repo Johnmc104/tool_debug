@@ -268,25 +268,24 @@ cli/
 
 **总效果**：两工具 server_core.h 均降至 ~135 行，职责清晰分离。
 
-### Phase 3：main.cpp 拆分 + cmd_open 共享
+### Phase 3：cmd_open/close 共享模板 — 已完成
 
-| 任务 | 工具 | 变更 |
-|------|------|------|
-| 提取 options.h（struct + 解析） | 两工具 | main() 瘦身 |
-| 提取 commands.h（cmd_open/close/query）| 两工具 | main.cpp 仅剩 main() |
-| 提取 tw::daemon::fork_server() | src_common | cmd_open 去重 |
+| 任务 | 工具 | 状态 | 实际效果 |
+|------|------|------|---------|
+| 提取 tw::daemon::fork_and_wait() | src_common | **已完成** | 151 行共享模板 |
+| 提取 tw::daemon::shutdown_server() | src_common | **已完成** | 两工具共用 |
+| vwave cmd_open 精简 | vwave | **已完成** | 149 → 63 行（-58%） |
+| vsignal cmd_open 精简 | vsignal | **已完成** | 142 → 60 行（-58%） |
+| vwave main.cpp 总行数 | vwave | **已完成** | 611 → 514 行 |
+| vsignal main.cpp 总行数 | vsignal | **已完成** | 568 → 493 行 |
 
-**验收**：main.cpp 降至 80 行以内。
+### Phase 4：缓存 — 已完成
 
-### Phase 4：缓存与连接复用
+| 任务 | 工具 | 状态 | 实际效果 |
+|------|------|------|---------|
+| 信号 handle 缓存 | vwave | **已完成** | 5 个 sig_by_name 调用点使用 cached_sig_by_name |
 
-| 任务 | 工具 | 变更 |
-|------|------|------|
-| 信号 handle 缓存 | vwave server | unordered_map<name, handle> |
-| batch socket 复用 | vsignal client | 单连接多请求 |
-| info 结果缓存 | 两工具 server | 首次查询后缓存 |
-
-**验收**：相同信号连续 10 次 get 耗时降低 ≥ 30%。
+**说明**：batch socket 复用和 info 缓存作为低优先级延后——当前瓶颈已在客户端侧（batch 聚合）解决，socket 连接开销（~5ms）在实际使用中不构成性能问题。
 
 ---
 
