@@ -88,9 +88,9 @@ static const char* nl_direction_str(int dir) {
 
 /**
  * Convert a single NL handle into a JSON object string.
- * Defensively null-checks every NPI return value.
+ * In compact mode, only emit "name" (leaf) to reduce output size.
  */
-static std::string nl_handle_to_json(npiNlHandle hdl) {
+static std::string nl_handle_to_json(npiNlHandle hdl, bool compact = false) {
     if (!hdl) return "{}";
 
     int obj_type = npi_nl_get(npiNlType, hdl);
@@ -98,32 +98,34 @@ static std::string nl_handle_to_json(npiNlHandle hdl) {
     const char* full_name = npi_nl_get_str(npiNlFullName, hdl);
 
     JsonObject obj;
-    obj.set("type", nl_obj_type_str(obj_type));
-    obj.set("name",      name      ? name      : "");
-    obj.set("full_name", full_name ? full_name : "");
 
-    // Instance extras
-    if (obj_type == npiNlInst) {
-        const char* def_name = npi_nl_get_str(npiNlDefName, hdl);
-        if (def_name) obj.set("def_name", def_name);
-        int cell_type = npi_nl_get(npiNlCellType, hdl);
-        if (cell_type > 0) obj.set("cell_type", static_cast<int64_t>(cell_type));
-    }
+    if (compact) {
+        obj.set("name", name ? name : "");
+    } else {
+        obj.set("type", nl_obj_type_str(obj_type));
+        obj.set("name",      name      ? name      : "");
+        obj.set("full_name", full_name ? full_name : "");
 
-    // Port / InstPort extras
-    if (obj_type == npiNlPort || obj_type == npiNlInstPort ||
-        obj_type == npiNlPseudoPort || obj_type == npiNlPseudoInstPort) {
-        int dir  = npi_nl_get(npiNlDirection, hdl);
-        int size = npi_nl_get(npiNlSize, hdl);
-        obj.set("direction", nl_direction_str(dir));
-        if (size > 0) obj.set("size", static_cast<int64_t>(size));
-    }
+        if (obj_type == npiNlInst) {
+            const char* def_name = npi_nl_get_str(npiNlDefName, hdl);
+            if (def_name) obj.set("def_name", def_name);
+            int cell_type = npi_nl_get(npiNlCellType, hdl);
+            if (cell_type > 0) obj.set("cell_type", static_cast<int64_t>(cell_type));
+        }
 
-    // Net extras
-    if (obj_type == npiNlDeclNet || obj_type == npiNlConcatNet ||
-        obj_type == npiNlSliceNet || obj_type == npiNlPseudoNet) {
-        int size = npi_nl_get(npiNlSize, hdl);
-        if (size > 0) obj.set("size", static_cast<int64_t>(size));
+        if (obj_type == npiNlPort || obj_type == npiNlInstPort ||
+            obj_type == npiNlPseudoPort || obj_type == npiNlPseudoInstPort) {
+            int dir  = npi_nl_get(npiNlDirection, hdl);
+            int size = npi_nl_get(npiNlSize, hdl);
+            obj.set("direction", nl_direction_str(dir));
+            if (size > 0) obj.set("size", static_cast<int64_t>(size));
+        }
+
+        if (obj_type == npiNlDeclNet || obj_type == npiNlConcatNet ||
+            obj_type == npiNlSliceNet || obj_type == npiNlPseudoNet) {
+            int size = npi_nl_get(npiNlSize, hdl);
+            if (size > 0) obj.set("size", static_cast<int64_t>(size));
+        }
     }
 
     return obj.dump();
@@ -131,13 +133,20 @@ static std::string nl_handle_to_json(npiNlHandle hdl) {
 
 /**
  * Convert a vector of NL handles into a JSON array string.
+ * Respects compact mode and limit (0 = no limit).
  */
-static std::string nl_hdl_vec_to_json(nlHdlVec_t& hdlVec) {
+static std::string nl_hdl_vec_to_json(nlHdlVec_t& hdlVec,
+                                       bool compact = false,
+                                       int64_t limit = 0) {
+    size_t count = hdlVec.size();
+    if (limit > 0 && static_cast<size_t>(limit) < count)
+        count = static_cast<size_t>(limit);
+
     std::ostringstream arr;
     arr << "[";
-    for (size_t i = 0; i < hdlVec.size(); ++i) {
+    for (size_t i = 0; i < count; ++i) {
         if (i) arr << ",";
-        arr << nl_handle_to_json(hdlVec[i]);
+        arr << nl_handle_to_json(hdlVec[i], compact);
     }
     arr << "]";
     return arr.str();
@@ -172,6 +181,8 @@ static std::string handle_trace_driver(int id, const JsonParser& params) {
 
     int assign_cell = static_cast<int>(params.get_int("assign_cell", 0));
     int pass_mod    = static_cast<int>(params.get_int("pass_mod", 0));
+    bool compact    = params.get_bool("compact", false);
+    int64_t limit   = params.get_int("limit", 0);
 
     nlHdlVec_t hdlVec;
     int ret = npi_nl_trace_driver(npi_str(sig), hdlVec, assign_cell, pass_mod);
@@ -182,8 +193,11 @@ static std::string handle_trace_driver(int id, const JsonParser& params) {
 
     JsonObject data;
     data.set("signal", sig);
-    data.set("count", static_cast<int64_t>(hdlVec.size()));
-    data.set_raw("drivers", nl_hdl_vec_to_json(hdlVec));
+    data.set("total", static_cast<int64_t>(hdlVec.size()));
+    int64_t returned = (limit > 0 && limit < (int64_t)hdlVec.size())
+                        ? limit : (int64_t)hdlVec.size();
+    data.set("returned", returned);
+    data.set_raw("drivers", nl_hdl_vec_to_json(hdlVec, compact, limit));
     return make_ok_response(id, data.dump());
 }
 
@@ -195,6 +209,8 @@ static std::string handle_trace_load(int id, const JsonParser& params) {
 
     int assign_cell = static_cast<int>(params.get_int("assign_cell", 0));
     int pass_mod    = static_cast<int>(params.get_int("pass_mod", 0));
+    bool compact    = params.get_bool("compact", false);
+    int64_t limit   = params.get_int("limit", 0);
 
     nlHdlVec_t hdlVec;
     int ret = npi_nl_trace_load(npi_str(sig), hdlVec, assign_cell, pass_mod);
@@ -205,8 +221,11 @@ static std::string handle_trace_load(int id, const JsonParser& params) {
 
     JsonObject data;
     data.set("signal", sig);
-    data.set("count", static_cast<int64_t>(hdlVec.size()));
-    data.set_raw("loads", nl_hdl_vec_to_json(hdlVec));
+    data.set("total", static_cast<int64_t>(hdlVec.size()));
+    int64_t returned = (limit > 0 && limit < (int64_t)hdlVec.size())
+                        ? limit : (int64_t)hdlVec.size();
+    data.set("returned", returned);
+    data.set_raw("loads", nl_hdl_vec_to_json(hdlVec, compact, limit));
     return make_ok_response(id, data.dump());
 }
 
@@ -219,6 +238,8 @@ static std::string handle_fanin_reg(int id, const JsonParser& params) {
     bool stop_at_pin = params.get_bool("stop_at_pin", false);
     bool report_port = params.get_bool("report_primary_port", false);
     std::string scope = params.get_string("scope");
+    bool compact     = params.get_bool("compact", false);
+    int64_t limit    = params.get_int("limit", 0);
 
     nlHdlVec_t hdlVec;
     int ret = npi_nl_sig_2_fanIn_reg_conn(
@@ -231,8 +252,11 @@ static std::string handle_fanin_reg(int id, const JsonParser& params) {
 
     JsonObject data;
     data.set("signal", sig);
-    data.set("count", static_cast<int64_t>(hdlVec.size()));
-    data.set_raw("fanin", nl_hdl_vec_to_json(hdlVec));
+    data.set("total", static_cast<int64_t>(hdlVec.size()));
+    int64_t returned = (limit > 0 && limit < (int64_t)hdlVec.size())
+                        ? limit : (int64_t)hdlVec.size();
+    data.set("returned", returned);
+    data.set_raw("fanin", nl_hdl_vec_to_json(hdlVec, compact, limit));
     return make_ok_response(id, data.dump());
 }
 
@@ -245,6 +269,8 @@ static std::string handle_fanout_reg(int id, const JsonParser& params) {
     bool stop_at_pin = params.get_bool("stop_at_pin", false);
     bool report_port = params.get_bool("report_primary_port", false);
     std::string scope = params.get_string("scope");
+    bool compact     = params.get_bool("compact", false);
+    int64_t limit    = params.get_int("limit", 0);
 
     nlHdlVec_t hdlVec;
     int ret = npi_nl_sig_2_fanOut_reg_conn(
@@ -257,8 +283,11 @@ static std::string handle_fanout_reg(int id, const JsonParser& params) {
 
     JsonObject data;
     data.set("signal", sig);
-    data.set("count", static_cast<int64_t>(hdlVec.size()));
-    data.set_raw("fanout", nl_hdl_vec_to_json(hdlVec));
+    data.set("total", static_cast<int64_t>(hdlVec.size()));
+    int64_t returned = (limit > 0 && limit < (int64_t)hdlVec.size())
+                        ? limit : (int64_t)hdlVec.size();
+    data.set("returned", returned);
+    data.set_raw("fanout", nl_hdl_vec_to_json(hdlVec, compact, limit));
     return make_ok_response(id, data.dump());
 }
 

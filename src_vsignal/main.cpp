@@ -68,6 +68,10 @@ Trace options (parentheses = applicable commands):
   --scope <name>             Limit search scope (fanin, fanout)
   --level high|low           Connection abstraction for conn (default: high)
 
+Output control:
+  --compact, -c              Compact output (leaf names only, fewer fields)
+  --limit <N>, -l <N>        Max results for driver/load/fanin/fanout (0=all)
+
 Global options:
   --json                     JSON output (recommended for programmatic use)
   --run-dir <path>           Override runtime directory (.vtool/vsignal_run/)
@@ -151,6 +155,24 @@ static int cmd_open(int argc, char** argv,
 
     // Ensure run directory exists
     run_dir.ensure_dir();
+
+    // Auto-complete LD_LIBRARY_PATH from VERDI_HOME before fork.
+    // npi_load_design dynamically loads libs from platform/linux64/bin/
+    // which is not covered by RUNPATH or the default module environment.
+    const char* verdi_home = std::getenv("VERDI_HOME");
+    if (verdi_home) {
+        std::string extra1 = std::string(verdi_home) + "/share/NPI/lib/linux64";
+        std::string extra2 = std::string(verdi_home) + "/platform/linux64/bin";
+        std::string cur = std::getenv("LD_LIBRARY_PATH") ? std::getenv("LD_LIBRARY_PATH") : "";
+        if (cur.find(extra2) == std::string::npos) {
+            std::string newpath = extra1 + ":" + extra2;
+            if (!cur.empty()) newpath += ":" + cur;
+            setenv("LD_LIBRARY_PATH", newpath.c_str(), 1);
+        }
+    } else {
+        std::cerr << "Warning: VERDI_HOME not set. NPI libraries may not be found.\n"
+                  << "Hint: module load synopsys/verdi/<version>\n";
+    }
 
     // Fork server process
     pid_t pid = fork();
@@ -272,7 +294,8 @@ static int cmd_query(const vsignal::RunDir& run_dir, bool json_mode,
                      bool assign_cell, bool pass_mod,
                      bool stop_at_pin, bool report_primary_port,
                      const std::string& scope,
-                     const std::string& level) {
+                     const std::string& level,
+                     bool compact_mode, int64_t limit_val) {
     if (!run_dir.is_server_alive()) {
         std::cerr << "Error: No active design.\n"
                   << "Use 'vsignal open -dbdir <kdb_dir>' first.\n";
@@ -297,6 +320,8 @@ static int cmd_query(const vsignal::RunDir& run_dir, bool json_mode,
         p.set("signal", positional1);
         if (assign_cell) p.set("assign_cell", (int64_t)1);
         if (pass_mod)    p.set("pass_mod", (int64_t)1);
+        if (compact_mode) p.set_bool("compact", true);
+        if (limit_val > 0) p.set("limit", limit_val);
         request = vsignal::client::build_request(req_id, "trace_driver", p.dump());
 
     } else if (command == "load") {
@@ -308,6 +333,8 @@ static int cmd_query(const vsignal::RunDir& run_dir, bool json_mode,
         p.set("signal", positional1);
         if (assign_cell) p.set("assign_cell", (int64_t)1);
         if (pass_mod)    p.set("pass_mod", (int64_t)1);
+        if (compact_mode) p.set_bool("compact", true);
+        if (limit_val > 0) p.set("limit", limit_val);
         request = vsignal::client::build_request(req_id, "trace_load", p.dump());
 
     } else if (command == "fanin") {
@@ -320,6 +347,8 @@ static int cmd_query(const vsignal::RunDir& run_dir, bool json_mode,
         p.set_bool("stop_at_pin", stop_at_pin);
         p.set_bool("report_primary_port", report_primary_port);
         if (!scope.empty()) p.set("scope", scope);
+        if (compact_mode) p.set_bool("compact", true);
+        if (limit_val > 0) p.set("limit", limit_val);
         request = vsignal::client::build_request(req_id, "fanin_reg", p.dump());
 
     } else if (command == "fanout") {
@@ -332,6 +361,8 @@ static int cmd_query(const vsignal::RunDir& run_dir, bool json_mode,
         p.set_bool("stop_at_pin", stop_at_pin);
         p.set_bool("report_primary_port", report_primary_port);
         if (!scope.empty()) p.set("scope", scope);
+        if (compact_mode) p.set_bool("compact", true);
+        if (limit_val > 0) p.set("limit", limit_val);
         request = vsignal::client::build_request(req_id, "fanout_reg", p.dump());
 
     } else if (command == "trace") {
@@ -344,6 +375,8 @@ static int cmd_query(const vsignal::RunDir& run_dir, bool json_mode,
         p.set("from", positional1);
         p.set("to", positional2);
         if (assign_cell) p.set("assign_cell", (int64_t)1);
+        if (compact_mode) p.set_bool("compact", true);
+        if (limit_val > 0) p.set("limit", limit_val);
         request = vsignal::client::build_request(req_id, "trace_path", p.dump());
 
     } else if (command == "conn") {
@@ -389,6 +422,8 @@ int main(int argc, char** argv) {
     bool report_primary_port = false;
     std::string scope;
     std::string level = "high";
+    bool compact_mode = false;
+    int64_t limit_val = 0;
 
     // Open-specific
     std::string dbdir;
@@ -421,6 +456,10 @@ int main(int argc, char** argv) {
             scope = argv[++i];
         } else if (arg == "--level" && i + 1 < argc) {
             level = argv[++i];
+        } else if (arg == "--compact" || arg == "-c") {
+            compact_mode = true;
+        } else if ((arg == "--limit" || arg == "-l") && i + 1 < argc) {
+            limit_val = std::strtoll(argv[++i], nullptr, 10);
 
         // Open: -dbdir
         } else if (arg == "-dbdir" && i + 1 < argc) {
@@ -489,5 +528,6 @@ int main(int argc, char** argv) {
                      positional1, positional2,
                      assign_cell, pass_mod,
                      stop_at_pin, report_primary_port,
-                     scope, level);
+                     scope, level,
+                     compact_mode, limit_val);
 }
