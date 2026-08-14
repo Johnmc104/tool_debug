@@ -244,15 +244,17 @@ cli/
 
 ## 6. 分阶段实施计划
 
-### Phase 1：参数结构化（减少参数传递）
+### Phase 1：参数结构化（减少参数传递）— 已完成
 
-| 任务 | 工具 | 变更 |
-|------|------|------|
-| 定义 vwave::QueryOptions struct | vwave | main.cpp 新增 struct，cmd_query 改为接收引用 |
-| 定义 vsignal::QueryOptions struct | vsignal | 同上 |
-| main() 解析结果填入 struct | 两工具 | 消除 17/12 个裸参数 |
+| 任务 | 工具 | 状态 | 实际效果 |
+|------|------|------|---------|
+| 定义 vsignal::CliOptions struct | vsignal | **已完成** | 12 参数 → 2 参数 |
+| 提取 parse_args() | vsignal | **已完成** | main() 151 → 42 行 |
+| 提取 fill_trace_params() | vsignal | **已完成** | 6 处重复 → 1 处 |
+| 合并 driver/load、fanin/fanout 分支 | vsignal | **已完成** | cmd_query 175 → 130 行 |
+| vwave::QueryOptions struct | vwave | 待实施 | |
 
-**验收**：cmd_query 签名缩减为 `(RunDir&, command, QueryOptions&)`。
+**总效果**：vsignal main.cpp 623 → 568 行（-9%），cmd_query 签名从 12 参数缩减为 `(RunDir&, CliOptions&)`。
 
 ### Phase 2：server_core.h 拆分
 
