@@ -29,6 +29,7 @@
 #include "common/json_parser.h"
 #include "common/run_dir.h"
 #include "client/client_core.h"
+#include "tw/daemon.h"
 
 // Server-side code (NPI-dependent, only executes in forked child)
 #include "server/server_core.h"
@@ -137,6 +138,25 @@ static bool resolve_run_dir(const std::string& /*run_dir_override*/,
     return false;
 }
 
+// ─── LD_LIBRARY_PATH auto-complete ───────────────────────────────────────────
+
+static void ensure_npi_lib_path() {
+    const char* verdi_home = std::getenv("VERDI_HOME");
+    if (!verdi_home) {
+        std::cerr << "Warning: VERDI_HOME not set. NPI libraries may not be found.\n"
+                  << "Hint: module load synopsys/verdi/<version>\n";
+        return;
+    }
+    std::string extra = std::string(verdi_home) + "/platform/linux64/bin";
+    std::string cur = std::getenv("LD_LIBRARY_PATH") ? std::getenv("LD_LIBRARY_PATH") : "";
+    if (cur.find(extra) == std::string::npos) {
+        std::string npi_lib = std::string(verdi_home) + "/share/NPI/lib/linux64";
+        std::string newpath = npi_lib + ":" + extra;
+        if (!cur.empty()) newpath += ":" + cur;
+        setenv("LD_LIBRARY_PATH", newpath.c_str(), 1);
+    }
+}
+
 // ─── Command: open ───────────────────────────────────────────────────────────
 
 static int cmd_open(int argc, char** argv,
@@ -170,117 +190,34 @@ static int cmd_open(int argc, char** argv,
                 std::cout << "Server already running (PID " << run_dir.read_pid()
                           << ") for " << design_source << "\n";
             return 0;
-        } else {
-            // Different design → close old, open new
-            if (!json_mode)
-                std::cout << "Switching design: closing " << stored << "...\n";
-            std::string req = vsignal::client::build_request(1, "shutdown");
-            vsignal::client::send_request(run_dir.socket_path(), req);
-            for (int i = 0; i < 30; ++i) {
-                usleep(100000);
-                if (!run_dir.is_server_alive()) break;
-            }
-            run_dir.cleanup();
         }
+        if (!json_mode)
+            std::cout << "Switching design: closing " << stored << "...\n";
+        tw::daemon::shutdown_server(
+            run_dir.base(), [](const std::string& s, const std::string& r) { return tw::client::send_request(s, r); },
+            vsignal::client::build_request(1, "shutdown"));
+        run_dir.cleanup();
     } else {
         run_dir.cleanup();
     }
 
-    // Ensure run directory exists
     run_dir.ensure_dir();
+    ensure_npi_lib_path();
 
-    // Auto-complete LD_LIBRARY_PATH from VERDI_HOME before fork.
-    // npi_load_design dynamically loads libs from platform/linux64/bin/
-    // which is not covered by RUNPATH or the default module environment.
-    const char* verdi_home = std::getenv("VERDI_HOME");
-    if (verdi_home) {
-        std::string extra1 = std::string(verdi_home) + "/share/NPI/lib/linux64";
-        std::string extra2 = std::string(verdi_home) + "/platform/linux64/bin";
-        std::string cur = std::getenv("LD_LIBRARY_PATH") ? std::getenv("LD_LIBRARY_PATH") : "";
-        if (cur.find(extra2) == std::string::npos) {
-            std::string newpath = extra1 + ":" + extra2;
-            if (!cur.empty()) newpath += ":" + cur;
-            setenv("LD_LIBRARY_PATH", newpath.c_str(), 1);
-        }
-    } else {
-        std::cerr << "Warning: VERDI_HOME not set. NPI libraries may not be found.\n"
-                  << "Hint: module load synopsys/verdi/<version>\n";
-    }
+    tw::daemon::LaunchConfig cfg;
+    cfg.log_tag     = "vsignal";
+    cfg.timeout_sec = 30;
+    cfg.json_mode   = json_mode;
 
-    // Fork server process
-    pid_t pid = fork();
-    if (pid < 0) {
-        perror("fork");
-        return 1;
-    }
-    if (pid == 0) {
-        // ── Child: become daemon, then run server ──
-        setsid();
-
-        // chdir to run_dir so NPI logs (vsignalLog/) stay contained
-        if (chdir(run_dir.dir().c_str()) != 0) {
-            perror("chdir to run_dir");
-        }
-
-        // Redirect stdout/stderr to log file
-        int log_fd = open(run_dir.log_path().c_str(),
-                          O_WRONLY | O_CREAT | O_TRUNC, 0644);
-        if (log_fd >= 0) {
-            dup2(log_fd, STDOUT_FILENO);
-            dup2(log_fd, STDERR_FILENO);
-            close(log_fd);
-        }
-        close(STDIN_FILENO);
-
-        // Run server (initializes NPI, loads design, listens)
-        int rc = vsignal::server::run_server(argc, argv, run_dir,
-                                              design_source, design_args);
-        _exit(rc);
-    }
-
-    // ── Parent: wait for server to become ready ──
-    bool ready = false;
-    for (int i = 0; i < 300; ++i) {  // up to 30s (KDB load can be slow)
-        usleep(100000);
-        // Check child didn't crash
-        int wstatus;
-        pid_t w = waitpid(pid, &wstatus, WNOHANG);
-        if (w > 0) {
-            std::cerr << "Error: Server process exited unexpectedly.\n";
-            std::cerr << "Check log: " << run_dir.log_path() << "\n";
-            return 1;
-        }
-        // Check if socket exists and server is reachable
-        struct stat sst;
-        if (stat(run_dir.socket_path().c_str(), &sst) == 0) {
-            std::string test_req = vsignal::client::build_request(0, "status");
-            std::string resp = vsignal::client::send_request(run_dir.socket_path(), test_req);
-            if (!resp.empty() && resp.find("\"ok\"") != std::string::npos) {
-                ready = true;
-                break;
-            }
-        }
-    }
-
-    if (!ready) {
-        std::cerr << "Error: Server did not become ready within 30s.\n"
-                  << "Check log: " << run_dir.log_path() << "\n";
-        return 1;
-    }
-
-    if (json_mode) {
-        std::cout << "{\"status\":\"ok\",\"message\":\"Design loaded\","
-                  << "\"pid\":" << pid
-                  << ",\"design\":\"" << design_source << "\""
-                  << ",\"socket\":\"" << run_dir.socket_path() << "\""
-                  << ",\"log\":\"" << run_dir.log_path() << "\"}" << std::endl;
-    } else {
-        std::cout << "Design loaded (PID " << pid << ")\n"
-                  << "  Design: " << design_source << "\n"
-                  << "  Socket: " << run_dir.socket_path() << "\n"
-                  << "  Log:    " << run_dir.log_path() << "\n";
-    }
-    return 0;
+    return tw::daemon::fork_and_wait(
+        run_dir.base(),
+        [&]() {
+            return vsignal::server::run_server(argc, argv, run_dir,
+                                                design_source, design_args);
+        },
+        [&]() { return vsignal::client::build_request(0, "status"); },
+        [](const std::string& s, const std::string& r) { return tw::client::send_request(s, r); },
+        cfg);
 }
 
 // ─── Command: close ──────────────────────────────────────────────────────────
@@ -294,27 +231,15 @@ static int cmd_close(const vsignal::RunDir& run_dir, bool json_mode) {
         return 0;
     }
 
-    std::string req = vsignal::client::build_request(1, "shutdown");
-    std::string resp = vsignal::client::send_request(run_dir.socket_path(), req);
-
-    for (int i = 0; i < 30; ++i) {
-        usleep(100000);
-        if (!run_dir.is_server_alive()) break;
-    }
-
-    if (run_dir.is_server_alive()) {
-        pid_t pid = run_dir.read_pid();
-        if (pid > 0) kill(pid, SIGKILL);
-        usleep(200000);
-    }
-
+    tw::daemon::shutdown_server(
+        run_dir.base(), [](const std::string& s, const std::string& r) { return tw::client::send_request(s, r); },
+        vsignal::client::build_request(1, "shutdown"));
     run_dir.cleanup();
 
-    if (json_mode) {
-        vsignal::client::print_response(resp, true);
-    } else {
+    if (json_mode)
+        std::cout << "{\"status\":\"ok\",\"message\":\"Design closed\"}" << std::endl;
+    else
         std::cout << "Design closed.\n";
-    }
     return 0;
 }
 

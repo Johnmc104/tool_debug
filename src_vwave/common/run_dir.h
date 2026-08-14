@@ -34,6 +34,7 @@ public:
 
     // ─── Path accessors ──────────────────────────────────────────────────────
 
+    const tw::RunDir& base()     const { return base_; }
     std::string socket_path()    const { return base_.socket_path(); }
     std::string pid_path()       const { return base_.pid_path(); }
     std::string log_path()       const { return base_.log_path(); }

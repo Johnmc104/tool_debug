@@ -28,6 +28,7 @@
 #include <sys/wait.h>
 
 // Client-side code (NPI-free)
+#include "tw/daemon.h"
 #include "common/protocol.h"
 #include "common/json_parser.h"
 #include "common/run_dir.h"
@@ -177,7 +178,6 @@ static int cmd_open(int argc, char** argv,
         return 1;
     }
 
-    // Verify file exists
     struct stat st;
     if (stat(fsdb_path.c_str(), &st) != 0) {
         std::cerr << "Error: File not found: " << fsdb_path << "\n";
@@ -185,8 +185,10 @@ static int cmd_open(int argc, char** argv,
     }
 
     wave::RunDir run_dir(fsdb_path, run_dir_override);
+    auto send = [](const std::string& s, const std::string& r) {
+        return tw::client::send_request(s, r);
+    };
 
-    // Check if server already running for this FSDB
     if (run_dir.is_server_alive()) {
         std::string stored_fsdb = tw::RunDir::read_file_content(
             run_dir.fsdb_path_file());
@@ -202,119 +204,31 @@ static int cmd_open(int argc, char** argv,
                 std::cout << "Server already running (PID " << run_dir.read_pid()
                           << ") for " << fsdb_path << "\n";
             return 0;
-        } else {
-            // Different FSDB → close old, open new
-            if (!json_mode)
-                std::cout << "Switching waveform: closing " << stored_fsdb << "...\n";
-            std::string req = wave::client::build_request(1, "shutdown");
-            wave::client::send_request(run_dir.socket_path(), req);
-            // Wait for server to exit
-            for (int i = 0; i < 30; ++i) {
-                usleep(100000);
-                if (!run_dir.is_server_alive()) break;
-            }
-            run_dir.cleanup();
         }
+        if (!json_mode)
+            std::cout << "Switching waveform: closing " << stored_fsdb << "...\n";
+        tw::daemon::shutdown_server(
+            run_dir.base(), send,
+            wave::client::build_request(1, "shutdown"));
+        run_dir.cleanup();
     } else {
-        // Clean stale files
         run_dir.cleanup();
     }
 
-    // Ensure run directory exists
     run_dir.ensure_dir();
 
-    // Fork server process
-    pid_t pid = fork();
-    if (pid < 0) {
-        perror("fork");
-        return 1;
-    }
-    if (pid == 0) {
-        // ── Child: become daemon, then run server ──
-        setsid();
+    tw::daemon::LaunchConfig cfg;
+    cfg.log_tag     = "vwave";
+    cfg.timeout_sec = open_timeout_sec;
+    cfg.json_mode   = json_mode;
 
-        // chdir to run_dir so NPI logs (vwaveLog/) stay contained
-        if (chdir(run_dir.dir().c_str()) != 0) {
-            perror("chdir to run_dir");
-        }
-
-        // Redirect stdout/stderr to log file
-        int log_fd = open(run_dir.log_path().c_str(),
-                          O_WRONLY | O_CREAT | O_TRUNC, 0644);
-        if (log_fd >= 0) {
-            dup2(log_fd, STDOUT_FILENO);
-            dup2(log_fd, STDERR_FILENO);
-            close(log_fd);
-        }
-        close(STDIN_FILENO);
-
-        // Run server (initializes NPI, opens FSDB, listens)
-        int rc = wave::server::run_server(argc, argv, run_dir, run_dir.fsdb_path());
-        _exit(rc);
-    }
-
-    // ── Parent: wait for server to become ready ──
-    // Poll for socket file + verify child is alive
-    bool ready = false;
-    int max_polls = open_timeout_sec * 10;  // 100ms per poll
-    for (int i = 0; i < max_polls; ++i) {
-        usleep(100000);
-        // Check child didn't crash
-        int wstatus;
-        pid_t w = waitpid(pid, &wstatus, WNOHANG);
-        if (w > 0) {
-            // Child exited prematurely
-            std::cerr << "Error: Server process exited unexpectedly.\n";
-            std::cerr << "Check log: " << run_dir.log_path() << "\n";
-            return 1;
-        }
-        // Check if socket exists and server is reachable
-        struct stat sst;
-        if (stat(run_dir.socket_path().c_str(), &sst) == 0) {
-            std::string test_req = wave::client::build_request(0, "status");
-            std::string resp = wave::client::send_request(run_dir.socket_path(), test_req);
-            if (!resp.empty() && resp.find("\"ok\"") != std::string::npos) {
-                ready = true;
-                break;
-            }
-        }
-    }
-
-    if (!ready) {
-        // Check if child is still running (loading, not crashed)
-        int wstatus;
-        pid_t w = waitpid(pid, &wstatus, WNOHANG);
-        if (w == 0) {
-            // Process still alive — likely still loading
-            if (json_mode) {
-                std::cout << "{\"status\":\"loading\",\"message\":\"Server still starting\","
-                          << "\"pid\":" << pid
-                          << ",\"timeout\":" << open_timeout_sec << "}" << std::endl;
-            } else {
-                std::cerr << "Warning: Server still loading (PID " << pid
-                          << ", waited " << open_timeout_sec << "s).\n"
-                          << "Use 'vwave status' to check when ready.\n";
-            }
-            return 2;  // Distinct from hard failure (exit code 1)
-        }
-        std::cerr << "Error: Server process exited during startup.\n"
-                  << "Check log: " << run_dir.log_path() << "\n";
-        return 1;
-    }
-
-    if (json_mode) {
-        std::cout << "{\"status\":\"ok\",\"message\":\"Waveform loaded\","
-                  << "\"pid\":" << pid
-                  << ",\"fsdb\":\"" << run_dir.fsdb_path() << "\""
-                  << ",\"socket\":\"" << run_dir.socket_path() << "\""
-                  << ",\"log\":\"" << run_dir.log_path() << "\"}" << std::endl;
-    } else {
-        std::cout << "Waveform loaded (PID " << pid << ")\n"
-                  << "  FSDB:   " << run_dir.fsdb_path() << "\n"
-                  << "  Socket: " << run_dir.socket_path() << "\n"
-                  << "  Log:    " << run_dir.log_path() << "\n";
-    }
-    return 0;
+    return tw::daemon::fork_and_wait(
+        run_dir.base(),
+        [&]() {
+            return wave::server::run_server(argc, argv, run_dir, run_dir.fsdb_path());
+        },
+        [&]() { return wave::client::build_request(0, "status"); },
+        send, cfg);
 }
 
 // ─── Command: close ──────────────────────────────────────────────────────────
@@ -328,29 +242,18 @@ static int cmd_close(const wave::RunDir& run_dir, bool json_mode) {
         return 0;
     }
 
-    std::string req = wave::client::build_request(1, "shutdown");
-    std::string resp = wave::client::send_request(run_dir.socket_path(), req);
-
-    // Wait for server to exit
-    for (int i = 0; i < 30; ++i) {
-        usleep(100000);
-        if (!run_dir.is_server_alive()) break;
-    }
-
-    // Force kill if still alive
-    if (run_dir.is_server_alive()) {
-        pid_t pid = run_dir.read_pid();
-        if (pid > 0) kill(pid, SIGKILL);
-        usleep(200000);
-    }
-
+    tw::daemon::shutdown_server(
+        run_dir.base(),
+        [](const std::string& s, const std::string& r) {
+            return tw::client::send_request(s, r);
+        },
+        wave::client::build_request(1, "shutdown"));
     run_dir.cleanup();
 
-    if (json_mode) {
-        wave::client::print_response(resp, true);
-    } else {
+    if (json_mode)
+        std::cout << "{\"status\":\"ok\",\"message\":\"Waveform closed\"}" << std::endl;
+    else
         std::cout << "Waveform closed.\n";
-    }
     return 0;
 }
 
