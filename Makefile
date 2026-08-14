@@ -2,40 +2,66 @@
 # tool_wave — FSDB Waveform & Netlist Signal Trace Tools
 #   vwave   — 波形读取 (FSDB)
 #   vsignal — 网表信号追踪 (KDB/RTL)
+#
+# 构建与发布 (由 common_packaging/packaging.mk 提供):
+#   make build        — 构建二进制
+#   make deploy-bin   — 部署到 $VTOOL_HOME/bin/
+#   make package      — 打包为 tar.gz
+#   make release      — 创建 git tag 并发布
+#
+# 编译:
+#   make              — 编译 vwave + vsignal
+#   make vwave        — 仅编译 vwave
+#   make vsignal      — 仅编译 vsignal
+#
+# 测试:
+#   make test         — 运行全部测试
+#   make clean        — 清理构建产物
 # ══════════════════════════════════════════════════════════════════════════════
 
-# ─── Verdi NPI paths ──────────────────────────────────────────────────────────
+# ── 公共打包变量 (在 include 之前设置) ──────────────────────────────────────────
+PROJECT_NAME  := tool_wave
+BINARIES      := vwave vsignal
+PACKAGE_FILES := README.md .github/skills
+
+# ── 引入公共打包目标: build / deploy-bin / package / release / tag / version ──
+COMMON_PKG_DIR := ../common_packaging
+-include $(COMMON_PKG_DIR)/packaging.mk
+
+# ── Fallback (packaging.mk 不可用时) ──────────────────────────────────────────
+VERSION       ?= $(shell cat VERSION 2>/dev/null || echo "0.0.0-dev")
+RELEASE_DIR   ?= release
+BIN_DIR       ?= $(RELEASE_DIR)/bin
+DIST_DIR      ?= dist
+_C_GREEN      ?= \033[0;32m
+_C_YELLOW     ?= \033[1;33m
+_C_BLUE       ?= \033[1;34m
+_C_RESET      ?= \033[0m
+
+# ── Verdi NPI paths ──────────────────────────────────────────────────────────
 VERDI_HOME   ?= /opt/Synopsys/verdi/T-2022.06-SP2
 NPI_INC       = $(VERDI_HOME)/share/NPI/inc
 NPI_L1_INC    = $(VERDI_HOME)/share/NPI/L1/C/inc
 NPI_LIB_DIR   = $(VERDI_HOME)/share/NPI/lib/linux64
 
-# ─── Compiler ─────────────────────────────────────────────────────────────────
+# ── Compiler ─────────────────────────────────────────────────────────────────
 CXX          ?= g++
 CXXFLAGS      = -std=c++14 -Wall -Wextra -O2
 INCLUDES      = -I$(NPI_INC) -I$(NPI_L1_INC)
 LDFLAGS       = -L$(NPI_LIB_DIR) -Wl,--enable-new-dtags,-rpath,$(NPI_LIB_DIR)
 LIBS          = -lNPI -lnpiL1 -lpthread -lrt -ldl
 
-# ─── Shared common library ────────────────────────────────────────────────────
-# Headers included as #include "tw/json.h" etc.  We create a build-time
-# symlink  build/include/tw → src_common  so -Ibuild/include resolves them.
+# ── Shared common library ────────────────────────────────────────────────────
+# Headers: #include "tw/json.h" → build/include/tw/ → src_common/
 COMMON_DIR    = src_common
 COMMON_HDRS   = $(wildcard $(COMMON_DIR)/*.h)
-TW_INC_DIR    = $(BUILD_DIR)/include
+OBJ_DIR       = build
+TW_INC_DIR    = $(OBJ_DIR)/include
 TW_INC        = -I$(TW_INC_DIR)
 
-# ─── Output ───────────────────────────────────────────────────────────────────
-BUILD_DIR     = build
-BIN_DIR       = $(BUILD_DIR)/bin
+# ── Binary targets ───────────────────────────────────────────────────────────
 VWAVE_BIN     = $(BIN_DIR)/vwave
 VSIGNAL_BIN   = $(BIN_DIR)/vsignal
-
-# ─── Distribution ─────────────────────────────────────────────────────────────
-VERSION      ?= $(shell git describe --tags --always 2>/dev/null || echo dev)
-DIST_NAME     = tool_wave-$(VERSION)
-DIST_DIR      = $(BUILD_DIR)/$(DIST_NAME)
-SKILL_DIR     = .github/skills/tool-wave
 
 # vwave sources
 VWAVE_MAIN    = src_vwave/main.cpp
@@ -47,10 +73,14 @@ VSIGNAL_MAIN  = src_vsignal/main.cpp
 VSIGNAL_HDRS  = $(wildcard src_vsignal/common/*.h src_vsignal/server/*.h src_vsignal/client/*.h)
 VSIGNAL_INC   = -Isrc_vsignal $(TW_INC) $(INCLUDES)
 
-# ─── Targets ──────────────────────────────────────────────────────────────────
-.PHONY: all clean help vwave vsignal test test-vwave test-vsignal dist
+# ── Default target ───────────────────────────────────────────────────────────
+.DEFAULT_GOAL := all
 
-all: $(VWAVE_BIN) $(VSIGNAL_BIN)
+.PHONY: all compile vwave vsignal test test-vwave test-vsignal clean help
+
+all: compile
+
+compile: $(VWAVE_BIN) $(VSIGNAL_BIN)
 
 vwave: $(VWAVE_BIN)
 vsignal: $(VSIGNAL_BIN)
@@ -63,14 +93,19 @@ $(TW_INC_DIR)/tw: $(COMMON_HDRS)
 $(VWAVE_BIN): $(VWAVE_MAIN) $(VWAVE_HDRS) $(COMMON_HDRS) $(TW_INC_DIR)/tw
 	@mkdir -p $(BIN_DIR)
 	$(CXX) $(CXXFLAGS) $(VWAVE_INC) -o $@ $(VWAVE_MAIN) $(LDFLAGS) $(LIBS)
-	@echo "Built: $@"
+	@printf '%b\n' "$(_C_GREEN)[OK]$(_C_RESET)    $@ ($$(du -h $@ | cut -f1))"
 
 $(VSIGNAL_BIN): $(VSIGNAL_MAIN) $(VSIGNAL_HDRS) $(COMMON_HDRS) $(TW_INC_DIR)/tw
 	@mkdir -p $(BIN_DIR)
 	$(CXX) $(CXXFLAGS) $(VSIGNAL_INC) -o $@ $(VSIGNAL_MAIN) $(LDFLAGS) $(LIBS)
-	@echo "Built: $@"
+	@printf '%b\n' "$(_C_GREEN)[OK]$(_C_RESET)    $@ ($$(du -h $@ | cut -f1))"
 
-# ─── Test targets ─────────────────────────────────────────────────────────────
+# ── Build hooks: C++ 原生编译覆盖 Docker/PyInstaller 流程 ────────────────────
+_do-build _do-build-local:
+	@printf '%b\n' "$(_C_BLUE)[BUILD]$(_C_RESET) $(PROJECT_NAME) v$(VERSION) — C++ native"
+	@$(MAKE) --no-print-directory compile
+
+# ── Test targets ──────────────────────────────────────────────────────────────
 test: test-vwave test-vsignal
 
 test-vwave: $(VWAVE_BIN)
@@ -81,39 +116,35 @@ test-vsignal: $(VSIGNAL_BIN)
 	@echo "\n══════ Running vsignal tests ══════"
 	bash test_vsignal/run_test.sh
 
-# ─── Distribution target ──────────────────────────────────────────────────────
-dist: $(VWAVE_BIN) $(VSIGNAL_BIN)
-	@rm -rf $(DIST_DIR)
-	@mkdir -p $(DIST_DIR)/bin
-	@mkdir -p $(DIST_DIR)/skills/tool-wave/references
-	@mkdir -p $(DIST_DIR)/skills/tool-wave/scripts
-	cp $(VWAVE_BIN) $(VSIGNAL_BIN) $(DIST_DIR)/bin/
-	cp $(SKILL_DIR)/SKILL.md               $(DIST_DIR)/skills/tool-wave/
-	cp $(SKILL_DIR)/references/vwave.md    $(DIST_DIR)/skills/tool-wave/references/
-	cp $(SKILL_DIR)/references/vsignal.md  $(DIST_DIR)/skills/tool-wave/references/
-	cp $(SKILL_DIR)/scripts/check-tools.sh $(DIST_DIR)/skills/tool-wave/scripts/
-	cp README.md $(DIST_DIR)/
-	@cd $(BUILD_DIR) && tar czf $(DIST_NAME).tar.gz $(DIST_NAME)/
-	@echo "Package: $(BUILD_DIR)/$(DIST_NAME).tar.gz"
-
+# ── Clean ─────────────────────────────────────────────────────────────────────
 clean:
-	rm -rf $(BUILD_DIR)
-	@echo "Cleaned."
+	rm -rf $(RELEASE_DIR) $(DIST_DIR) $(OBJ_DIR)
+	@printf '%b\n' "$(_C_GREEN)[OK]$(_C_RESET)    清理完成"
 
-help:
-	@echo "tool_wave — FSDB Waveform & Netlist Signal Trace Tools"
+# ── Help ──────────────────────────────────────────────────────────────────────
+help: ## 显示帮助
+	@echo "tool_wave v$(VERSION) — FSDB Waveform & Netlist Signal Trace Tools"
 	@echo ""
-	@echo "Build:"
-	@echo "  make               Build both vwave and vsignal"
-	@echo "  make vwave         Build vwave only"
-	@echo "  make vsignal       Build vsignal only"
-	@echo "  make clean         Remove build artifacts"
-	@echo "  make dist          Package binaries + skill + README"
+	@echo "Compile:"
+	@echo "  make               编译 vwave + vsignal"
+	@echo "  make vwave         仅编译 vwave"
+	@echo "  make vsignal       仅编译 vsignal"
+	@echo ""
+	@echo "Build & Deploy:"
+	@echo "  make build         构建二进制"
+	@echo "  make deploy-bin    部署到 \$$VTOOL_HOME/bin/"
+	@echo "  make package       打包为 tar.gz"
+	@echo "  make release       创建 git tag 并发布"
 	@echo ""
 	@echo "Test:"
-	@echo "  make test          Run all tests (vwave + vsignal)"
-	@echo "  make test-vwave    Run vwave tests (62 cases)"
-	@echo "  make test-vsignal  Run vsignal tests (27 cases)"
+	@echo "  make test          运行全部测试"
+	@echo "  make test-vwave    运行 vwave 测试"
+	@echo "  make test-vsignal  运行 vsignal 测试"
+	@echo ""
+	@echo "Info:"
+	@echo "  make version       显示版本号"
+	@echo "  make pkg-info      显示打包配置"
+	@echo "  make clean         清理构建产物"
 	@echo ""
 	@echo "Environment:"
 	@echo "  VERDI_HOME=$(VERDI_HOME)"

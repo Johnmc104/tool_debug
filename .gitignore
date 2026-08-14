@@ -1,4 +1,6 @@
 build/
+release/
+dist/
 .vtool/
 *.o
 *.d

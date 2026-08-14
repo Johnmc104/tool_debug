@@ -111,8 +111,14 @@ static int cmd_open(int argc, char** argv,
 
     // Check if server already running
     if (run_dir.is_server_alive()) {
-        std::string stored = run_dir.design_source();
-        if (stored == run_dir.design_source()) {
+        std::string stored = tw::RunDir::read_file_content(
+            run_dir.design_source_file());
+        char resolved[PATH_MAX];
+        std::string abs_design = design_source;
+        if (realpath(design_source.c_str(), resolved))
+            abs_design = resolved;
+
+        if (stored == abs_design) {
             if (json_mode)
                 std::cout << "{\"status\":\"ok\",\"message\":\"Server already running\","
                           << "\"pid\":" << run_dir.read_pid() << "}" << std::endl;
@@ -148,6 +154,11 @@ static int cmd_open(int argc, char** argv,
     if (pid == 0) {
         // ── Child: become daemon, then run server ──
         setsid();
+
+        // chdir to run_dir so NPI logs (vsignalLog/) stay contained
+        if (chdir(run_dir.dir().c_str()) != 0) {
+            perror("chdir to run_dir");
+        }
 
         // Redirect stdout/stderr to log file
         int log_fd = open(run_dir.log_path().c_str(),

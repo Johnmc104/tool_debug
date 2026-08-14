@@ -139,8 +139,8 @@ static int cmd_open(int argc, char** argv,
 
     // Check if server already running for this FSDB
     if (run_dir.is_server_alive()) {
-        std::string stored_fsdb = run_dir.fsdb_path();
-        // Resolve the incoming path for comparison
+        std::string stored_fsdb = tw::RunDir::read_file_content(
+            run_dir.fsdb_path_file());
         char resolved[PATH_MAX];
         std::string abs_fsdb = fsdb_path;
         if (realpath(fsdb_path.c_str(), resolved)) abs_fsdb = resolved;
