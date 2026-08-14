@@ -33,6 +33,34 @@
 // Server-side code (NPI-dependent, only executes in forked child)
 #include "server/server_core.h"
 
+// ─── CLI options ────────────────────────────────────────────────────────────
+
+struct CliOptions {
+    std::string command;
+    std::string run_dir_override;
+    bool json_mode      = false;
+
+    // Output control
+    bool compact_mode   = true;
+    int64_t limit_val   = 50;
+
+    // Trace options
+    bool assign_cell    = false;
+    bool pass_mod       = false;
+    bool stop_at_pin    = false;
+    bool report_primary_port = false;
+    std::string scope;
+    std::string level   = "high";
+
+    // Signals
+    std::vector<std::string> signals;
+    std::string positional2;
+
+    // Open-specific
+    std::string dbdir;
+    std::vector<std::string> source_files;
+};
+
 
 // ─── Usage ───────────────────────────────────────────────────────────────────
 
@@ -292,168 +320,131 @@ static int cmd_close(const vsignal::RunDir& run_dir, bool json_mode) {
 
 // ─── Query command dispatcher ────────────────────────────────────────────────
 
-static int cmd_query(const vsignal::RunDir& run_dir, bool json_mode,
-                     const std::string& command,
-                     const std::vector<std::string>& signals,
-                     const std::string& positional2,
-                     bool assign_cell, bool pass_mod,
-                     bool stop_at_pin, bool report_primary_port,
-                     const std::string& scope,
-                     const std::string& level,
-                     bool compact_mode, int64_t limit_val) {
+// Build JSON params common to trace commands
+static void fill_trace_params(vsignal::JsonObject& p, const CliOptions& opts) {
+    if (opts.compact_mode) p.set_bool("compact", true);
+    if (opts.limit_val > 0) p.set("limit", opts.limit_val);
+}
+
+static int cmd_query(const vsignal::RunDir& run_dir, const CliOptions& opts) {
     if (!run_dir.is_server_alive()) {
         std::cerr << "Error: No active design.\n"
                   << "Use 'vsignal open -dbdir <kdb_dir>' first.\n";
         return 1;
     }
 
-    // For trace commands with multiple signals, send one request per signal
-    // and aggregate results into a single JSON array.
+    const auto& cmd = opts.command;
+    const auto& sigs = opts.signals;
+
     auto is_trace_cmd = [](const std::string& c) {
         return c == "driver" || c == "load" || c == "fanin" || c == "fanout";
     };
 
-    if (is_trace_cmd(command) && signals.size() > 1) {
+    // ── Batch mode: multiple signals ──
+    if (is_trace_cmd(cmd) && sigs.size() > 1) {
         std::ostringstream agg;
         agg << "{\"id\":1,\"status\":\"ok\",\"data\":{\"results\":[";
-        for (size_t si = 0; si < signals.size(); ++si) {
+        for (size_t si = 0; si < sigs.size(); ++si) {
             if (si) agg << ",";
-
             vsignal::JsonObject p;
-            p.set("signal", signals[si]);
-            if (compact_mode) p.set_bool("compact", true);
-            if (limit_val > 0) p.set("limit", limit_val);
-            if (command == "driver" || command == "load") {
-                if (assign_cell) p.set("assign_cell", (int64_t)1);
-                if (pass_mod)    p.set("pass_mod", (int64_t)1);
-            }
-            if (command == "fanin" || command == "fanout") {
-                p.set_bool("stop_at_pin", stop_at_pin);
-                p.set_bool("report_primary_port", report_primary_port);
-                if (!scope.empty()) p.set("scope", scope);
+            p.set("signal", sigs[si]);
+            fill_trace_params(p, opts);
+            if (cmd == "driver" || cmd == "load") {
+                if (opts.assign_cell) p.set("assign_cell", (int64_t)1);
+                if (opts.pass_mod)    p.set("pass_mod", (int64_t)1);
+            } else {
+                p.set_bool("stop_at_pin", opts.stop_at_pin);
+                p.set_bool("report_primary_port", opts.report_primary_port);
+                if (!opts.scope.empty()) p.set("scope", opts.scope);
             }
 
-            std::string cmd_name;
-            if (command == "driver") cmd_name = "trace_driver";
-            else if (command == "load") cmd_name = "trace_load";
-            else if (command == "fanin") cmd_name = "fanin_reg";
-            else cmd_name = "fanout_reg";
-
+            std::string cmd_name = (cmd == "driver") ? "trace_driver"
+                                 : (cmd == "load")   ? "trace_load"
+                                 : (cmd == "fanin")  ? "fanin_reg"
+                                 :                     "fanout_reg";
             std::string req = vsignal::client::build_request(
                 static_cast<int>(si + 1), cmd_name, p.dump());
             std::string resp = vsignal::client::send_request(
                 run_dir.socket_path(), req);
 
             if (resp.empty()) {
-                agg << "{\"signal\":\"" << signals[si]
+                agg << "{\"signal\":\"" << sigs[si]
                     << "\",\"error\":\"NO_RESPONSE\"}";
             } else {
                 vsignal::JsonParser rp;
-                if (rp.parse(resp) && rp.get_string("status") == "ok") {
+                if (rp.parse(resp) && rp.get_string("status") == "ok")
                     agg << rp.get_string("data");
-                } else {
-                    agg << "{\"signal\":\"" << signals[si]
+                else
+                    agg << "{\"signal\":\"" << sigs[si]
                         << "\",\"error\":\"" << rp.get_string("status") << "\"}";
-                }
             }
         }
         agg << "]}}";
-        vsignal::client::print_response(agg.str(), json_mode);
+        vsignal::client::print_response(agg.str(), opts.json_mode);
         return 0;
     }
 
-    // Single-signal path
-    std::string sig1 = signals.empty() ? "" : signals[0];
-
+    // ── Single-signal path ──
+    std::string sig1 = sigs.empty() ? "" : sigs[0];
     std::string request;
     int req_id = 1;
 
-    if (command == "status") {
+    if (cmd == "status") {
         request = vsignal::client::build_request(req_id, "status");
-
-    } else if (command == "info") {
+    } else if (cmd == "info") {
         request = vsignal::client::build_request(req_id, "info");
 
-    } else if (command == "driver") {
+    } else if (cmd == "driver" || cmd == "load") {
         if (sig1.empty()) {
-            std::cerr << "Error: Signal name required.\nUsage: vsignal driver <signal>\n";
+            std::cerr << "Error: Signal name required.\n";
             return 1;
         }
         vsignal::JsonObject p;
         p.set("signal", sig1);
-        if (assign_cell) p.set("assign_cell", (int64_t)1);
-        if (pass_mod)    p.set("pass_mod", (int64_t)1);
-        if (compact_mode) p.set_bool("compact", true);
-        if (limit_val > 0) p.set("limit", limit_val);
-        request = vsignal::client::build_request(req_id, "trace_driver", p.dump());
+        if (opts.assign_cell) p.set("assign_cell", (int64_t)1);
+        if (opts.pass_mod)    p.set("pass_mod", (int64_t)1);
+        fill_trace_params(p, opts);
+        request = vsignal::client::build_request(req_id,
+            cmd == "driver" ? "trace_driver" : "trace_load", p.dump());
 
-    } else if (command == "load") {
+    } else if (cmd == "fanin" || cmd == "fanout") {
         if (sig1.empty()) {
-            std::cerr << "Error: Signal name required.\nUsage: vsignal load <signal>\n";
+            std::cerr << "Error: Signal name required.\n";
             return 1;
         }
         vsignal::JsonObject p;
         p.set("signal", sig1);
-        if (assign_cell) p.set("assign_cell", (int64_t)1);
-        if (pass_mod)    p.set("pass_mod", (int64_t)1);
-        if (compact_mode) p.set_bool("compact", true);
-        if (limit_val > 0) p.set("limit", limit_val);
-        request = vsignal::client::build_request(req_id, "trace_load", p.dump());
+        p.set_bool("stop_at_pin", opts.stop_at_pin);
+        p.set_bool("report_primary_port", opts.report_primary_port);
+        if (!opts.scope.empty()) p.set("scope", opts.scope);
+        fill_trace_params(p, opts);
+        request = vsignal::client::build_request(req_id,
+            cmd == "fanin" ? "fanin_reg" : "fanout_reg", p.dump());
 
-    } else if (command == "fanin") {
-        if (sig1.empty()) {
-            std::cerr << "Error: Signal name required.\nUsage: vsignal fanin <signal>\n";
-            return 1;
-        }
-        vsignal::JsonObject p;
-        p.set("signal", sig1);
-        p.set_bool("stop_at_pin", stop_at_pin);
-        p.set_bool("report_primary_port", report_primary_port);
-        if (!scope.empty()) p.set("scope", scope);
-        if (compact_mode) p.set_bool("compact", true);
-        if (limit_val > 0) p.set("limit", limit_val);
-        request = vsignal::client::build_request(req_id, "fanin_reg", p.dump());
-
-    } else if (command == "fanout") {
-        if (sig1.empty()) {
-            std::cerr << "Error: Signal name required.\nUsage: vsignal fanout <signal>\n";
-            return 1;
-        }
-        vsignal::JsonObject p;
-        p.set("signal", sig1);
-        p.set_bool("stop_at_pin", stop_at_pin);
-        p.set_bool("report_primary_port", report_primary_port);
-        if (!scope.empty()) p.set("scope", scope);
-        if (compact_mode) p.set_bool("compact", true);
-        if (limit_val > 0) p.set("limit", limit_val);
-        request = vsignal::client::build_request(req_id, "fanout_reg", p.dump());
-
-    } else if (command == "trace") {
-        if (sig1.empty() || positional2.empty()) {
-            std::cerr << "Error: Two signal names required.\n"
-                      << "Usage: vsignal trace <from_signal> <to_signal>\n";
+    } else if (cmd == "trace") {
+        if (sig1.empty() || opts.positional2.empty()) {
+            std::cerr << "Error: Two signal names required.\n";
             return 1;
         }
         vsignal::JsonObject p;
         p.set("from", sig1);
-        p.set("to", positional2);
-        if (assign_cell) p.set("assign_cell", (int64_t)1);
-        if (compact_mode) p.set_bool("compact", true);
-        if (limit_val > 0) p.set("limit", limit_val);
+        p.set("to", opts.positional2);
+        if (opts.assign_cell) p.set("assign_cell", (int64_t)1);
+        fill_trace_params(p, opts);
         request = vsignal::client::build_request(req_id, "trace_path", p.dump());
 
-    } else if (command == "conn") {
+    } else if (cmd == "conn") {
         if (sig1.empty()) {
-            std::cerr << "Error: Instance name required.\nUsage: vsignal conn <instance>\n";
+            std::cerr << "Error: Instance name required.\n";
             return 1;
         }
         vsignal::JsonObject p;
         p.set("instance", sig1);
-        p.set("level", level);
+        p.set("level", opts.level);
         request = vsignal::client::build_request(req_id, "inst_conn", p.dump());
 
     } else {
-        std::cerr << "Unknown command: " << command << "\n";
+        std::cerr << "Unknown command: " << cmd << "\n";
         print_usage();
         return 1;
     }
@@ -463,161 +454,115 @@ static int cmd_query(const vsignal::RunDir& run_dir, bool json_mode,
         std::cerr << "Error: No response from server. Is it running?\n";
         return 1;
     }
-
-    vsignal::client::print_response(response, json_mode);
+    vsignal::client::print_response(response, opts.json_mode);
     return 0;
 }
 
 // ─── Main ────────────────────────────────────────────────────────────────────
 
-int main(int argc, char** argv) {
-    // ── Parse arguments ──
-    std::string run_dir_override;
-    std::string command;
-    std::string positional1;        // first positional after command
-    std::string positional2;        // second positional (for trace)
-    bool json_mode = false;
-
-    // Trace options
-    bool assign_cell = false;
-    bool pass_mod = false;
-    bool stop_at_pin = false;
-    bool report_primary_port = false;
-    std::string scope;
-    std::string level = "high";
-    bool compact_mode = true;    // compact ON by default, use --full to disable
-    int64_t limit_val = 50;      // default limit, use --limit 0 for unlimited
-
-    // Multi-signal batch
+static CliOptions parse_args(int argc, char** argv) {
+    CliOptions opts;
+    std::string positional1;
     std::string signal_name;
     std::vector<std::string> extra_signals;
     std::string signal_file;
-
-    // Open-specific
-    std::string dbdir;
-    std::vector<std::string> source_files;
-
-    // Parse all arguments
     bool in_open = false;
+
     for (int i = 1; i < argc; ++i) {
         std::string arg = argv[i];
 
-        // Global options
         if (arg == "--run-dir" && i + 1 < argc) {
-            run_dir_override = argv[++i];
+            opts.run_dir_override = argv[++i];
         } else if (arg == "--json") {
-            json_mode = true;
+            opts.json_mode = true;
         } else if (arg == "-h" || arg == "--help") {
             print_usage();
-            return 0;
+            std::exit(0);
 
-        // Trace options
-        } else if (arg == "--assign-cell") {
-            assign_cell = true;
-        } else if (arg == "--pass-mod") {
-            pass_mod = true;
-        } else if (arg == "--stop-at-pin") {
-            stop_at_pin = true;
-        } else if (arg == "--report-primary-port") {
-            report_primary_port = true;
-        } else if (arg == "--scope" && i + 1 < argc) {
-            scope = argv[++i];
-        } else if (arg == "--level" && i + 1 < argc) {
-            level = argv[++i];
-        } else if (arg == "--compact" || arg == "-c") {
-            compact_mode = true;
-        } else if (arg == "--full") {
-            compact_mode = false;
-        } else if ((arg == "--limit" || arg == "-l") && i + 1 < argc) {
-            limit_val = std::strtoll(argv[++i], nullptr, 10);
-        } else if ((arg == "-s" || arg == "--signal") && i + 1 < argc) {
-            if (signal_name.empty())
-                signal_name = argv[++i];
-            else
-                extra_signals.push_back(argv[++i]);
-        } else if ((arg == "-f" || arg == "--signal-file") && i + 1 < argc) {
+        } else if (arg == "--assign-cell")       { opts.assign_cell = true;
+        } else if (arg == "--pass-mod")          { opts.pass_mod = true;
+        } else if (arg == "--stop-at-pin")       { opts.stop_at_pin = true;
+        } else if (arg == "--report-primary-port") { opts.report_primary_port = true;
+        } else if (arg == "--scope" && i+1 < argc)  { opts.scope = argv[++i];
+        } else if (arg == "--level" && i+1 < argc)  { opts.level = argv[++i];
+        } else if (arg == "--compact" || arg == "-c") { opts.compact_mode = true;
+        } else if (arg == "--full")              { opts.compact_mode = false;
+        } else if ((arg == "--limit" || arg == "-l") && i+1 < argc) {
+            opts.limit_val = std::strtoll(argv[++i], nullptr, 10);
+        } else if ((arg == "-s" || arg == "--signal") && i+1 < argc) {
+            if (signal_name.empty()) signal_name = argv[++i];
+            else extra_signals.push_back(argv[++i]);
+        } else if ((arg == "-f" || arg == "--signal-file") && i+1 < argc) {
             signal_file = argv[++i];
-
-        // Open: -dbdir
-        } else if (arg == "-dbdir" && i + 1 < argc) {
-            dbdir = argv[++i];
-
-        // Positional arguments
+        } else if (arg == "-dbdir" && i+1 < argc) {
+            opts.dbdir = argv[++i];
         } else if (arg[0] != '-') {
-            if (command.empty()) {
-                command = arg;
-                if (command == "open") in_open = true;
+            if (opts.command.empty()) {
+                opts.command = arg;
+                if (opts.command == "open") in_open = true;
             } else if (in_open) {
-                // After "open", collect source files
-                source_files.push_back(arg);
+                opts.source_files.push_back(arg);
             } else if (positional1.empty()) {
                 positional1 = arg;
-            } else if (positional2.empty()) {
-                positional2 = arg;
+            } else if (opts.positional2.empty()) {
+                opts.positional2 = arg;
             }
         }
     }
 
-    if (command.empty()) {
+    // Collect signals: -s flags → -f file → positional
+    if (!signal_name.empty()) opts.signals.push_back(signal_name);
+    for (auto& s : extra_signals) opts.signals.push_back(s);
+    if (!signal_file.empty()) {
+        auto file_sigs = tw::client::read_signal_file(signal_file);
+        opts.signals.insert(opts.signals.end(), file_sigs.begin(), file_sigs.end());
+    }
+    if (opts.signals.empty() && !positional1.empty())
+        opts.signals.push_back(positional1);
+
+    return opts;
+}
+
+int main(int argc, char** argv) {
+    CliOptions opts = parse_args(argc, argv);
+
+    if (opts.command.empty()) {
         print_usage();
         return 1;
     }
 
-    // ── open: special handling ──
-    if (command == "open") {
+    // ── open ──
+    if (opts.command == "open") {
         std::string design_source;
         std::vector<std::string> design_args;
 
-        if (!dbdir.empty()) {
-            // KDB mode: resolve to absolute path before fork+chdir
+        if (!opts.dbdir.empty()) {
             char resolved[PATH_MAX];
-            std::string abs_dbdir = dbdir;
-            if (realpath(dbdir.c_str(), resolved)) abs_dbdir = resolved;
+            std::string abs_dbdir = opts.dbdir;
+            if (realpath(opts.dbdir.c_str(), resolved)) abs_dbdir = resolved;
             design_source = abs_dbdir;
             design_args.push_back("-dbdir");
             design_args.push_back(abs_dbdir);
-        } else if (!source_files.empty()) {
-            // RTL source mode: resolve all paths to absolute
-            for (auto& f : source_files) {
+        } else if (!opts.source_files.empty()) {
+            for (auto& f : opts.source_files) {
                 char resolved[PATH_MAX];
                 if (realpath(f.c_str(), resolved)) f = resolved;
             }
-            design_source = source_files[0];
-            for (auto& f : source_files) design_args.push_back(f);
+            design_source = opts.source_files[0];
+            for (auto& f : opts.source_files) design_args.push_back(f);
         }
 
         return cmd_open(argc, argv, design_source, design_args,
-                        run_dir_override, json_mode);
+                        opts.run_dir_override, opts.json_mode);
     }
 
-    // ── All other commands need a RunDir ──
+    // ── RunDir for all other commands ──
     vsignal::RunDir run_dir;
-    if (!resolve_run_dir(run_dir_override, run_dir))
+    if (!resolve_run_dir(opts.run_dir_override, run_dir))
         return 1;
 
-    // ── close ──
-    if (command == "close") {
-        return cmd_close(run_dir, json_mode);
-    }
+    if (opts.command == "close")
+        return cmd_close(run_dir, opts.json_mode);
 
-    // ── Collect all signals for batch mode ──
-    // Priority: -s flags, then -f file, then positional arg
-    std::vector<std::string> all_signals;
-    if (!signal_name.empty()) all_signals.push_back(signal_name);
-    for (auto& s : extra_signals) all_signals.push_back(s);
-    if (!signal_file.empty()) {
-        auto file_sigs = tw::client::read_signal_file(signal_file);
-        all_signals.insert(all_signals.end(), file_sigs.begin(), file_sigs.end());
-    }
-    // If no -s/-f used, fall back to positional arg
-    if (all_signals.empty() && !positional1.empty())
-        all_signals.push_back(positional1);
-
-    // ── Query commands ──
-    return cmd_query(run_dir, json_mode, command,
-                     all_signals, positional2,
-                     assign_cell, pass_mod,
-                     stop_at_pin, report_primary_port,
-                     scope, level,
-                     compact_mode, limit_val);
+    return cmd_query(run_dir, opts);
 }
