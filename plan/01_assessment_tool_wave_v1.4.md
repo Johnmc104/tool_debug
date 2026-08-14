@@ -148,9 +148,18 @@ vsignal conn tb_top.top_inst.u_digit_top.u_system.u_cortexm0integration --json
 
 ### 4.3 关键发现
 
-1. **vwave 的 compact 模式效果显著**：signals 从 2362 → 296 字符（-87%）。vsignal 完全缺失此能力。
-2. **vsignal fanout 是最大的数据膨胀点**：173 条寄存器结果，每条包含完整层次路径（60-120 字符），总计 42 KB。这在 AI 4K-8K token 的有效工作区间内是不可接受的。
-3. **信号路径重复**是主要的字符浪费源：同一 fanout 结果中，前缀 `tb_top.top_inst.u_digit_top.u_system.u_cortexm0integration.u_top.` 重复 173 次。
+1. **vwave 的 compact 模式效果显著**：signals 从 2362 → 296 字符（-87%）。
+2. **vsignal fanout 是最大的数据膨胀点**：164 条结果，完整输出 38 KB。
+3. **信号路径重复**是主要的字符浪费源。
+
+### 4.4 v1.5 改进后数据量（已实现）
+
+| 模式 | vsignal fanout 大小 | 对比 v1.4 |
+|------|---------------------|----------|
+| v1.4 默认（无 compact/limit） | 38,293 bytes | 基准 |
+| v1.5 默认（compact + limit=50） | **3,390 bytes** | **-91%** |
+| v1.5 compact + limit=5 | **467 bytes** | **-99%** |
+| v1.5 --full --limit 0（等同旧行为） | 38,293 bytes | 无变化 |
 
 ---
 
