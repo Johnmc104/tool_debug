@@ -36,6 +36,40 @@
 // Server-side code (NPI-dependent, only executes in forked child)
 #include "server/server_core.h"
 
+// ─── CLI options ────────────────────────────────────────────────────────────
+
+struct CliOptions {
+    std::string command;
+    std::string fsdb_path;
+    std::string run_dir_override;
+    bool json_mode       = false;
+    int open_timeout_sec = 30;
+
+    // Output control
+    bool compact_mode    = false;
+    int64_t limit_val    = 1000;
+    int depth            = 1;
+
+    // Positional / signal
+    std::string scope_path;
+    std::string signal_name;
+    std::vector<std::string> extra_signals;
+    std::string signal_file;
+
+    // Value query
+    int64_t time_val     = -1;
+    int64_t begin_time   = -1;
+    int64_t end_time     = -1;
+    std::string radix    = "bin";
+
+    // Edge
+    std::string edge_type = "any";
+    std::string edge_dir  = "forward";
+
+    // Find
+    std::string find_scope;
+};
+
 
 // ─── Usage ───────────────────────────────────────────────────────────────────
 
@@ -322,169 +356,158 @@ static int cmd_close(const wave::RunDir& run_dir, bool json_mode) {
 
 // ─── Query command dispatcher ────────────────────────────────────────────────
 
-static int cmd_query(const wave::RunDir& run_dir, bool json_mode,
-                     const std::string& command,
-                     const std::string& scope_path,
-                     const std::string& signal_name,
-                     const std::vector<std::string>& extra_signals,
-                     const std::string& signal_file,
-                     int64_t time_val, int64_t begin_time, int64_t end_time,
-                     const std::string& radix,
-                     bool compact_mode,
-                     const std::string& find_scope,
-                     int depth,
-                     const std::string& edge_type,
-                     const std::string& edge_dir,
-                     int64_t limit_val) {
+// Collect all signal sources into one vector
+static std::vector<std::string> collect_signals(const CliOptions& opts) {
+    std::vector<std::string> all;
+    if (!opts.signal_name.empty()) all.push_back(opts.signal_name);
+    for (auto& s : opts.extra_signals) all.push_back(s);
+    if (!opts.signal_file.empty()) {
+        auto fs = wave::client::read_signal_file(opts.signal_file);
+        all.insert(all.end(), fs.begin(), fs.end());
+    }
+    return all;
+}
+
+static int cmd_query(const wave::RunDir& run_dir, const CliOptions& opts) {
     if (!run_dir.is_server_alive()) {
         std::cerr << "Error: No active waveform.\n"
                   << "Use 'vwave open <file.fsdb>' first.\n";
         return 1;
     }
 
+    const auto& cmd = opts.command;
     std::string request;
     int req_id = 1;
 
-    if (command == "status") {
+    if (cmd == "status") {
         request = wave::client::build_request(req_id, "status");
 
-    } else if (command == "info") {
+    } else if (cmd == "info") {
         request = wave::client::build_request(req_id, "file_info");
 
-    } else if (command == "scopes") {
+    } else if (cmd == "scopes") {
         wave::JsonObject p;
-        if (!scope_path.empty()) p.set("path", scope_path);
-        if (compact_mode) p.set_bool("compact", true);
-        if (depth > 1) p.set("depth", static_cast<int64_t>(depth));
+        if (!opts.scope_path.empty()) p.set("path", opts.scope_path);
+        if (opts.compact_mode) p.set_bool("compact", true);
+        if (opts.depth > 1) p.set("depth", static_cast<int64_t>(opts.depth));
         request = wave::client::build_request(req_id, "list_scopes", p.dump());
 
-    } else if (command == "signals") {
-        if (scope_path.empty()) {
+    } else if (cmd == "signals") {
+        if (opts.scope_path.empty()) {
             std::cerr << "Error: Scope path required.\nUsage: vwave signals <path>\n";
             return 1;
         }
         wave::JsonObject p;
-        p.set("path", scope_path);
-        if (compact_mode) p.set_bool("compact", true);
+        p.set("path", opts.scope_path);
+        if (opts.compact_mode) p.set_bool("compact", true);
         request = wave::client::build_request(req_id, "list_signals", p.dump());
 
-    } else if (command == "signal-info") {
-        if (signal_name.empty()) {
+    } else if (cmd == "signal-info") {
+        if (opts.signal_name.empty()) {
             std::cerr << "Error: Signal name required.\nUsage: vwave signal-info <name>\n";
             return 1;
         }
         wave::JsonObject p;
-        p.set("signal", signal_name);
+        p.set("signal", opts.signal_name);
         request = wave::client::build_request(req_id, "signal_info", p.dump());
 
-    } else if (command == "find") {
-        std::string pattern = scope_path;
-        if (pattern.empty() && !signal_name.empty()) pattern = signal_name;
+    } else if (cmd == "find") {
+        std::string pattern = opts.scope_path;
+        if (pattern.empty() && !opts.signal_name.empty()) pattern = opts.signal_name;
         if (pattern.empty()) {
-            std::cerr << "Error: Pattern required.\nUsage: vwave find <pattern> [--scope <path>]\n";
+            std::cerr << "Error: Pattern required.\nUsage: vwave find <pattern>\n";
             return 1;
         }
         wave::JsonObject p;
         p.set("pattern", pattern);
-        if (!find_scope.empty()) p.set("scope", find_scope);
+        if (!opts.find_scope.empty()) p.set("scope", opts.find_scope);
         request = wave::client::build_request(req_id, "find_signals", p.dump());
 
-    } else if (command == "get-value") {
-        std::vector<std::string> all_signals;
-        if (!signal_name.empty()) all_signals.push_back(signal_name);
-        for (auto& s : extra_signals) all_signals.push_back(s);
-        if (!signal_file.empty()) {
-            auto file_sigs = wave::client::read_signal_file(signal_file);
-            all_signals.insert(all_signals.end(), file_sigs.begin(), file_sigs.end());
-        }
+    } else if (cmd == "get-value") {
+        auto all_signals = collect_signals(opts);
         if (all_signals.empty()) {
             std::cerr << "Error: No signals specified (use -s or -f)\n";
             return 1;
         }
 
-        if (begin_time >= 0 && end_time >= 0) {
+        if (opts.begin_time >= 0 && opts.end_time >= 0) {
             if (all_signals.size() > 1) {
-                // Multi-signal range: send N requests, aggregate results
                 std::ostringstream agg;
                 agg << "{\"id\":1,\"status\":\"ok\",\"data\":{\"begin\":"
-                    << begin_time << ",\"end\":" << end_time
+                    << opts.begin_time << ",\"end\":" << opts.end_time
                     << ",\"signals\":[";
                 for (size_t si = 0; si < all_signals.size(); ++si) {
                     if (si) agg << ",";
                     wave::JsonObject p;
                     p.set("signal", all_signals[si]);
-                    p.set("begin", begin_time);
-                    p.set("end", end_time);
-                    p.set("radix", radix);
-                    if (limit_val != 1000) p.set("limit", limit_val);
+                    p.set("begin", opts.begin_time);
+                    p.set("end", opts.end_time);
+                    p.set("radix", opts.radix);
+                    if (opts.limit_val != 1000) p.set("limit", opts.limit_val);
                     std::string req = wave::client::build_request(
                         static_cast<int>(si + 1), "get_value_between", p.dump());
                     std::string resp = wave::client::send_request(
                         run_dir.socket_path(), req);
                     wave::JsonParser rp;
                     if (!resp.empty() && rp.parse(resp)
-                        && rp.get_string("status") == "ok") {
+                        && rp.get_string("status") == "ok")
                         agg << rp.get_string("data");
-                    } else {
+                    else
                         agg << "{\"signal\":\"" << all_signals[si]
                             << "\",\"error\":\"QUERY_FAILED\"}";
-                    }
                 }
                 agg << "]}}";
-                wave::client::print_response(agg.str(), json_mode);
+                wave::client::print_response(agg.str(), opts.json_mode);
                 return 0;
             }
             wave::JsonObject p;
             p.set("signal", all_signals[0]);
-            p.set("begin", begin_time);
-            p.set("end", end_time);
-            p.set("radix", radix);
-            if (limit_val != 1000) p.set("limit", limit_val);
+            p.set("begin", opts.begin_time);
+            p.set("end", opts.end_time);
+            p.set("radix", opts.radix);
+            if (opts.limit_val != 1000) p.set("limit", opts.limit_val);
             request = wave::client::build_request(req_id, "get_value_between", p.dump());
-        } else if (time_val >= 0) {
+
+        } else if (opts.time_val >= 0) {
             wave::JsonObject p;
             p.set_array("signals", all_signals);
-            p.set("time", time_val);
-            p.set("radix", radix);
+            p.set("time", opts.time_val);
+            p.set("radix", opts.radix);
             request = wave::client::build_request(req_id, "get_value_at", p.dump());
         } else {
             std::cerr << "Error: --time or (--begin + --end) required for get-value\n";
             return 1;
         }
 
-    } else if (command == "edge") {
-        std::string sig = signal_name;
-        if (sig.empty() && !scope_path.empty()) sig = scope_path;
-        if (sig.empty()) {
-            std::cerr << "Error: Signal required.\nUsage: vwave edge -s <sig> -t <time> [--rising|--falling]\n";
-            return 1;
-        }
-        if (time_val < 0) {
-            std::cerr << "Error: --time required for edge command\n";
+    } else if (cmd == "edge") {
+        std::string sig = opts.signal_name;
+        if (sig.empty()) sig = opts.scope_path;
+        if (sig.empty() || opts.time_val < 0) {
+            std::cerr << "Error: -s <sig> and -t <time> required for edge\n";
             return 1;
         }
         wave::JsonObject p;
         p.set("signal", sig);
-        p.set("time", time_val);
-        p.set("edge", edge_type);
-        p.set("dir", edge_dir);
+        p.set("time", opts.time_val);
+        p.set("edge", opts.edge_type);
+        p.set("dir", opts.edge_dir);
         request = wave::client::build_request(req_id, "next_edge", p.dump());
 
-    } else if (command == "vc-count") {
-        std::string sig = signal_name;
-        if (sig.empty() && !scope_path.empty()) sig = scope_path;
+    } else if (cmd == "vc-count") {
+        std::string sig = opts.signal_name;
+        if (sig.empty()) sig = opts.scope_path;
         if (sig.empty()) {
-            std::cerr << "Error: Signal required.\nUsage: vwave vc-count -s <sig> [-b <begin> -e <end>]\n";
+            std::cerr << "Error: Signal required for vc-count\n";
             return 1;
         }
         wave::JsonObject p;
         p.set("signal", sig);
-        if (begin_time >= 0) p.set("begin", begin_time);
-        if (end_time >= 0) p.set("end", end_time);
+        if (opts.begin_time >= 0) p.set("begin", opts.begin_time);
+        if (opts.end_time >= 0) p.set("end", opts.end_time);
         request = wave::client::build_request(req_id, "vc_count", p.dump());
 
     } else {
-        std::cerr << "Unknown command: " << command << "\n";
+        std::cerr << "Unknown command: " << cmd << "\n";
         print_usage();
         return 1;
     }
@@ -494,137 +517,95 @@ static int cmd_query(const wave::RunDir& run_dir, bool json_mode,
         std::cerr << "Error: No response from server. Is it running?\n";
         return 1;
     }
-
-    wave::client::print_response(response, json_mode);
+    wave::client::print_response(response, opts.json_mode);
     return 0;
 }
 
 // ─── Main ────────────────────────────────────────────────────────────────────
 
-int main(int argc, char** argv) {
-    // ── Parse arguments ──
-    std::string fsdb_path;
-    std::string run_dir_override;
-    std::string command;
-    std::string scope_or_positional;   // first positional after command
-    std::string signal_name;
-    std::string signal_file;
-    std::string radix = "bin";
-    int64_t time_val = -1;
-    int64_t begin_time = -1;
-    int64_t end_time = -1;
-    bool json_mode = false;
-    int open_timeout_sec = 30;
-    bool compact_mode = false;
-    std::string find_scope;
-    int depth = 1;
-    std::string edge_type = "any";
-    std::string edge_dir = "forward";
-    int64_t limit_val = 1000;
-    std::vector<std::string> extra_signals;
+static CliOptions parse_args(int argc, char** argv) {
+    CliOptions opts;
+    std::string scope_or_positional;
 
     for (int i = 1; i < argc; ++i) {
         std::string arg = argv[i];
 
-        // Global options
-        if (arg == "--fsdb" && i + 1 < argc) {
-            fsdb_path = argv[++i];
-        } else if (arg == "--run-dir" && i + 1 < argc) {
-            run_dir_override = argv[++i];
-        } else if (arg == "--timeout" && i + 1 < argc) {
-            open_timeout_sec = std::atoi(argv[++i]);
-            if (open_timeout_sec < 1) open_timeout_sec = 30;
-        } else if (arg == "--json") {
-            json_mode = true;
-        } else if (arg == "--compact" || arg == "-c") {
-            compact_mode = true;
-        } else if (arg == "-h" || arg == "--help") {
-            print_usage();
-            return 0;
+        if (arg == "--fsdb" && i+1 < argc)        { opts.fsdb_path = argv[++i];
+        } else if (arg == "--run-dir" && i+1 < argc) { opts.run_dir_override = argv[++i];
+        } else if (arg == "--timeout" && i+1 < argc) {
+            opts.open_timeout_sec = std::atoi(argv[++i]);
+            if (opts.open_timeout_sec < 1) opts.open_timeout_sec = 30;
+        } else if (arg == "--json")              { opts.json_mode = true;
+        } else if (arg == "--compact" || arg == "-c") { opts.compact_mode = true;
+        } else if (arg == "-h" || arg == "--help") { print_usage(); std::exit(0);
 
-        // Get-value options (short + long form)
-        } else if ((arg == "-s" || arg == "--signal") && i + 1 < argc) {
-            if (signal_name.empty())
-                signal_name = argv[++i];
-            else
-                extra_signals.push_back(argv[++i]);
-        } else if ((arg == "-f" || arg == "--signal-file") && i + 1 < argc) {
-            signal_file = argv[++i];
-        } else if ((arg == "-t" || arg == "--time") && i + 1 < argc) {
-            time_val = std::strtoll(argv[++i], nullptr, 10);
-        } else if ((arg == "-b" || arg == "--begin") && i + 1 < argc) {
-            begin_time = std::strtoll(argv[++i], nullptr, 10);
-        } else if ((arg == "-e" || arg == "--end") && i + 1 < argc) {
-            end_time = std::strtoll(argv[++i], nullptr, 10);
-        } else if ((arg == "-r" || arg == "--radix") && i + 1 < argc) {
-            radix = argv[++i];
-        } else if ((arg == "-l" || arg == "--limit") && i + 1 < argc) {
-            limit_val = std::strtoll(argv[++i], nullptr, 10);
-        } else if (arg == "--scope" && i + 1 < argc) {
-            find_scope = argv[++i];
-        } else if (arg == "--depth" && i + 1 < argc) {
-            depth = std::atoi(argv[++i]);
-            if (depth < 1) depth = 1;
-        } else if (arg == "--edge" && i + 1 < argc) {
-            edge_type = argv[++i];
-        } else if (arg == "--dir" && i + 1 < argc) {
-            edge_dir = argv[++i];
-        } else if (arg == "--rising") {
-            edge_type = "rising";
-        } else if (arg == "--falling") {
-            edge_type = "falling";
-        } else if (arg == "--path" && i + 1 < argc) {
-            // backward compatibility
-            scope_or_positional = argv[++i];
+        } else if ((arg == "-s" || arg == "--signal") && i+1 < argc) {
+            if (opts.signal_name.empty()) opts.signal_name = argv[++i];
+            else opts.extra_signals.push_back(argv[++i]);
+        } else if ((arg == "-f" || arg == "--signal-file") && i+1 < argc) {
+            opts.signal_file = argv[++i];
+        } else if ((arg == "-t" || arg == "--time") && i+1 < argc) {
+            opts.time_val = std::strtoll(argv[++i], nullptr, 10);
+        } else if ((arg == "-b" || arg == "--begin") && i+1 < argc) {
+            opts.begin_time = std::strtoll(argv[++i], nullptr, 10);
+        } else if ((arg == "-e" || arg == "--end") && i+1 < argc) {
+            opts.end_time = std::strtoll(argv[++i], nullptr, 10);
+        } else if ((arg == "-r" || arg == "--radix") && i+1 < argc) {
+            opts.radix = argv[++i];
+        } else if ((arg == "-l" || arg == "--limit") && i+1 < argc) {
+            opts.limit_val = std::strtoll(argv[++i], nullptr, 10);
+        } else if (arg == "--scope" && i+1 < argc)  { opts.find_scope = argv[++i];
+        } else if (arg == "--depth" && i+1 < argc) {
+            opts.depth = std::atoi(argv[++i]);
+            if (opts.depth < 1) opts.depth = 1;
+        } else if (arg == "--rising")             { opts.edge_type = "rising";
+        } else if (arg == "--falling")            { opts.edge_type = "falling";
+        } else if (arg == "--dir" && i+1 < argc)  { opts.edge_dir = argv[++i];
+        } else if (arg == "--path" && i+1 < argc) { scope_or_positional = argv[++i];
 
-        // Positional arguments
         } else if (arg[0] != '-') {
-            if (command.empty()) {
-                command = arg;
-            } else if (scope_or_positional.empty()) {
-                scope_or_positional = arg;
-            }
+            if (opts.command.empty()) opts.command = arg;
+            else if (scope_or_positional.empty()) scope_or_positional = arg;
         }
     }
 
-    if (command.empty()) {
+    // Normalize
+    if (opts.command == "get") opts.command = "get-value";
+
+    // Route positional arg to scope_path or signal_name
+    if (opts.command == "signal-info" && opts.signal_name.empty()
+        && !scope_or_positional.empty()) {
+        opts.signal_name = scope_or_positional;
+    } else {
+        opts.scope_path = scope_or_positional;
+    }
+
+    return opts;
+}
+
+int main(int argc, char** argv) {
+    CliOptions opts = parse_args(argc, argv);
+
+    if (opts.command.empty()) {
         print_usage();
         return 1;
     }
 
-    // ── open: special handling ──
-    if (command == "open") {
-        // The positional after "open" is the FSDB path
-        if (fsdb_path.empty() && !scope_or_positional.empty())
-            fsdb_path = scope_or_positional;
-        return cmd_open(argc, argv, fsdb_path, run_dir_override, json_mode,
-                        open_timeout_sec);
+    // ── open ──
+    if (opts.command == "open") {
+        if (opts.fsdb_path.empty() && !opts.scope_path.empty())
+            opts.fsdb_path = opts.scope_path;
+        return cmd_open(argc, argv, opts.fsdb_path, opts.run_dir_override,
+                        opts.json_mode, opts.open_timeout_sec);
     }
 
-    // ── Normalize command aliases ──
-    if (command == "get") command = "get-value";
-
-    // ── All other commands need a RunDir ──
+    // ── RunDir for all other commands ──
     wave::RunDir run_dir;
-    if (!resolve_run_dir(fsdb_path, run_dir_override, run_dir))
+    if (!resolve_run_dir(opts.fsdb_path, opts.run_dir_override, run_dir))
         return 1;
 
-    // ── close ──
-    if (command == "close") {
-        return cmd_close(run_dir, json_mode);
-    }
+    if (opts.command == "close")
+        return cmd_close(run_dir, opts.json_mode);
 
-    // ── For "scopes" and "signals", the positional arg is the path ──
-    std::string scope_path = scope_or_positional;
-    // "signal-info": positional arg is the signal name
-    if (command == "signal-info" && signal_name.empty() && !scope_or_positional.empty()) {
-        signal_name = scope_or_positional;
-        scope_path.clear();
-    }
-
-    // ── Query commands ──
-    return cmd_query(run_dir, json_mode, command,
-                     scope_path, signal_name, extra_signals, signal_file,
-                     time_val, begin_time, end_time, radix, compact_mode,
-                     find_scope, depth, edge_type, edge_dir, limit_val);
+    return cmd_query(run_dir, opts);
 }
