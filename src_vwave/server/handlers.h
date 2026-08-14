@@ -13,6 +13,7 @@
 #include <vector>
 #include <sstream>
 #include <chrono>
+#include <unordered_map>
 
 #include <unistd.h>
 
@@ -58,6 +59,18 @@ static bool wildcard_match(const char* pattern, const char* str) {
     }
     while (*pattern == '*') ++pattern;
     return !*pattern && !*str;
+}
+
+// ─── Signal handle cache ────────────────────────────────────────────────────
+
+static std::unordered_map<std::string, npiFsdbSigHandle> g_sig_cache;
+
+static npiFsdbSigHandle cached_sig_by_name(const std::string& name) {
+    auto it = g_sig_cache.find(name);
+    if (it != g_sig_cache.end()) return it->second;
+    npiFsdbSigHandle hdl = npi_fsdb_sig_by_name(g_file_hdl, name.c_str(), nullptr);
+    if (hdl) g_sig_cache[name] = hdl;
+    return hdl;
 }
 
 // ─── Status / Info ──────────────────────────────────────────────────────────
@@ -253,7 +266,7 @@ static std::string handle_signal_info(int id, const JsonParser& params) {
     if (sig_name.empty())
         return make_error_response(id, err::INVALID_PARAMS, "Missing 'signal' parameter");
 
-    npiFsdbSigHandle sig = npi_fsdb_sig_by_name(g_file_hdl, sig_name.c_str(), nullptr);
+    npiFsdbSigHandle sig = cached_sig_by_name(sig_name);
     if (!sig)
         return make_error_response(id, err::SIGNAL_NOT_FOUND,
                                    "Signal '" + sig_name + "' not found");
@@ -303,7 +316,7 @@ static std::string handle_get_value_at(int id, const JsonParser& params) {
     arr << "[";
     for (size_t i = 0; i < signals.size(); ++i) {
         if (i) arr << ",";
-        npiFsdbSigHandle sig = npi_fsdb_sig_by_name(g_file_hdl, signals[i].c_str(), nullptr);
+        npiFsdbSigHandle sig = cached_sig_by_name(signals[i]);
         JsonObject val_obj;
         val_obj.set("signal", signals[i]);
         if (!sig) {
@@ -348,7 +361,7 @@ static std::string handle_get_value_between(int id, const JsonParser& params) {
     else if (radix_str == "oct") format = npiFsdbOctStrVal;
     else if (radix_str == "dec") format = npiFsdbDecStrVal;
 
-    npiFsdbSigHandle sig = npi_fsdb_sig_by_name(g_file_hdl, sig_name.c_str(), nullptr);
+    npiFsdbSigHandle sig = cached_sig_by_name(sig_name);
     if (!sig)
         return make_error_response(id, err::SIGNAL_NOT_FOUND,
                                    "Signal '" + sig_name + "' not found");
@@ -479,7 +492,7 @@ static std::string handle_next_edge(int id, const JsonParser& params) {
     if (from_time < 0)
         return make_error_response(id, err::INVALID_TIME, "Missing 'time'");
 
-    npiFsdbSigHandle sig = npi_fsdb_sig_by_name(g_file_hdl, sig_name.c_str(), nullptr);
+    npiFsdbSigHandle sig = cached_sig_by_name(sig_name);
     if (!sig)
         return make_error_response(id, err::SIGNAL_NOT_FOUND,
                                    "Signal '" + sig_name + "' not found");
@@ -559,7 +572,7 @@ static std::string handle_vc_count(int id, const JsonParser& params) {
         end = static_cast<int64_t>(mt);
     }
 
-    npiFsdbSigHandle sig = npi_fsdb_sig_by_name(g_file_hdl, sig_name.c_str(), nullptr);
+    npiFsdbSigHandle sig = cached_sig_by_name(sig_name);
     if (!sig)
         return make_error_response(id, err::SIGNAL_NOT_FOUND,
                                    "Signal '" + sig_name + "' not found");
