@@ -10,6 +10,7 @@
 #include <string>
 #include <functional>
 #include <iostream>
+#include <fstream>
 
 #include <unistd.h>
 #include <fcntl.h>
@@ -79,8 +80,16 @@ inline int fork_and_wait(
         int wstatus;
         pid_t w = waitpid(pid, &wstatus, WNOHANG);
         if (w > 0) {
-            std::cerr << "Error: Server process exited unexpectedly.\n"
-                      << "Check log: " << run_dir.log_path() << "\n";
+            std::cerr << "Error: Server process exited unexpectedly.\n";
+            // Surface server-side ERROR/Hint lines so users need not open the log
+            std::ifstream log(run_dir.log_path());
+            std::string line;
+            while (std::getline(log, line)) {
+                if (line.find("ERROR") != std::string::npos ||
+                    line.find("Hint:") != std::string::npos)
+                    std::cerr << "  " << line << "\n";
+            }
+            std::cerr << "Check log: " << run_dir.log_path() << "\n";
             return 1;
         }
 

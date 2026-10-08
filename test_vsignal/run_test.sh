@@ -4,7 +4,7 @@ set -e
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
-VSIGNAL="$ROOT_DIR/build/bin/vsignal"
+VSIGNAL="${BIN_DIR:-$ROOT_DIR/release/bin}/vsignal"
 
 # Colors
 RED='\033[0;31m'
@@ -112,7 +112,7 @@ echo "── Step 5: Trace drivers ──"
 
 RESULT=$("$VSIGNAL" driver top.data_out --json 2>/dev/null || true)
 check "driver returns ok" "$RESULT" '"status":"ok"'
-check "driver shows count" "$RESULT" '"count":'
+check "driver shows total" "$RESULT" '"total":'
 check "driver shows drivers array" "$RESULT" '"drivers":'
 
 # ── Step 6: Load trace ───────────────────────────────────────────────────────
@@ -121,7 +121,7 @@ echo "── Step 6: Trace loads ──"
 
 RESULT=$("$VSIGNAL" load top.data_in --json 2>/dev/null || true)
 check "load returns ok" "$RESULT" '"status":"ok"'
-check "load shows count" "$RESULT" '"count":'
+check "load shows total" "$RESULT" '"total":'
 check "load shows loads array" "$RESULT" '"loads":'
 
 # ── Step 7: FanIn register ───────────────────────────────────────────────────
@@ -130,7 +130,7 @@ echo "── Step 7: FanIn register connections ──"
 
 RESULT=$("$VSIGNAL" fanin top.data_out --json 2>/dev/null || true)
 check "fanin returns ok" "$RESULT" '"status":"ok"'
-check "fanin shows count" "$RESULT" '"count":'
+check "fanin shows total" "$RESULT" '"total":'
 check "fanin shows fanin array" "$RESULT" '"fanin":'
 
 # ── Step 8: FanOut register ──────────────────────────────────────────────────
@@ -139,7 +139,7 @@ echo "── Step 8: FanOut register connections ──"
 
 RESULT=$("$VSIGNAL" fanout top.clk --json 2>/dev/null || true)
 check "fanout returns ok" "$RESULT" '"status":"ok"'
-check "fanout shows count" "$RESULT" '"count":'
+check "fanout shows total" "$RESULT" '"total":'
 check "fanout shows fanout array" "$RESULT" '"fanout":'
 
 # ── Step 9: Instance connections ─────────────────────────────────────────────
@@ -149,6 +149,7 @@ echo "── Step 9: Instance connections ──"
 RESULT=$("$VSIGNAL" conn top.u_sub --json 2>/dev/null || true)
 check "conn returns ok" "$RESULT" '"status":"ok"'
 check "conn shows connections" "$RESULT" '"connections":'
+check "conn shows port name" "$RESULT" '"port":"data_in"'
 
 # ── Step 10: Signal-to-signal trace ──────────────────────────────────────────
 echo ""

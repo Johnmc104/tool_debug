@@ -10,7 +10,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
-VWAVE="$PROJECT_DIR/build/bin/vwave"
+VWAVE="${BIN_DIR:-$PROJECT_DIR/release/bin}/vwave"
 FSDB="$PROJECT_DIR/test_vwave/tb_top.fsdb"
 RUNDIR="$PROJECT_DIR/.vtool/wave_run"
 TIMEOUT_CMD="timeout 10"
@@ -33,7 +33,12 @@ log_test()    { printf "  %-55s " "$1"; }
 pass()        { echo -e "${GREEN}PASS${NC}"; PASS=$((PASS + 1)); }
 fail()        { echo -e "${RED}FAIL${NC}: $1"; FAIL=$((FAIL + 1)); }
 
-run_vwave() { $TIMEOUT_CMD "$VWAVE" "$@" --json 2>/dev/null || true; }
+# open 含 License 签出，可能耗时 20s+，单独放宽超时
+run_vwave() {
+    local t="$TIMEOUT_CMD"
+    [[ "${1:-}" == "open" ]] && t="timeout 60"
+    $t "$VWAVE" "$@" --json 2>/dev/null || true
+}
 assert_has() { echo "$1" | grep -qF "$2"; }
 
 # ─── Cleanup any old server ──────────────────────────────────────────────────
@@ -227,8 +232,12 @@ OUT=$(run_vwave --fsdb "$FSDB" signal-info tb.intf.paddr)
 log_test "signal-info returns ok"
 if assert_has "$OUT" '"status":"ok"'; then pass; else fail "$OUT"; fi
 
-log_test "name = tb.intf.paddr"
-if assert_has "$OUT" '"name":"tb.intf.paddr"'; then pass; else fail "$OUT"; fi
+log_test "name = paddr, full_name = tb.intf.paddr"
+if assert_has "$OUT" '"name":"paddr"' && assert_has "$OUT" '"full_name":"tb.intf.paddr"'; then
+    pass
+else
+    fail "$OUT"
+fi
 
 log_test "left=31, right=0"
 if assert_has "$OUT" '"left":31' && assert_has "$OUT" '"right":0'; then

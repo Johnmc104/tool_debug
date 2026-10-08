@@ -19,6 +19,7 @@
 #include "tw/json.h"
 #include "tw/protocol.h"
 #include "tw/server_loop.h"
+#include "tw/npi_env.h"
 
 #include "common/protocol.h"
 #include "common/json_parser.h"
@@ -86,7 +87,11 @@ inline int run_server(int argc, char** argv,
     g_fsdb_path = fsdb_path;
 
     std::cerr << "[vwave-server] Initializing NPI...\n";
-    npi_init(argc, argv);
+    if (!npi_init(argc, argv)) {
+        tw::npi_env::report_init_failure("vwave-server");
+        npi_end();
+        return 1;
+    }
 
     std::cerr << "[vwave-server] Loading FSDB: " << fsdb_path << "\n";
     g_file_hdl = npi_fsdb_open(fsdb_path.c_str());

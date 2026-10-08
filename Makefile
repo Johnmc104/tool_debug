@@ -39,16 +39,18 @@ _C_BLUE       ?= \033[1;34m
 _C_RESET      ?= \033[0m
 
 # ── Verdi NPI paths ──────────────────────────────────────────────────────────
-VERDI_HOME   ?= /opt/Synopsys/verdi/T-2022.06-SP2
+# 已验证: T-2022.06-SP2, Y-2026.03-SP2 (2026.03+ 需 License feature VerdiNPI)
+VERDI_HOME   ?= /opt/Synopsys/verdi/Y-2026.03-SP2
 NPI_INC       = $(VERDI_HOME)/share/NPI/inc
 NPI_L1_INC    = $(VERDI_HOME)/share/NPI/L1/C/inc
 NPI_LIB_DIR   = $(VERDI_HOME)/share/NPI/lib/linux64
 
 # ── Compiler ─────────────────────────────────────────────────────────────────
 CXX          ?= g++
-CXXFLAGS      = -std=c++14 -Wall -Wextra -O2
+CXXFLAGS      = -std=c++14 -Wall -Wextra -O2 -DTW_BUILD_VERDI_HOME='"$(VERDI_HOME)"'
 INCLUDES      = -I$(NPI_INC) -I$(NPI_L1_INC)
-LDFLAGS       = -L$(NPI_LIB_DIR) -Wl,--enable-new-dtags,-rpath,$(NPI_LIB_DIR)
+# RPATH (disable-new-dtags) 优先于 LD_LIBRARY_PATH，避免误加载其它 Verdi 版本的 libNPI
+LDFLAGS       = -L$(NPI_LIB_DIR) -Wl,--disable-new-dtags,-rpath,$(NPI_LIB_DIR)
 LIBS          = -lNPI -lnpiL1 -lpthread -lrt -ldl
 
 # ── Shared common library ────────────────────────────────────────────────────
@@ -110,11 +112,11 @@ test: test-vwave test-vsignal
 
 test-vwave: $(VWAVE_BIN)
 	@echo "\n══════ Running vwave tests ══════"
-	bash test_vwave/run_test.sh
+	BIN_DIR=$(abspath $(BIN_DIR)) bash test_vwave/run_test.sh
 
 test-vsignal: $(VSIGNAL_BIN)
 	@echo "\n══════ Running vsignal tests ══════"
-	bash test_vsignal/run_test.sh
+	BIN_DIR=$(abspath $(BIN_DIR)) bash test_vsignal/run_test.sh
 
 # ── Clean ─────────────────────────────────────────────────────────────────────
 clean:

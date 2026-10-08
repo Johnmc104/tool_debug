@@ -20,6 +20,7 @@
 #include "tw/json.h"
 #include "tw/protocol.h"
 #include "tw/server_loop.h"
+#include "tw/npi_env.h"
 
 #include "common/protocol.h"
 #include "common/json_parser.h"
@@ -86,7 +87,11 @@ inline int run_server(int argc, char** argv,
     g_design_source  = design_source;
 
     std::cerr << "[vsignal-server] Initializing NPI...\n";
-    npi_init(argc, argv);
+    if (!npi_init(argc, argv)) {
+        tw::npi_env::report_init_failure("vsignal-server");
+        npi_end();
+        return 1;
+    }
 
     std::vector<std::string> load_args;
     load_args.push_back("vsignal");
@@ -101,7 +106,7 @@ inline int run_server(int argc, char** argv,
     std::cerr << "\n";
 
     int load_ret = npi_load_design(static_cast<int>(c_args.size()), c_args.data());
-    if (load_ret < 0) {
+    if (load_ret <= 0) {
         std::cerr << "[vsignal-server] ERROR: npi_load_design failed (rc="
                   << load_ret << ")\n"
                   << "[vsignal-server] Check: " << run_dir.dir()

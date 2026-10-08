@@ -211,7 +211,9 @@ static std::string handle_inst_conn(int id, const JsonParser& params) {
         if (i) arr << ",";
         JsonObject pair_obj;
         npiHandle port_hdl = pairVec[i].first;
+        // Port handles have no npiFullName; fall back to npiName
         const char* port_name = npi_get_str(npiFullName, port_hdl);
+        if (!port_name || !port_name[0]) port_name = npi_get_str(npiName, port_hdl);
         pair_obj.set("port", port_name ? port_name : "");
 
         hdlVec_t& sigs = pairVec[i].second;

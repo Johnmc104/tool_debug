@@ -29,6 +29,7 @@
 
 // Client-side code (NPI-free)
 #include "tw/daemon.h"
+#include "tw/npi_env.h"
 #include "common/protocol.h"
 #include "common/json_parser.h"
 #include "common/run_dir.h"
@@ -216,6 +217,7 @@ static int cmd_open(int argc, char** argv,
     }
 
     run_dir.ensure_dir();
+    tw::npi_env::sync_verdi_home(json_mode);
 
     tw::daemon::LaunchConfig cfg;
     cfg.log_tag     = "vwave";

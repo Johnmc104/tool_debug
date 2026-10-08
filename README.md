@@ -176,7 +176,11 @@ make clean            # 清理 release/ dist/ build/
 | **Linux** | Unix Domain Socket, fork/setsid |
 | **VCS -kdb** | vsignal 需要 KDB 数据库（`vcs -kdb ...` 编译生成） |
 
-> vsignal 会自动从 `VERDI_HOME` 推导 `LD_LIBRARY_PATH`，无需手动设置。
+> 二进制通过 RPATH 绑定编译时的 Verdi NPI 库，不受 `LD_LIBRARY_PATH` 中其它 Verdi 版本影响；
+> 若编译时的 Verdi 路径存在，运行时 `VERDI_HOME` 会自动对齐到该版本。
+>
+> 已验证 Verdi 版本：T-2022.06-SP2、Y-2026.03-SP2。2026.03 起 NPI 签出 License feature
+> `VerdiNPI`，若 License 服务器无此 feature，可 `export NPI_LICENSE=Verdi` 回退使用 `Verdi` feature。
 
 ## 工程结构
 
@@ -188,6 +192,7 @@ src_common/           共享库（tw:: 命名空间）
   json.h              JSON 构建/解析
   protocol.h          响应编码、错误码
   run_dir.h           运行目录管理
+  npi_env.h           VERDI_HOME 对齐、NPI 初始化失败诊断
 
 src_vwave/            vwave 源码
   main.cpp            CLI + CliOptions + parse_args + cmd_query

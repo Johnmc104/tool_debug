@@ -30,6 +30,7 @@
 #include "common/run_dir.h"
 #include "client/client_core.h"
 #include "tw/daemon.h"
+#include "tw/npi_env.h"
 
 // Server-side code (NPI-dependent, only executes in forked child)
 #include "server/server_core.h"
@@ -139,25 +140,6 @@ static bool resolve_run_dir(const std::string& /*run_dir_override*/,
     return false;
 }
 
-// ─── LD_LIBRARY_PATH auto-complete ───────────────────────────────────────────
-
-static void ensure_npi_lib_path() {
-    const char* verdi_home = std::getenv("VERDI_HOME");
-    if (!verdi_home) {
-        std::cerr << "Warning: VERDI_HOME not set. NPI libraries may not be found.\n"
-                  << "Hint: module load synopsys/verdi/<version>\n";
-        return;
-    }
-    std::string extra = std::string(verdi_home) + "/platform/linux64/bin";
-    std::string cur = std::getenv("LD_LIBRARY_PATH") ? std::getenv("LD_LIBRARY_PATH") : "";
-    if (cur.find(extra) == std::string::npos) {
-        std::string npi_lib = std::string(verdi_home) + "/share/NPI/lib/linux64";
-        std::string newpath = npi_lib + ":" + extra;
-        if (!cur.empty()) newpath += ":" + cur;
-        setenv("LD_LIBRARY_PATH", newpath.c_str(), 1);
-    }
-}
-
 // ─── Command: open ───────────────────────────────────────────────────────────
 
 static int cmd_open(int argc, char** argv,
@@ -203,7 +185,8 @@ static int cmd_open(int argc, char** argv,
     }
 
     run_dir.ensure_dir();
-    ensure_npi_lib_path();
+    tw::npi_env::sync_verdi_home(json_mode);
+    tw::npi_env::ensure_npi_lib_path();
 
     tw::daemon::LaunchConfig cfg;
     cfg.log_tag     = "vsignal";
