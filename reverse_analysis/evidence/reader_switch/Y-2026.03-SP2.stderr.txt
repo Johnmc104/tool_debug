@@ -1,0 +1,5 @@
+FSDB Reader, Release Verdi_Y-2026.03-SP2, RH Linux x86_64/64bit, 10/09/2026
+(C) 1996 - 2026 by Synopsys, Inc.
+*WARN* This FSDB file (/home/zhhe/work/python_auto/tool_wave/test_vwave/tb_top.fsdb) was generated using a previous version.
+      You can load and use this FSDB file as you did in the previous version, but you may not have access to certain new features.
+      Please consult the Release Notes for a list of the latest features, and regenerate the FSDB file if you would like to use new features.

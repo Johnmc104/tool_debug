@@ -1,0 +1,2 @@
+FSDB Reader, Release Verdi_T-2022.06-SP2, RH Linux x86_64/64bit, 10/09/2026
+(C) 1996 - 2026 by Synopsys, Inc.

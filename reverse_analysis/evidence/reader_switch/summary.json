@@ -1,0 +1,26 @@
+{
+  "probe": "/home/zhhe/work/python_auto/tool_wave/reverse_analysis/build/centos7/T-2022.06-SP2/reader_probe",
+  "build_sdk": "T-2022.06-SP2",
+  "test_environment": "current host; not CentOS 7 for 2026 libraries",
+  "sample": "/home/zhhe/work/python_auto/tool_wave/test_vwave/tb_top.fsdb",
+  "sample_writer": "T-2022.06-SP2",
+  "ffrObject_virtual_declaration_groups": 111,
+  "ffrObject_declaration_sequence_equal": true,
+  "reader_runs": {
+    "T-2022.06-SP2": {
+      "exit_code": 0,
+      "events": 132,
+      "matches_baseline": true,
+      "libraries": "/opt/Synopsys/verdi/T-2022.06-SP2/share/FsdbReader/linux64",
+      "network_calls_observed": false
+    },
+    "Y-2026.03-SP2": {
+      "exit_code": 0,
+      "events": 132,
+      "matches_baseline": true,
+      "libraries": "/opt/Synopsys/verdi/Y-2026.03-SP2/share/FsdbReader/linux64",
+      "network_calls_observed": false
+    }
+  },
+  "scope": "existing sample and probe API subset; not a complete ABI certification"
+}

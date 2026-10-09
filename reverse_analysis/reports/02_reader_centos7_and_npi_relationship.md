@@ -84,7 +84,7 @@ libc.so.6: GLIBC_2.18/2.25/2.26/2.27 not found (required by libnffr.so)
 libc.so.6: GLIBC_2.25/2.28 not found  (required by libnsys.so)
 ```
 
-程序在进入读取逻辑前退出，返回 1。复用同一探针用于隔离库自身的加载要求，不代表两版本 SDK 的对象布局或全部 API ABI 可以互换。
+程序在进入读取逻辑前退出，返回 1。复用同一探针用于隔离库自身的加载要求，不代表两版本 SDK 的对象布局或全部 API ABI 可以互换。后续在较新主机上的库切换实测与适配范围见 [当前兼容计划](../../plan/06_fsdb_reader_compatibility_plan.md)。
 
 依据：[加载失败记录](../evidence/centos7/Y-2026.03-SP2/runtime.stderr.txt)。
 

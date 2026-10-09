@@ -1,10 +1,14 @@
 # FSDB 逆向分析工作区
 
-目标：分析 FSDB 的结构与读取路径，评估在本地自行解析、脱离 NPI 与厂商库的可行性。
+目标：评估脱离 NPI 的 FSDB 本地读取。当前已选择配套 SDK 动态加载，保留 NPI 并通过参数切换，重点解决 EDA 切换和 CentOS 7 运行；格式逆向作为独立探索保留。
 
 初步报告：[01_fsdb_native_reader_feasibility.md](reports/01_fsdb_native_reader_feasibility.md)。
 
 后续实测：[02_reader_centos7_and_npi_relationship.md](reports/02_reader_centos7_and_npi_relationship.md)。2022 reader 已在纯 CentOS 7 容器完成断网读取，可作为免 NPI 的候选方案；2026 reader 的 glibc 要求过高。
+
+方案比较：[动态加载与自包含兼容计划](../plan/06_fsdb_reader_compatibility_plan.md)。按用户选择使用配套库，不以旧 reader 读取新年代波形作为前提。
+
+当前开发评估：[vwave 双后端开发计划](../plan/07_vwave_dual_backend_dev_plan.md)。建议 `--backend npi|ffr`，默认保留 NPI；拆分轻量 CLI 与后台读取进程，动态库选择固定在会话打开时。
 
 ## 目录
 
@@ -18,6 +22,7 @@ reverse_analysis/
 ├── evidence/probe/       reader 输出、实验条件与网络调用跟踪
 ├── evidence/compatibility/  两版本 ABI 要求、NPI 内置 reader 调用链
 ├── evidence/centos7/     CentOS 7 运行记录、镜像指纹与结果对照
+├── evidence/reader_switch/  同一探针切换两套 SDK 的库映射和结果
 └── build/                本地编译产物，不纳入版本管理
 ```
 
@@ -39,6 +44,9 @@ python3 reverse_analysis/scripts/analyze_reader_compat.py
 
 # CentOS 7 实测；使用本机已有的 centos:7 和 manylinux2014 镜像
 bash reverse_analysis/scripts/test_centos7_reader.sh
+
+# 上一步生成探针后，在当前主机切换 2022 / 2026 reader
+python3 reverse_analysis/scripts/test_reader_switch.py
 ```
 
 可以指定不同安装、样本和信号：
