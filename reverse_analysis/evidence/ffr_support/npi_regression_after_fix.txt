@@ -1,0 +1,17 @@
+t ═══
+  status ok before close                                  PASS
+  close returns ok                                        PASS
+  server process stopped                                  PASS
+  re-open after close                                     PASS
+  value read after restart                                PASS
+
+═══ T16: Waveform Switch ═══
+  switch: re-open same file (idempotent)                  PASS
+
+═══ Summary ═══
+  Total:  62
+  Pass:   62
+  Fail:   0
+  Skip:   0
+
+All tests passed!

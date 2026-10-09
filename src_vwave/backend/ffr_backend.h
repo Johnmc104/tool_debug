@@ -10,6 +10,7 @@
 #include <limits>
 #include <unordered_map>
 #include <unordered_set>
+#include <set>
 #include <cstdio>
 
 namespace wave {
@@ -106,28 +107,73 @@ class FfrBackend : public WaveBackend {
         if (first == std::string::npos) return;
         auto base = raw.substr(0, first);
         auto parts = ranges_in(raw.substr(first));
-        std::string full = scope_parent.empty() ? base : scope_parent + "." + base;
-        for (size_t i = 0; i < parts.size(); ++i) {
-            int left = 0, right = 0;
-            if (!parse_range(parts[i], left, right)) continue;
-            // The next dimension is the element's range. The last range belongs
-            // to the array itself when this callback describes the outer array.
-            std::string key = full;
-            if (i + 1 < parts.size()) {
-                int next_left = 0, next_right = 0;
-                parse_range(parts[i+1], next_left, next_right);
-                SignalInfo s; s.name = leaf_name(key); s.full_name = key;
-                s.left = next_left; s.right = next_right; s.direction = "none";
-                if (variables_.emplace(key, Var{s, 0, FSDB_VT_MDA, FSDB_BYTES_PER_BIT_UNKNOWN}).second)
-                    signals_[scope_parent].push_back(s);
-            } else {
-                SignalInfo s; s.name = leaf_name(key); s.full_name = key;
-                s.left = left; s.right = right; s.direction = "none";
-                if (variables_.emplace(key, Var{s, 0, FSDB_VT_MDA, FSDB_BYTES_PER_BIT_UNKNOWN}).second)
-                    signals_[scope_parent].push_back(s);
-            }
-            full += parts[i];
+        std::string base_full = scope_parent.empty() ? base : scope_parent + "." + base;
+        if (parts.size() == 1) {
+            int left = 0, right = 0; if (!parse_range(parts[0], left, right)) return;
+            SignalInfo s; s.name = leaf_name(base_full); s.full_name = base_full;
+            s.left = left; s.right = right; s.direction = "none";
+            if (variables_.emplace(base_full, Var{s, 0, FSDB_VT_MDA, FSDB_BYTES_PER_BIT_UNKNOWN}).second)
+                signals_[scope_parent].push_back(s);
+            return;
         }
+        // For nested arrays, each callback describes the next dimension of a
+        // synthetic parent: matrix[1] has the range from [2:1].
+        std::string key = base_full;
+        std::string parent_key = scope_parent;
+        for (size_t i = 0; i + 1 < parts.size(); ++i) {
+            key += parts[i];
+            int left = 0, right = 0; if (!parse_range(parts[i+1], left, right)) continue;
+            SignalInfo s; s.name = leaf_name(key); s.full_name = key;
+            s.left = left; s.right = right; s.direction = "none";
+            if (variables_.emplace(key, Var{s, 0, FSDB_VT_MDA, FSDB_BYTES_PER_BIT_UNKNOWN}).second)
+                signals_[parent_key].push_back(s);
+            parent_key = key;
+        }
+    }
+    std::vector<std::string> composite_children(const std::string& path) const {
+        std::vector<std::string> result;
+        auto add=[&](const std::string& value) {
+            if (std::find(result.begin(),result.end(),value)==result.end()) result.push_back(value);
+        };
+        auto listed=signals_.find(path);
+        if (listed!=signals_.end()) for (const auto& s:listed->second) add(s.full_name);
+        const std::string prefix=path+".";
+        const std::string bracket=path+"[";
+        for (const auto& item:variables_) {
+            if (item.first.compare(0,prefix.size(),prefix)==0) {
+                auto rest=item.first.substr(prefix.size());
+                auto dot=rest.find('.'); auto b=rest.find('[');
+                auto end=std::min(dot==std::string::npos?rest.size():dot,
+                                  b==std::string::npos?rest.size():b);
+                add(path+"."+rest.substr(0,end));
+            } else if (item.first.compare(0,bracket.size(),bracket)==0) {
+                auto end=item.first.find(']',bracket.size());
+                if (end!=std::string::npos) add(item.first.substr(0,end+1));
+            }
+        }
+        auto parent=variables_.find(path);
+        if (parent!=variables_.end() && parent->second.info.left!=parent->second.info.right) {
+            const bool descending=parent->second.info.left>parent->second.info.right;
+            std::sort(result.begin(),result.end(),[&](const std::string& a,const std::string& b) {
+                int ai=0,bi=0; parse_range(a.substr(path.size()),ai,ai);
+                parse_range(b.substr(path.size()),bi,bi);
+                return descending ? ai>bi : ai<bi;
+            });
+        }
+        return result;
+    }
+    std::string composite_value(const std::string& path, int64_t t, const std::string& radix) {
+        auto children=composite_children(path);
+        if (children.empty()) throw BackendError("UNSUPPORTED_SIGNAL_TYPE", "FFR composite value is not available: "+path);
+        std::ostringstream out; out << '{';
+        for (size_t i=0;i<children.size();++i) {
+            if (i) out << ',';
+            out << value_at(children[i],t,radix);
+        }
+        out << '}'; return out.str();
+    }
+    std::string value_at(const std::string& path, int64_t t, const std::string& radix) {
+        return point(path,t,radix).value;
     }
     static bool_T tree(fsdbTreeCBType type, void* client, void* data) {
         auto& b=*static_cast<FfrBackend*>(client);
@@ -177,6 +223,8 @@ class FfrBackend : public WaveBackend {
                 s.name.compare(s.name.size()-range.size(),range.size(),range)==0)
                 s.name.resize(s.name.size()-range.size());
             s.full_name=b.parent().empty() ? s.name : b.parent()+"."+s.name;
+            if (!b.aggregate_stack_.empty())
+                s.name=leaf_name(b.parent())+"."+s.name;
             s.left=v->lbitnum; s.right=v->rbitnum;
             s.direction=v->direction==FSDB_VD_INPUT ? "input" : v->direction==FSDB_VD_OUTPUT ? "output" :
                 v->direction==FSDB_VD_INOUT ? "inout" : "none";
@@ -272,6 +320,38 @@ class FfrBackend : public WaveBackend {
         }
         return {static_cast<int64_t>(time(t)),convert(bin,radix)};
     }
+    void collect_composite_times(const std::string& path, int64_t begin, int64_t end,
+                                 std::set<int64_t>& times) {
+        for (const auto& child:composite_children(path)) {
+            auto descriptor=lookup(child);
+            if (!descriptor.id && !descriptor.sliced) {
+                collect_composite_times(child,begin,end,times);
+                continue;
+            }
+            Cursor c(*this,child); auto xtag=tag(std::min(begin,info_.max_time));
+            if (ops_.seek(c.handle,&xtag,nullptr)!=FSDB_RC_SUCCESS) continue;
+            do {
+                fsdbTag64 raw{}; if (ops_.tag(c.handle,&raw)!=FSDB_RC_SUCCESS) break;
+                auto point_time=static_cast<int64_t>(time(raw));
+                if (point_time>=begin && point_time<=end) times.insert(point_time);
+                if (point_time>end) break;
+            } while (ops_.next(c.handle)==FSDB_RC_SUCCESS);
+        }
+    }
+    Range composite_range(const std::string& path, int64_t begin, int64_t end,
+                          const std::string& radix, size_t limit) {
+        std::set<int64_t> times; collect_composite_times(path,begin,end,times);
+        Range result; if (times.empty()) return result;
+        times.insert(begin);
+        std::string last; bool first=true;
+        for (auto point_time:times) {
+            auto value=point(path,point_time,radix).value;
+            if (!first && value==last) continue;
+            first=false; last=value; ++result.total;
+            if (result.changes.size()<limit) result.changes.push_back({point_time,value});
+        }
+        return result;
+    }
     static std::string convert(const std::string& bin, const std::string& radix) {
         if (radix=="bin") return bin;
         if (radix=="dec") {
@@ -365,6 +445,9 @@ public:
         return resolve(path,result);
     }
     Value point(const std::string& path, int64_t t, const std::string& radix) override {
+        auto descriptor=lookup(path);
+        if (!descriptor.id && !descriptor.sliced)
+            return {t,composite_value(path,t,radix)};
         Cursor c(*this,path); auto xtag=tag(std::min(t,info_.max_time));
         if (ops_.seek(c.handle,&xtag,nullptr)!=FSDB_RC_SUCCESS)
             throw BackendError("FILE_READ_ERROR", "read failed");
@@ -372,19 +455,47 @@ public:
     }
     Range range(const std::string& path, int64_t begin, int64_t end,
                 const std::string& radix, size_t limit) override {
+        auto descriptor=lookup(path);
+        if (!descriptor.id && !descriptor.sliced)
+            return composite_range(path,begin,end,radix,limit);
         Cursor c(*this,path); Range r; auto t=tag(std::min(begin,info_.max_time));
         if (ops_.seek(c.handle,&t,nullptr)!=FSDB_RC_SUCCESS) return r;
         Value v=current(c,radix);
         if (v.time>begin || v.time>end) return r;
         // NPI 范围输出以 begin 时的值开头，即使该时刻没有真实 VC。
         v.time=begin; r.total=1; if (limit) r.changes.push_back(v);
+        std::string last=v.value;
         while (ops_.next(c.handle)==FSDB_RC_SUCCESS) {
             v=current(c,radix); if (v.time>end) break;
+            // NPI 的 slice 视图过滤投影后没有实际变化的父总线 VC。
+            if (c.var.sliced && v.value==last) continue;
+            last=v.value;
             ++r.total; if (r.changes.size()<limit) r.changes.push_back(v);
         }
         return r;
     }
     Edge edge(const std::string& path, int64_t t, const std::string& kind, bool backward) override {
+        auto descriptor=lookup(path);
+        if (!descriptor.id && !descriptor.sliced) {
+            std::set<int64_t> times; collect_composite_times(path,info_.min_time,info_.max_time,times);
+            Edge result;
+            if (backward) {
+                for (auto it=times.rbegin(); it!=times.rend(); ++it) if (*it<t) {
+                    auto value=point(path,*it,"bin");
+                    if (kind=="any" || value.value==(kind=="rising" ? "1" : "0")) {
+                        result.found=true; result.value=value; return result;
+                    }
+                }
+            } else {
+                for (auto it=times.begin(); it!=times.end(); ++it) if (*it>t) {
+                    auto value=point(path,*it,"bin");
+                    if (kind=="any" || value.value==(kind=="rising" ? "1" : "0")) {
+                        result.found=true; result.value=value; return result;
+                    }
+                }
+            }
+            return result;
+        }
         Cursor c(*this,path); Edge e; auto xtag=tag(std::min(t,info_.max_time));
         if (ops_.seek(c.handle,&xtag,nullptr)!=FSDB_RC_SUCCESS) return e;
         if (kind=="any") {
@@ -411,14 +522,25 @@ public:
         return e;
     }
     int64_t count(const std::string& path, int64_t begin, int64_t end) override {
+        auto descriptor=lookup(path);
+        if (!descriptor.id && !descriptor.sliced)
+            return composite_range(path,begin,end,"bin",100000).total;
         Cursor c(*this,path); auto t=tag(begin); int64_t n=0;
         if (ops_.seek(c.handle,&t,nullptr)!=FSDB_RC_SUCCESS) return 0;
+        std::string last;
         do {
             fsdbTag64 current_tag{};
             if (ops_.tag(c.handle,&current_tag)!=FSDB_RC_SUCCESS) break;
             auto v=static_cast<int64_t>(time(current_tag));
             if (v>end) break;
-            if (v>=begin) ++n;
+            if (v>=begin) {
+                if (c.var.sliced) {
+                    auto value=current(c,"bin").value;
+                    if (n && value==last) continue;
+                    last=value;
+                }
+                ++n;
+            }
         } while (ops_.next(c.handle)==FSDB_RC_SUCCESS);
         return n;
     }

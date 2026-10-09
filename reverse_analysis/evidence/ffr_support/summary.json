@@ -1,28 +1,36 @@
 {
   "date": "2026-10-09",
   "baseline_commit": "968a0f3",
-  "backend_modified": false,
+  "backend_modified": true,
   "matrices": [
     {
-      "evidence": "expanded2022_queries.json",
-      "sdk": "/opt/Synopsys/verdi/T-2022.06-SP2",
-      "checks": 202,
-      "different": 172,
-      "sample_sha256": "c7026c564a7ae91d0fd81740bcd19bbadf25ecc929e8a8a5d0ed79699a8d4eba"
+      "evidence": "backend_after_fix.json",
+      "checks": 924,
+      "different": 0
     },
     {
-      "evidence": "expanded_queries.json",
-      "sdk": "/opt/Synopsys/verdi/Y-2026.03-SP2",
-      "checks": 202,
-      "different": 172,
-      "sample_sha256": "841a5c298abe4621e40311e807a32775d7894a7ef4029712e672b57c3ccf95d7"
+      "evidence": "fixture_after_fix_2022.json",
+      "checks": 3404,
+      "different": 0,
+      "sdk": "T-2022.06-SP2"
     },
     {
-      "evidence": "support_queries.json",
-      "sdk": "/opt/Synopsys/verdi/Y-2026.03-SP2",
+      "evidence": "fixture_after_fix_2026.json",
+      "checks": 1709,
+      "different": 0,
+      "sdk": "Y-2026.03-SP2"
+    },
+    {
+      "evidence": "expanded_after_fix.json",
+      "checks": 202,
+      "different": 47,
+      "sdk": "Y-2026.03-SP2"
+    },
+    {
+      "evidence": "support_after_fix.json",
       "checks": 377,
-      "different": 297,
-      "sample_sha256": "f25453d6a4bffd47590c63a5e902ad3eb0e2f4ff51748d046b94fff7d22a3126"
+      "different": 100,
+      "sdk": "Y-2026.03-SP2"
     }
   ],
   "checks": 781,
@@ -41,5 +49,36 @@
     "无初始 VC 的实际边界样本"
   ],
   "npi_reference": "npi",
-  "note": "本轮 NPI 查询参考使用 release/bin/vwave-npi-worker（2026 配套构建），与所选 FFR SDK 分别对照；2022 FFR 使用其配套 FSDB 6.0 样本。"
+  "note": "本轮 NPI 查询参考使用 release/bin/vwave-npi-worker（2026 配套构建），与所选 FFR SDK 分别对照；2022 FFR 使用其配套 FSDB 6.0 样本。",
+  "phase1": {
+    "checks": {
+      "existing_sample": 924,
+      "fixture_2022": 3404,
+      "fixture_2026": 1709,
+      "expanded_2026": 202,
+      "struct_array_2026": 377
+    },
+    "differences": {
+      "existing_sample": 0,
+      "fixture_2022": 0,
+      "fixture_2026": 0,
+      "expanded_2026": 47,
+      "struct_array_2026": 100
+    },
+    "features": [
+      "bit and part select",
+      "unpacked struct paths",
+      "static array intermediate and composite values",
+      "real point/range/count",
+      "composite edge/count"
+    ]
+  },
+  "remaining": [
+    "packed struct field paths and parent display",
+    "string value formatting",
+    "invalid or no-initial-VC boundary cases",
+    "large-waveform performance"
+  ],
+  "checks_after_fix": 6616,
+  "differences_after_fix": 147
 }

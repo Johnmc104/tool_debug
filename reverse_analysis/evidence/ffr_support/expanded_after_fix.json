@@ -1,0 +1,10 @@
+{
+  "sample": "/home/zhhe/work/python_auto/tool_wave/build/backend_fixtures/Y-2026.03-SP2/fixture.fsdb",
+  "sdk": "/opt/Synopsys/verdi/Y-2026.03-SP2",
+  "checks": 202,
+  "different": 47,
+  "remaining_categories": {
+    "memory": 24,
+    "message": 23
+  }
+}

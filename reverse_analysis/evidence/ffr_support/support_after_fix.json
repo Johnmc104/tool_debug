@@ -1,0 +1,15 @@
+{
+  "sample": "/home/zhhe/work/python_auto/tool_wave/build/ffr_support_analysis/support.fsdb",
+  "sdk": "/opt/Synopsys/verdi/Y-2026.03-SP2",
+  "checks": 377,
+  "different": 100,
+  "remaining_categories": {
+    "<none>": 1,
+    "packet": 24,
+    "payload": 25,
+    "tag": 25,
+    "packet[7:0]": 1,
+    "matrix[1][2][3]": 1,
+    "text_value": 23
+  }
+}

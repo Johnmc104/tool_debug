@@ -155,9 +155,14 @@ def main():
                 assert b'dlopen' in invalid_result.stderr
                 assert cli('status', '--run-dir', ffr)['data']['pid'] == pid
                 if args.fixture:
-                    for signal in ['fixture.analog', 'fixture.message', 'fixture.memory']:
+                    analog = request(ffr, 'get_value_at', {'signals': ['fixture.analog'], 'time': 3000,
+                                                           'radix': 'dec'})
+                    assert analog['data']['values'][0]['value'] == '-2.500000E+00'
+                    for signal in ['fixture.message']:
                         unsupported = request(ffr, 'get_value_at', {'signals': [signal], 'time': 0})
                         assert unsupported['data']['values'][0]['error_code'] == 'UNSUPPORTED_SIGNAL_TYPE'
+                    memory = request(ffr, 'get_value_at', {'signals': ['fixture.memory'], 'time': 0})
+                    assert memory['data']['values'][0]['value'] == '{00000001,00000010}'
                 checks += 12 + (3 if args.fixture else 0)
             # 安装路径不变但库内容更新：必须重新选择 reader。
             patched_home = Path(root) / 'patch sdk with spaces'
