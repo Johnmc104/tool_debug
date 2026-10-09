@@ -1,0 +1,22 @@
+FFR packed-struct expansion verification
+Date: 2026-10-09
+
+Public API baseline:
+  ffrHasDataTypeDef() = 0
+  ffrGetVarInfoByVarIdcode(packet id) returns type=4, descriptor=null, extra_info=null
+  default ffrReadScopeVarTree(): packet[11:0] only
+
+Internal reader entry found in libnffr.so:
+  ffrObject::ffrEnablePackedModeExpandChildFlow(char)
+  T-2022.06-SP2 offset: 0x255426
+  Y-2026.03-SP2 offset: 0x85ea96
+
+With the switch enabled before ffrReadScopeVarTree(), Y-2026 emits:
+  STRUCT name=packet fields=2 type=11 (FSDB_STRUCT_TYPE_PACKED_STRUCT)
+  VAR tag[3:0] id=13
+  VAR payload[7:0] id=14
+  STRUCT_END
+
+The implementation is guarded by the exact validated SDK version and does not
+load libNPI or call FDA private objects. A different Reader build must be
+re-verified before enabling this path.

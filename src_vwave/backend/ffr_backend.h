@@ -12,6 +12,7 @@
 #include <unordered_set>
 #include <set>
 #include <cstdio>
+#include <cstdint>
 
 namespace wave {
 
@@ -42,6 +43,7 @@ class FfrBackend : public WaveBackend {
         bool sliced = false;
         int base_left = 0, base_right = 0;
         int slice_left = 0, slice_right = 0;
+        bool packed_struct = false;
     };
     std::unordered_map<std::string,Var> variables_;
     std::unordered_map<std::string,std::vector<std::string>> children_;
@@ -75,6 +77,32 @@ class FfrBackend : public WaveBackend {
     static uint64_t time(const fsdbTag64& t) { return (uint64_t(t.H)<<32)|t.L; }
     static fsdbTag64 tag(int64_t t) {
         fsdbTag64 result{}; result.H=uint64_t(t)>>32; result.L=uint64_t(t); return result;
+    }
+    static std::string project_slice(const Var& var, const std::string& bin) {
+        int step=var.slice_left<=var.slice_right ? 1 : -1;
+        std::string selected;
+        for (int index=var.slice_left;;index+=step) {
+            int offset=var.base_left>var.base_right ? var.base_left-index : index-var.base_left;
+            if (offset<0 || static_cast<size_t>(offset)>=bin.size())
+                throw BackendError("SIGNAL_NOT_FOUND", "Bit select outside signal range: "+var.info.full_name);
+            selected.push_back(bin[static_cast<size_t>(offset)]);
+            if (index==var.slice_right) break;
+        }
+        return selected;
+    }
+    void enable_packed_struct_expansion() {
+        // This switch is an internal FsdbReader entry, absent from ffrAPI.h.
+        // Keep it restricted to the exact reader builds whose entry offsets
+        // were verified in reverse_analysis/evidence/ffr_support.
+        uint64_t offset = 0;
+        if (sdk_version_ == "Verdi_T-2022.06-SP2") offset = 0x255426;
+        else if (sdk_version_ == "Verdi_Y-2026.03-SP2") offset = 0x85ea96;
+        if (!offset) return;
+        struct link_map* map = nullptr;
+        if (dlinfo(library_, RTLD_DI_LINKMAP, &map) != 0 || !map) return;
+        auto enable = reinterpret_cast<void (*)(char)>(
+            static_cast<uintptr_t>(map->l_addr) + offset);
+        enable(1);
     }
     std::string parent() const {
         if (!aggregate_stack_.empty()) return aggregate_stack_.back();
@@ -172,6 +200,17 @@ class FfrBackend : public WaveBackend {
         }
         out << '}'; return out.str();
     }
+    std::string composite_bits(const std::string& path, int64_t t) {
+        auto children=composite_children(path);
+        if (children.empty()) throw BackendError("UNSUPPORTED_SIGNAL_TYPE", "FFR composite value is not available: "+path);
+        std::string result;
+        for (const auto& child:children) {
+            auto descriptor=lookup(child);
+            if (!descriptor.id && !descriptor.sliced) result+=composite_bits(child,t);
+            else result+=value_at(child,t,"bin");
+        }
+        return result;
+    }
     std::string value_at(const std::string& path, int64_t t, const std::string& radix) {
         return point(path,t,radix).value;
     }
@@ -205,7 +244,9 @@ class FfrBackend : public WaveBackend {
             std::string name=structure->name ? structure->name : "";
             std::string full=b.parent().empty() ? name : b.parent()+"."+name;
             SignalInfo s; s.name=name; s.full_name=full; s.direction="none";
-            if (b.variables_.emplace(full,Var{s,0,FSDB_VT_MDA,FSDB_BYTES_PER_BIT_UNKNOWN}).second)
+            Var aggregate{s,0,FSDB_VT_MDA,FSDB_BYTES_PER_BIT_UNKNOWN};
+            aggregate.packed_struct = structure->type == FSDB_STRUCT_TYPE_PACKED_STRUCT;
+            if (b.variables_.emplace(full,aggregate).second)
                 b.signals_[b.parent()].push_back(s);
             b.signals_[full];
             b.aggregate_stack_.push_back(full);
@@ -234,13 +275,33 @@ class FfrBackend : public WaveBackend {
         }
         return 1;
     }
+    void finalize_packed_struct_ranges() {
+        for (auto& item:variables_) {
+            auto& var=item.second;
+            if (!var.packed_struct) continue;
+            int width=0;
+            for (const auto& child:composite_children(item.first)) {
+                auto it=variables_.find(child);
+                if (it==variables_.end()) continue;
+                const auto& child_var=it->second;
+                int child_width=child_var.packed_struct && child_var.base_left!=child_var.base_right
+                    ? std::abs(child_var.base_left-child_var.base_right)+1
+                    : std::abs(child_var.info.left-child_var.info.right)+1;
+                width+=child_width;
+            }
+            if (width) {
+                var.base_left=width-1; var.base_right=0;
+            }
+        }
+    }
     Var lookup(const std::string& path) const {
         auto exact=variables_.find(path);
         if (exact!=variables_.end()) return exact->second;
         size_t best=0; const Var* source=nullptr; std::string source_path;
         for (const auto& item:variables_) {
-            if (!item.second.id || path.size()<=item.first.size() ||
+            if (path.size()<=item.first.size() ||
                 path.compare(0,item.first.size(),item.first)!=0) continue;
+            if (!item.second.id && composite_children(item.first).empty()) continue;
             auto suffix=path.substr(item.first.size());
             int left=0,right=0;
             if (!parse_range(suffix,left,right) || item.first.size()<=best) continue;
@@ -248,11 +309,21 @@ class FfrBackend : public WaveBackend {
         }
         if (!source) throw BackendError("SIGNAL_NOT_FOUND", "Signal '"+path+"' not found");
         Var result=*source; result.source=source_path; result.sliced=true;
-        result.base_left=source->info.left; result.base_right=source->info.right;
+        result.base_left=source->packed_struct ? source->base_left : source->info.left;
+        result.base_right=source->packed_struct ? source->base_right : source->info.right;
         if (!parse_range(path.substr(source_path.size()),result.slice_left,result.slice_right))
             throw BackendError("SIGNAL_NOT_FOUND", "Signal '"+path+"' not found");
         result.info.full_name=path; result.info.name=leaf_name(path);
         result.info.left=result.slice_left; result.info.right=result.slice_right;
+        if (source->packed_struct) {
+            // NPI exposes a packed-struct part-select as a virtual field name
+            // (packet.7:0) and keeps the aggregate's scalar range metadata.
+            auto range=path.substr(source_path.size());
+            if (range.size()>=2 && range.front()=='[' && range.back()==']')
+                range=range.substr(1,range.size()-2);
+            result.info.name=leaf_name(source_path)+"."+range;
+            result.info.left=result.info.right=0;
+        }
         return result;
     }
     bool resolve(const std::string& path, SignalInfo& result) const {
@@ -306,18 +377,7 @@ class FfrBackend : public WaveBackend {
             if (raw[i]>=4) throw BackendError("UNSUPPORTED_SIGNAL_TYPE", "Unsupported logic value encoding");
             bin.push_back("01xz"[raw[i]]);
         }
-        if (c.var.sliced) {
-            int step=c.var.slice_left<=c.var.slice_right ? 1 : -1;
-            std::string selected;
-            for (int index=c.var.slice_left;;index+=step) {
-                int offset=c.var.base_left>c.var.base_right ? c.var.base_left-index : index-c.var.base_left;
-                if (offset<0 || static_cast<size_t>(offset)>=bin.size())
-                    throw BackendError("SIGNAL_NOT_FOUND", "Bit select outside signal range: "+c.var.info.full_name);
-                selected.push_back(bin[static_cast<size_t>(offset)]);
-                if (index==c.var.slice_right) break;
-            }
-            bin.swap(selected);
-        }
+        if (c.var.sliced) bin=project_slice(c.var,bin);
         return {static_cast<int64_t>(time(t)),convert(bin,radix)};
     }
     void collect_composite_times(const std::string& path, int64_t begin, int64_t end,
@@ -340,7 +400,9 @@ class FfrBackend : public WaveBackend {
     }
     Range composite_range(const std::string& path, int64_t begin, int64_t end,
                           const std::string& radix, size_t limit) {
-        std::set<int64_t> times; collect_composite_times(path,begin,end,times);
+        auto descriptor=lookup(path);
+        const auto& base=descriptor.sliced ? descriptor.source : path;
+        std::set<int64_t> times; collect_composite_times(base,begin,end,times);
         Range result; if (times.empty()) return result;
         times.insert(begin);
         std::string last; bool first=true;
@@ -425,6 +487,7 @@ public:
             throw BackendError("FSDB_OPEN_FAILED", "Cannot read FSDB file information: "+path);
         file_=open_(const_cast<char*>(path.c_str()));
         if (!file_) throw BackendError("FSDB_OPEN_FAILED", "Failed to open FSDB: "+path);
+        enable_packed_struct_expansion();
         if (file_->ffrGetXTagType()!=FSDB_XTAG_TYPE_HL)
             throw BackendError("UNSUPPORTED_FILE_TYPE", "FFR requires integer simulation timestamps");
         fsdbTag64 first{},last{};
@@ -436,6 +499,7 @@ public:
         children_[""]; signals_[""];
         if (file_->ffrSetTreeCBFunc(tree,this)!=FSDB_RC_SUCCESS || file_->ffrReadScopeVarTree()!=FSDB_RC_SUCCESS)
             throw BackendError("FILE_READ_ERROR", "Cannot read scope/signal tree");
+        finalize_packed_struct_ranges();
     }
     FileInfo info() override { return info_; }
     bool has_scope(const std::string& path) override { return children_.count(path); }
@@ -446,8 +510,11 @@ public:
     }
     Value point(const std::string& path, int64_t t, const std::string& radix) override {
         auto descriptor=lookup(path);
-        if (!descriptor.id && !descriptor.sliced)
-            return {t,composite_value(path,t,radix)};
+        if (!descriptor.id) {
+            if (!descriptor.sliced) return {t,composite_value(path,t,radix)};
+            auto value=project_slice(descriptor,composite_bits(descriptor.source,t));
+            return {t,convert(value,radix)};
+        }
         Cursor c(*this,path); auto xtag=tag(std::min(t,info_.max_time));
         if (ops_.seek(c.handle,&xtag,nullptr)!=FSDB_RC_SUCCESS)
             throw BackendError("FILE_READ_ERROR", "read failed");
@@ -456,7 +523,7 @@ public:
     Range range(const std::string& path, int64_t begin, int64_t end,
                 const std::string& radix, size_t limit) override {
         auto descriptor=lookup(path);
-        if (!descriptor.id && !descriptor.sliced)
+        if (!descriptor.id)
             return composite_range(path,begin,end,radix,limit);
         Cursor c(*this,path); Range r; auto t=tag(std::min(begin,info_.max_time));
         if (ops_.seek(c.handle,&t,nullptr)!=FSDB_RC_SUCCESS) return r;
@@ -476,8 +543,9 @@ public:
     }
     Edge edge(const std::string& path, int64_t t, const std::string& kind, bool backward) override {
         auto descriptor=lookup(path);
-        if (!descriptor.id && !descriptor.sliced) {
-            std::set<int64_t> times; collect_composite_times(path,info_.min_time,info_.max_time,times);
+        if (!descriptor.id) {
+            const auto& base=descriptor.sliced ? descriptor.source : path;
+            std::set<int64_t> times; collect_composite_times(base,info_.min_time,info_.max_time,times);
             Edge result;
             if (backward) {
                 for (auto it=times.rbegin(); it!=times.rend(); ++it) if (*it<t) {
@@ -523,7 +591,7 @@ public:
     }
     int64_t count(const std::string& path, int64_t begin, int64_t end) override {
         auto descriptor=lookup(path);
-        if (!descriptor.id && !descriptor.sliced)
+        if (!descriptor.id)
             return composite_range(path,begin,end,"bin",100000).total;
         Cursor c(*this,path); auto t=tag(begin); int64_t n=0;
         if (ops_.seek(c.handle,&t,nullptr)!=FSDB_RC_SUCCESS) return 0;
