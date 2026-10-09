@@ -1,6 +1,6 @@
 # FFR 后端功能边界与重构计划
 
-日期：2026-10-09。对应发布版本：`tool_wave v1.7`。实现基线：`4eacd7a`。
+日期：2026-10-09。文档状态：v1.7 已实施，进入兼容性增强阶段。实现基线：`4eacd7a`。
 
 ## 1. 结论
 
@@ -14,7 +14,7 @@ FFR 后端继续采用动态加载配套 FsdbReader 的方案，NPI 后端保留
 - real 点值、范围、计数和 edge。
 - 与 NPI 一致的范围起点、重复父总线 VC 过滤、组合信号 edge/count 和 string 失败语义。
 
-这不是完整的 NPI 或 FSDB 原生解析器。磁盘格式、压缩、索引和厂商 Reader 仍由 FsdbReader 负责；工程只在公开 FFR API 返回的树、idcode、VC 和类型信息之上重建 NPI 所需的查询语义。
+这不是完整的 NPI 或 FSDB 原生解析器。磁盘格式、压缩、索引和厂商 Reader 仍由 FsdbReader 负责；工程只在公开 FFR API 返回的树、idcode、VC 和类型信息之上重建 NPI 所需的查询语义。当前交付目标是让 vwave 的既有查询在已验证 Reader 上可用，不承诺替换 Verdi 的全部 FSDB 能力。
 
 ## 2. 兼容范围
 
@@ -100,7 +100,18 @@ STRUCT_END
 
 这是版本适配点，不是稳定 FFR ABI。后续 Reader 必须重新取证入口位置、入口前置条件、回调顺序和字段位序；不能把现有偏移复制到其他 EDA 版本。
 
-## 6. libNPI 逆向得到的边界
+## 6. 能力降级边界
+
+FFR 适配层按能力返回结果，不把“能打开文件”当作所有查询都支持：
+
+- 已匹配的 Reader 可以查询普通数字、real、静态数组、unpacked/packed struct、位选和组合事件；这些路径进入差分矩阵验收。
+- packed-child 展开入口只对已取证的 Reader 开启。其他版本仍可读取普通父总线；字段路径没有布局证据时返回明确的未支持错误，不猜测字段偏移。
+- string 保留 NPI 当前可观察行为：点值报告 `FILE_READ_ERROR`，范围不产生变化项，`vc-count` 和 `edge(any)` 仍使用原始事件。文本解码另列为后续能力，不能把错误码兼容写成文本支持。
+- 动态数组、queue、class、事务属性、非四态编码、无整数时间戳和持续写入文件暂不进入兼容承诺；查询应返回稳定错误码，避免静默给出错误值。
+
+这样可以在切换 EDA/Reader 时保留 NPI 模式和已打开会话，同时让 FFR 的版本边界可诊断、可回归。
+
+## 7. libNPI 逆向得到的边界
 
 已保存的调用链表明 NPI 不是简单的 Reader 转发层：
 
@@ -120,36 +131,39 @@ npi_fsdb_vct_value
 
 `fda_vch_partial_t` 和 `fda_vch_composite_t` 说明位选、结构体和数组不能都当成一个普通 idcode。当前 FFR 实现只复现 vwave 命令实际需要的可观察语义，不把 FDA 私有类当作可链接 ABI。
 
-## 7. 验证结果
+## 8. 验证结果
 
 已完成以下差分和回归：
 
 | 矩阵 | 查询数 | 差异 |
 |---|---:|---:|
-| T-2022 普通位选/数组 | 202 | 0 |
-| Y-2026 普通位选/数组 | 202 | 0 |
-| T-2022 配套后端样本 | 1709 | 0 |
-| Y-2026 配套后端样本 | 1709 | 0 |
+| 现有样本双后端 | 924 | 0 |
+| T-2022 配套样本 | 3404 | 0 |
+| Y-2026 配套样本 | 1709 | 0 |
+| T-2022 位选/数组扩展 | 202 | 0 |
+| Y-2026 位选/数组扩展 | 202 | 0 |
 | struct/二维数组/packed/string 专项 | 377 | 0 |
 
-工程测试 `make test-vwave` 通过。v1.7 发布包已包含 `vwave`、`vsignal`、`vwave-npi-worker` 和 `vwave-ffr-worker`，归档校验通过。
+工程测试 `make test-vwave` 通过。v1.7 发布包已包含 `vwave`、`vsignal`、`vwave-npi-worker` 和 `vwave-ffr-worker`，归档校验通过。当前归档为 `dist/tool_wave-1.7-linux-x86_64.tar.gz`，SHA-256 为 `09024d10485d1159e9e4263bb408062ec48adb86a5c04ef5af0dd8822974c424`。
 
-## 8. 后续重构计划
+验收数字来自最终差分文件；修复前或第一阶段的 `*_after_fix.json` 摘要仍保留在证据目录中，用于说明问题演进，不能作为当前支持结论。
+
+## 9. 后续重构计划
 
 按优先级推进：
 
-1. **降低 packed 展开入口的版本耦合**：从“版本字符串 + 固定偏移”改为运行时 ELF 符号定位或受控的 SDK 适配表，并增加入口字节和回调结果校验；找不到匹配入口时明确降级为父总线视图。
-2. **补充异常波形样本**：无初始 VC、同一时间多字段变化、dumpoff 后恢复、空文件和持续写入文件。
-3. **评估 string 文本解码**：先确认 Reader raw VC 的所有权、长度和编码，再决定是否提供独立输出格式；不改变当前 NPI 兼容语义。
-4. **按实际需求扩展动态数组、queue、class 和事务属性**，每类能力单独取证，不与 packed struct 混为一个“大而全”版本。
-5. **做生产规模性能验收**：打开耗时、首次查询耗时、多个 cursor 并发查询、内存占用和 Reader 版本切换。
+1. **P0：降低 packed 展开入口的版本耦合**：从“版本字符串 + 固定偏移”改为运行时 ELF 符号定位或受控的 SDK 适配表，并增加入口字节和回调结果校验；找不到匹配入口时明确降级为父总线视图。
+2. **P0：补充异常波形样本**：无初始 VC、同一时间多字段变化、dumpoff 后恢复、空文件和持续写入文件；每个样本同时跑 NPI/FFR，记录点值、范围、计数和 edge。
+3. **P1：评估 string 文本解码**：先确认 Reader raw VC 的所有权、长度和编码，再决定是否提供独立输出格式；不改变当前 NPI 兼容语义。
+4. **P1：按实际需求扩展复杂类型**：动态数组、queue、class 和事务属性逐类取证，每类增加独立能力开关和差分样本，不与 packed struct 混为一个“大而全”版本。
+5. **P1：做生产规模性能验收**：记录打开耗时、首次查询耗时、多个 cursor 并发查询、内存峰值和 Reader 版本切换；超过基线时再决定缓存或索引策略。
 
-## 9. 证据与复现
+## 10. 证据与复现
 
 - [packed struct 差分结果](../reverse_analysis/evidence/ffr_support/support_packed_after_fix.json)
 - [packed struct 入口取证](../reverse_analysis/evidence/ffr_support/packed_expand_probe.txt)
 - [剩余差异闭环记录](../reverse_analysis/evidence/ffr_support/remaining_diff_after_fix.txt)
-- [2022/2026 位选矩阵](../reverse_analysis/evidence/ffr_support/expanded2022_queries.json)、[扩展查询](../reverse_analysis/evidence/ffr_support/expanded_queries.json)
+- [修复前 2022/2026 位选矩阵（问题复现）](../reverse_analysis/evidence/ffr_support/expanded2022_queries.json)、[修复前扩展查询](../reverse_analysis/evidence/ffr_support/expanded_queries.json)
 - [NPI 调用链与反汇编](../reverse_analysis/evidence/ffr_support/npi_calls.json)
 - [差分脚本](../reverse_analysis/scripts/analyze_ffr_support.py)
 - [专项 SV 样本](../reverse_analysis/probes/ffr_support_fixture.sv)、[Reader 探针](../reverse_analysis/probes/ffr_support_probe.cpp)
