@@ -3,7 +3,7 @@
   "sdk": "/opt/Synopsys/verdi/Y-2026.03-SP2",
   "npi_reference": "worker compiled with its own SDK; see worker --describe",
   "checks": 377,
-  "different": 26,
+  "different": 0,
   "records": [
     {
       "cmd": "list_signals",
@@ -96,20 +96,6 @@
               "direction": "none"
             },
             {
-              "name": "matrix[1]",
-              "full_name": "support_fixture.matrix[1]",
-              "left": 2,
-              "right": 1,
-              "direction": "none"
-            },
-            {
-              "name": "matrix[0]",
-              "full_name": "support_fixture.matrix[0]",
-              "left": 2,
-              "right": 1,
-              "direction": "none"
-            },
-            {
               "name": "two_state",
               "full_name": "support_fixture.two_state",
               "left": 7,
@@ -140,7 +126,7 @@
           ]
         }
       },
-      "equal": false
+      "equal": true
     },
     {
       "cmd": "list_scopes",
@@ -3088,13 +3074,13 @@
         "status": "ok",
         "data": {
           "name": "packet.7:0",
-          "full_name": "support_fixture.packet[7:0]",
+          "full_name": "support_fixture.packet.7:0",
           "left": 0,
           "right": 0,
           "direction": "none"
         }
       },
-      "equal": false
+      "equal": true
     },
     {
       "cmd": "get_value_at",
@@ -9837,10 +9823,10 @@
           "edge": "any",
           "dir": "backward",
           "found_time": 0,
-          "value": "1"
+          "value": "x"
         }
       },
-      "equal": false
+      "equal": true
     },
     {
       "cmd": "signal_info",
@@ -13781,14 +13767,14 @@
             {
               "signal": "support_fixture.text_value",
               "value": "x",
-              "error": "FFR string value formatting is not yet supported",
-              "error_code": "UNSUPPORTED_SIGNAL_TYPE",
+              "error": "read failed",
+              "error_code": "FILE_READ_ERROR",
               "actual_time": 0
             }
           ]
         }
       },
-      "equal": false
+      "equal": true
     },
     {
       "cmd": "get_value_at",
@@ -13824,14 +13810,14 @@
             {
               "signal": "support_fixture.text_value",
               "value": "x",
-              "error": "FFR string value formatting is not yet supported",
-              "error_code": "UNSUPPORTED_SIGNAL_TYPE",
+              "error": "read failed",
+              "error_code": "FILE_READ_ERROR",
               "actual_time": 0
             }
           ]
         }
       },
-      "equal": false
+      "equal": true
     },
     {
       "cmd": "get_value_at",
@@ -13867,14 +13853,14 @@
             {
               "signal": "support_fixture.text_value",
               "value": "x",
-              "error": "FFR string value formatting is not yet supported",
-              "error_code": "UNSUPPORTED_SIGNAL_TYPE",
+              "error": "read failed",
+              "error_code": "FILE_READ_ERROR",
               "actual_time": 0
             }
           ]
         }
       },
-      "equal": false
+      "equal": true
     },
     {
       "cmd": "get_value_at",
@@ -13910,14 +13896,14 @@
             {
               "signal": "support_fixture.text_value",
               "value": "x",
-              "error": "FFR string value formatting is not yet supported",
-              "error_code": "UNSUPPORTED_SIGNAL_TYPE",
+              "error": "read failed",
+              "error_code": "FILE_READ_ERROR",
               "actual_time": 0
             }
           ]
         }
       },
-      "equal": false
+      "equal": true
     },
     {
       "cmd": "get_value_at",
@@ -13953,14 +13939,14 @@
             {
               "signal": "support_fixture.text_value",
               "value": "x",
-              "error": "FFR string value formatting is not yet supported",
-              "error_code": "UNSUPPORTED_SIGNAL_TYPE",
+              "error": "read failed",
+              "error_code": "FILE_READ_ERROR",
               "actual_time": 1000
             }
           ]
         }
       },
-      "equal": false
+      "equal": true
     },
     {
       "cmd": "get_value_at",
@@ -13996,14 +13982,14 @@
             {
               "signal": "support_fixture.text_value",
               "value": "x",
-              "error": "FFR string value formatting is not yet supported",
-              "error_code": "UNSUPPORTED_SIGNAL_TYPE",
+              "error": "read failed",
+              "error_code": "FILE_READ_ERROR",
               "actual_time": 1000
             }
           ]
         }
       },
-      "equal": false
+      "equal": true
     },
     {
       "cmd": "get_value_at",
@@ -14039,14 +14025,14 @@
             {
               "signal": "support_fixture.text_value",
               "value": "x",
-              "error": "FFR string value formatting is not yet supported",
-              "error_code": "UNSUPPORTED_SIGNAL_TYPE",
+              "error": "read failed",
+              "error_code": "FILE_READ_ERROR",
               "actual_time": 1000
             }
           ]
         }
       },
-      "equal": false
+      "equal": true
     },
     {
       "cmd": "get_value_at",
@@ -14082,14 +14068,14 @@
             {
               "signal": "support_fixture.text_value",
               "value": "x",
-              "error": "FFR string value formatting is not yet supported",
-              "error_code": "UNSUPPORTED_SIGNAL_TYPE",
+              "error": "read failed",
+              "error_code": "FILE_READ_ERROR",
               "actual_time": 1000
             }
           ]
         }
       },
-      "equal": false
+      "equal": true
     },
     {
       "cmd": "get_value_at",
@@ -14125,14 +14111,14 @@
             {
               "signal": "support_fixture.text_value",
               "value": "x",
-              "error": "FFR string value formatting is not yet supported",
-              "error_code": "UNSUPPORTED_SIGNAL_TYPE",
+              "error": "read failed",
+              "error_code": "FILE_READ_ERROR",
               "actual_time": 3000
             }
           ]
         }
       },
-      "equal": false
+      "equal": true
     },
     {
       "cmd": "get_value_at",
@@ -14168,14 +14154,14 @@
             {
               "signal": "support_fixture.text_value",
               "value": "x",
-              "error": "FFR string value formatting is not yet supported",
-              "error_code": "UNSUPPORTED_SIGNAL_TYPE",
+              "error": "read failed",
+              "error_code": "FILE_READ_ERROR",
               "actual_time": 3000
             }
           ]
         }
       },
-      "equal": false
+      "equal": true
     },
     {
       "cmd": "get_value_at",
@@ -14211,14 +14197,14 @@
             {
               "signal": "support_fixture.text_value",
               "value": "x",
-              "error": "FFR string value formatting is not yet supported",
-              "error_code": "UNSUPPORTED_SIGNAL_TYPE",
+              "error": "read failed",
+              "error_code": "FILE_READ_ERROR",
               "actual_time": 3000
             }
           ]
         }
       },
-      "equal": false
+      "equal": true
     },
     {
       "cmd": "get_value_at",
@@ -14254,14 +14240,14 @@
             {
               "signal": "support_fixture.text_value",
               "value": "x",
-              "error": "FFR string value formatting is not yet supported",
-              "error_code": "UNSUPPORTED_SIGNAL_TYPE",
+              "error": "read failed",
+              "error_code": "FILE_READ_ERROR",
               "actual_time": 3000
             }
           ]
         }
       },
-      "equal": false
+      "equal": true
     },
     {
       "cmd": "get_value_at",
@@ -14297,14 +14283,14 @@
             {
               "signal": "support_fixture.text_value",
               "value": "x",
-              "error": "FFR string value formatting is not yet supported",
-              "error_code": "UNSUPPORTED_SIGNAL_TYPE",
+              "error": "read failed",
+              "error_code": "FILE_READ_ERROR",
               "actual_time": 4000
             }
           ]
         }
       },
-      "equal": false
+      "equal": true
     },
     {
       "cmd": "get_value_at",
@@ -14340,14 +14326,14 @@
             {
               "signal": "support_fixture.text_value",
               "value": "x",
-              "error": "FFR string value formatting is not yet supported",
-              "error_code": "UNSUPPORTED_SIGNAL_TYPE",
+              "error": "read failed",
+              "error_code": "FILE_READ_ERROR",
               "actual_time": 4000
             }
           ]
         }
       },
-      "equal": false
+      "equal": true
     },
     {
       "cmd": "get_value_at",
@@ -14383,14 +14369,14 @@
             {
               "signal": "support_fixture.text_value",
               "value": "x",
-              "error": "FFR string value formatting is not yet supported",
-              "error_code": "UNSUPPORTED_SIGNAL_TYPE",
+              "error": "read failed",
+              "error_code": "FILE_READ_ERROR",
               "actual_time": 4000
             }
           ]
         }
       },
-      "equal": false
+      "equal": true
     },
     {
       "cmd": "get_value_at",
@@ -14426,14 +14412,14 @@
             {
               "signal": "support_fixture.text_value",
               "value": "x",
-              "error": "FFR string value formatting is not yet supported",
-              "error_code": "UNSUPPORTED_SIGNAL_TYPE",
+              "error": "read failed",
+              "error_code": "FILE_READ_ERROR",
               "actual_time": 4000
             }
           ]
         }
       },
-      "equal": false
+      "equal": true
     },
     {
       "cmd": "get_value_at",
@@ -14469,14 +14455,14 @@
             {
               "signal": "support_fixture.text_value",
               "value": "x",
-              "error": "FFR string value formatting is not yet supported",
-              "error_code": "UNSUPPORTED_SIGNAL_TYPE",
+              "error": "read failed",
+              "error_code": "FILE_READ_ERROR",
               "actual_time": 6000
             }
           ]
         }
       },
-      "equal": false
+      "equal": true
     },
     {
       "cmd": "get_value_at",
@@ -14512,14 +14498,14 @@
             {
               "signal": "support_fixture.text_value",
               "value": "x",
-              "error": "FFR string value formatting is not yet supported",
-              "error_code": "UNSUPPORTED_SIGNAL_TYPE",
+              "error": "read failed",
+              "error_code": "FILE_READ_ERROR",
               "actual_time": 6000
             }
           ]
         }
       },
-      "equal": false
+      "equal": true
     },
     {
       "cmd": "get_value_at",
@@ -14555,14 +14541,14 @@
             {
               "signal": "support_fixture.text_value",
               "value": "x",
-              "error": "FFR string value formatting is not yet supported",
-              "error_code": "UNSUPPORTED_SIGNAL_TYPE",
+              "error": "read failed",
+              "error_code": "FILE_READ_ERROR",
               "actual_time": 6000
             }
           ]
         }
       },
-      "equal": false
+      "equal": true
     },
     {
       "cmd": "get_value_at",
@@ -14598,14 +14584,14 @@
             {
               "signal": "support_fixture.text_value",
               "value": "x",
-              "error": "FFR string value formatting is not yet supported",
-              "error_code": "UNSUPPORTED_SIGNAL_TYPE",
+              "error": "read failed",
+              "error_code": "FILE_READ_ERROR",
               "actual_time": 6000
             }
           ]
         }
       },
-      "equal": false
+      "equal": true
     },
     {
       "cmd": "get_value_between",
@@ -14627,13 +14613,16 @@
       },
       "ffr": {
         "id": 1,
-        "status": "error",
-        "error": {
-          "code": "UNSUPPORTED_SIGNAL_TYPE",
-          "message": "FFR string value formatting is not yet supported"
+        "status": "ok",
+        "data": {
+          "signal": "support_fixture.text_value",
+          "begin": 0,
+          "end": 6000,
+          "total_changes": 0,
+          "changes": []
         }
       },
-      "equal": false
+      "equal": true
     },
     {
       "cmd": "vc_count",
@@ -14685,13 +14674,17 @@
       },
       "ffr": {
         "id": 1,
-        "status": "error",
-        "error": {
-          "code": "UNSUPPORTED_SIGNAL_TYPE",
-          "message": "FFR string value formatting is not yet supported"
+        "status": "ok",
+        "data": {
+          "signal": "support_fixture.text_value",
+          "from_time": 1000,
+          "edge": "any",
+          "dir": "forward",
+          "found_time": 2000,
+          "value": ""
         }
       },
-      "equal": false
+      "equal": true
     },
     {
       "cmd": "next_edge",
@@ -14714,13 +14707,17 @@
       },
       "ffr": {
         "id": 1,
-        "status": "error",
-        "error": {
-          "code": "UNSUPPORTED_SIGNAL_TYPE",
-          "message": "FFR string value formatting is not yet supported"
+        "status": "ok",
+        "data": {
+          "signal": "support_fixture.text_value",
+          "from_time": 1000,
+          "edge": "any",
+          "dir": "backward",
+          "found_time": 0,
+          "value": ""
         }
       },
-      "equal": false
+      "equal": true
     }
   ]
 }

@@ -1,0 +1,19 @@
+FFR/NPI remaining-difference closure, 2026-10-09
+
+support fixture:
+  377 checks, 0 differences
+
+T-2022 fixture bit/array matrix:
+  202 checks, 0 differences
+Y-2026 fixture bit/array matrix:
+  202 checks, 0 differences
+
+Compatibility details:
+  - String point reads mirror NPI FILE_READ_ERROR.
+  - String ranges/counts/edges mirror NPI's empty-range, VC-count, and
+    time-only edge behavior for this Reader representation.
+  - Nested MDA intermediate nodes remain queryable composite values but are
+    hidden from scope signal listings, matching NPI.
+  - Backward-any edge on a bit-select uses a partial-cursor compatible
+    projection over parent events, including NPI's initial/unchanged-value
+    behavior.

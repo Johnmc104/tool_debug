@@ -153,8 +153,10 @@ class FfrBackend : public WaveBackend {
             int left = 0, right = 0; if (!parse_range(parts[i+1], left, right)) continue;
             SignalInfo s; s.name = leaf_name(key); s.full_name = key;
             s.left = left; s.right = right; s.direction = "none";
-            if (variables_.emplace(key, Var{s, 0, FSDB_VT_MDA, FSDB_BYTES_PER_BIT_UNKNOWN}).second)
-                signals_[parent_key].push_back(s);
+            // Intermediate multidimensional-array nodes are queryable
+            // composite values, but NPI does not expose them in scope signal
+            // listings. Keep them in variables_ for lookup only.
+            variables_.emplace(key, Var{s, 0, FSDB_VT_MDA, FSDB_BYTES_PER_BIT_UNKNOWN});
             parent_key = key;
         }
     }
@@ -322,6 +324,7 @@ class FfrBackend : public WaveBackend {
             if (range.size()>=2 && range.front()=='[' && range.back()==']')
                 range=range.substr(1,range.size()-2);
             result.info.name=leaf_name(source_path)+"."+range;
+            result.info.full_name=source_path+"."+range;
             result.info.left=result.info.right=0;
         }
         return result;
@@ -411,6 +414,41 @@ class FfrBackend : public WaveBackend {
             if (!first && value==last) continue;
             first=false; last=value; ++result.total;
             if (result.changes.size()<limit) result.changes.push_back({point_time,value});
+        }
+        return result;
+    }
+    Edge partial_backward_any_edge(const Var& slice, int64_t target) {
+        Edge result;
+        Cursor cursor(*this,slice.source);
+        if (ops_.first(cursor.handle)!=FSDB_RC_SUCCESS) return result;
+        std::vector<Value> events;
+        do {
+            auto value=current(cursor,"bin");
+            if (value.time>target) break;
+            value.value=project_slice(slice,value.value);
+            events.push_back(value);
+        } while (ops_.next(cursor.handle)==FSDB_RC_SUCCESS);
+        if (events.empty()) return result;
+        const size_t last=events.size()-1;
+        if (last==0) {
+            result.found=true;
+            result.value={events[0].time,std::string(events[0].value.size(),'x')};
+            return result;
+        }
+        if (events[last].value==events[last-1].value) {
+            // NPI's partial cursor reports the value before the first
+            // effective slice event when the latest parent VC leaves the
+            // selected bits unchanged.
+            result.found=true;
+            result.value={events[last-1].time,std::string(events[last].value.size(),'x')};
+            return result;
+        }
+        for (size_t i=last;i>0;--i) {
+            if (i==1 || events[i-1].value!=events[i-2].value) {
+                result.found=true;
+                result.value=events[i-1];
+                return result;
+            }
         }
         return result;
     }
@@ -515,6 +553,8 @@ public:
             auto value=project_slice(descriptor,composite_bits(descriptor.source,t));
             return {t,convert(value,radix)};
         }
+        if ((descriptor.type & 0x3f)==FSDB_VT_STRING)
+            throw BackendError("FILE_READ_ERROR", "read failed");
         Cursor c(*this,path); auto xtag=tag(std::min(t,info_.max_time));
         if (ops_.seek(c.handle,&xtag,nullptr)!=FSDB_RC_SUCCESS)
             throw BackendError("FILE_READ_ERROR", "read failed");
@@ -525,6 +565,7 @@ public:
         auto descriptor=lookup(path);
         if (!descriptor.id)
             return composite_range(path,begin,end,radix,limit);
+        if ((descriptor.type & 0x3f)==FSDB_VT_STRING) return {};
         Cursor c(*this,path); Range r; auto t=tag(std::min(begin,info_.max_time));
         if (ops_.seek(c.handle,&t,nullptr)!=FSDB_RC_SUCCESS) return r;
         Value v=current(c,radix);
@@ -543,6 +584,20 @@ public:
     }
     Edge edge(const std::string& path, int64_t t, const std::string& kind, bool backward) override {
         auto descriptor=lookup(path);
+        if ((descriptor.type & 0x3f)==FSDB_VT_STRING) {
+            Edge result;
+            if (kind!="any") return result;
+            Cursor c(*this,path); auto xtag=tag(std::min(t,info_.max_time));
+            if (ops_.seek(c.handle,&xtag,nullptr)!=FSDB_RC_SUCCESS) return result;
+            if ((backward ? ops_.prev(c.handle) : ops_.next(c.handle))!=FSDB_RC_SUCCESS) return result;
+            fsdbTag64 found{};
+            if (ops_.tag(c.handle,&found)!=FSDB_RC_SUCCESS) return result;
+            result.found=true;
+            result.value={static_cast<int64_t>(time(found)),""};
+            return result;
+        }
+        if (descriptor.sliced && descriptor.id && backward && kind=="any")
+            return partial_backward_any_edge(descriptor,t);
         if (!descriptor.id) {
             const auto& base=descriptor.sliced ? descriptor.source : path;
             std::set<int64_t> times; collect_composite_times(base,info_.min_time,info_.max_time,times);

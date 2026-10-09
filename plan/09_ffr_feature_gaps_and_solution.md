@@ -8,9 +8,9 @@
 
 建议继续使用动态 FsdbReader，并定向分析 libNPI 的 FDA 层以补齐语义。公开 SDK、NPI 行为对照、局部反汇编三者结合；遇到公开接口缺少元数据时，再分析 NPI 如何向底层 reader 请求相关信息。当前没有证据要求重写 FSDB 磁盘解析器。
 
-本轮先完成问题复现和调用链取证，随后已实施第一阶段修复。现在又补上了当前已验证 T-2022/Y-2026 Reader 的 packed struct 展开路径；string 仍未完成。
+本轮先完成问题复现和调用链取证，随后已实施第一阶段修复。现在已补上当前已验证 T-2022/Y-2026 Reader 的 packed struct 展开路径，并把 string 的失败、范围、计数和 edge 语义与 NPI 对齐。
 
-第一阶段已修改主工程后端：位选/片选、unpacked struct 路径、普通静态数组中间层和组合值、real 值/范围/计数，以及组合信号的 edge/count 已接入。修复后普通扩展矩阵保持原有 924 项、0 差异；结构体/数组样本的差异主要收敛为 packed struct 字段、string 和少量元数据语义。
+第一阶段已修改主工程后端：位选/片选、unpacked struct 路径、普通静态数组中间层和组合值、real 值/范围/计数，以及组合信号的 edge/count 已接入。本轮又修复了 packed struct 展开、string NPI 兼容语义、二维数组中间节点列表和片选 backward-any edge。普通扩展矩阵和结构体/数组矩阵目前均为 0 差异。
 
 ## 2. 已复现的问题
 
@@ -25,7 +25,7 @@
 | `matrix[1]` | 二维数组中间层可查 | （第一阶段已修复） | ARRAY_BEGIN 只建立最外层父项 |
 | `memory`、`matrix` 父值 | 如 `{1,205}`、`{{120,154},{188,222}}` | （第一阶段已修复） | 缺少组合值与多个叶元素事件的合并 |
 | `analog`（real） | 如 `-2.500000E+00`，可遍历和计数 | （第一阶段已修复） | Cursor 统一限制 1 byte/bit，连不需要值转换的计数也被拒绝 |
-| string | 当前 NPI 的 bin/hex/oct/dec 字符串查询也失败，但 VC 计数可用 | 查询和计数都报未支持 | 需要区分 NPI 格式限制、Reader 原始编码和工程接口能力 |
+| string | 点值返回 `FILE_READ_ERROR`，范围为空，VC 计数和 edge 时间可用 | （本轮已对齐） | 先保持 NPI 现有失败/事件语义，不伪造文本内容 |
 
 位选和片选问题在配套 2022、2026 样本上均复现。结构体、二维数组和录波暂停区间使用新增 VCS/Verdi 2026 样本验证。普通 `bit [7:0]` 在该样本中以四态数字编码返回，可正常读取；不能仅根据 SV 源码声明推断 Reader 的编码。
 
@@ -65,7 +65,7 @@ packed struct 的普通公开树默认只返回 `packet[11:0]`，`dtidcode=0`；
 
 这个入口不是稳定 FFR ABI。后续 SDK 即使版本字符串相近，也必须重新取证入口位置和回调结果；找不到匹配入口时应继续使用普通父总线视图并报告能力边界，不能把当前偏移推广为通用兼容方案。
 
-string 原始 VC 的 byte-count 为 4，不能按普通字符数组或 float 直接解释。本轮仅记录事件及元数据，未确认其引用值到文本的完整转换路径。当前 NPI worker 调用 L1 时统一传入数字 radix，也没有提供 `npiFsdbStringVal` 查询，因此 string 需要同时设计工程输出格式及后端能力。
+string 原始 VC 的 byte-count 为 4，不能按普通字符数组或 float 直接解释。当前 NPI worker 调用 L1 时统一传入数字 radix，也没有提供 `npiFsdbStringVal` 查询，因此本轮选择复现 NPI 的可观察行为：点值报告 `FILE_READ_ERROR`，范围为空，计数保留 Reader 事件数，edge 只返回时间而不填值。真正的文本解码仍是独立后续工作。
 
 ## 5. 推荐修改方式
 
@@ -90,7 +90,7 @@ ValueCursor
 后续按以下顺序实施，每步都有可验收的结果：
 
 1. packed struct：当前已完成 T-2022.06-SP2/Y-2026.03-SP2 的展开适配；新增 EDA/Reader 版本必须重新验证内部入口和字段顺序。
-2. string、动态数组、class 等按实际需求扩展，不与 packed struct 混为一个大版本。
+2. string 文本解码、动态数组、class 等按实际需求扩展，不与本轮的 NPI 兼容语义混为一个大版本。
 3. 对组合信号补充同时间多字段变化、无初始 VC 和大规模性能测试。
 这不是完整克隆 NPI。先覆盖 vwave 现有命令实际需要的信号解析、类型描述和事件语义，继续由厂商 Reader 负责磁盘读取与解压。
 
@@ -98,7 +98,7 @@ ValueCursor
 
 修复前的新增矩阵共 **781 项查询，641 项与 NPI 存在差异**：2022/2026 现有样本扩展矩阵各 202 项、172 项差异；2026 新样本 377 项、297 项差异。其中包括首版已经声明不支持的类型，不应把 641 解释为 641 个独立 bug。
 
-第一阶段修复后，现有样本 924 项仍为 0 差异；配套 2022 样本 3404 项、配套 2026 样本 1709 项均为 0 差异。扩展位选矩阵为 202 项、47 项差异；启用 packed struct 展开后，结构体/二维数组矩阵 377 项降为 26 项差异。剩余主要是 string 未支持、FFR 列出二维数组中间节点的元数据差异，以及一个数组位选 edge 边界语义差异；`packet.payload`、`packet.tag`、packed struct 父值和 `packet[7:0]` 点值/范围已对齐。
+第一阶段修复后，现有样本 924 项仍为 0 差异；配套 2022 样本 3404 项、配套 2026 样本 1709 项均为 0 差异。修复剩余差异后，扩展位选矩阵在 T-2022/Y-2026 上各为 202 项、0 差异；结构体/二维数组矩阵为 377 项、0 差异。packed struct 字段、string 当前 NPI 语义、数组中间节点列表和片选 edge 均已纳入对照。
 
 此前 4342 项、0 差异只覆盖当时的数字信号矩阵；不能推出所有数字访问形式和所有类型都兼容。新增位选、结构体和数组中间层正好补出了原测试的空白。
 
@@ -110,6 +110,7 @@ ValueCursor
 - [第一阶段配套样本回归](../reverse_analysis/evidence/ffr_support/fixture_after_fix_2022.json)、[2026 回归](../reverse_analysis/evidence/ffr_support/fixture_after_fix_2026.json)
 - [packed struct 展开后的结构体/数组差分](../reverse_analysis/evidence/ffr_support/support_packed_after_fix.json)
 - [packed struct 内部入口取证](../reverse_analysis/evidence/ffr_support/packed_expand_probe.txt)
+- [剩余差异闭环记录](../reverse_analysis/evidence/ffr_support/remaining_diff_after_fix.txt)
 - [Reader 原始树与 real 事件](../reverse_analysis/evidence/ffr_support/support_raw.txt)
 - [libNPI 定向调用链](../reverse_analysis/evidence/ffr_support/npi_calls.json)
 - [差分与取证脚本](../reverse_analysis/scripts/analyze_ffr_support.py)

@@ -160,7 +160,12 @@ def main():
                     assert analog['data']['values'][0]['value'] == '-2.500000E+00'
                     for signal in ['fixture.message']:
                         unsupported = request(ffr, 'get_value_at', {'signals': [signal], 'time': 0})
-                        assert unsupported['data']['values'][0]['error_code'] == 'UNSUPPORTED_SIGNAL_TYPE'
+                        # NPI itself reports FILE_READ_ERROR for this string
+                        # representation; FFR mirrors that result after the
+                        # string parity fix. Older readers may reject it
+                        # earlier as an unsupported value type.
+                        assert unsupported['data']['values'][0]['error_code'] in {
+                            'FILE_READ_ERROR', 'UNSUPPORTED_SIGNAL_TYPE'}
                     memory = request(ffr, 'get_value_at', {'signals': ['fixture.memory'], 'time': 0})
                     assert memory['data']['values'][0]['value'] == '{00000001,00000010}'
                 checks += 12 + (3 if args.fixture else 0)
