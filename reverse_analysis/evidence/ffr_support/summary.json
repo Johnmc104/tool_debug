@@ -1,0 +1,45 @@
+{
+  "date": "2026-10-09",
+  "baseline_commit": "968a0f3",
+  "backend_modified": false,
+  "matrices": [
+    {
+      "evidence": "expanded2022_queries.json",
+      "sdk": "/opt/Synopsys/verdi/T-2022.06-SP2",
+      "checks": 202,
+      "different": 172,
+      "sample_sha256": "c7026c564a7ae91d0fd81740bcd19bbadf25ecc929e8a8a5d0ed79699a8d4eba"
+    },
+    {
+      "evidence": "expanded_queries.json",
+      "sdk": "/opt/Synopsys/verdi/Y-2026.03-SP2",
+      "checks": 202,
+      "different": 172,
+      "sample_sha256": "841a5c298abe4621e40311e807a32775d7894a7ef4029712e672b57c3ccf95d7"
+    },
+    {
+      "evidence": "support_queries.json",
+      "sdk": "/opt/Synopsys/verdi/Y-2026.03-SP2",
+      "checks": 377,
+      "different": 297,
+      "sample_sha256": "f25453d6a4bffd47590c63a5e902ad3eb0e2f4ff51748d046b94fff7d22a3126"
+    }
+  ],
+  "checks": 781,
+  "different": 641,
+  "interpretation": "差异包含首版明确不支持的类型；查询条目数量不等于独立 bug 数量。",
+  "confirmed": [
+    "两套 SDK 的数字位选/片选缺失",
+    "unpacked struct 字段路径错误",
+    "packed struct 字段缺失且父值格式不同",
+    "多维数组中间层与组合值缺失",
+    "公开 Reader 接口可读取普通 real，适配层目前拒绝"
+  ],
+  "unresolved": [
+    "packed struct 完整字段布局获取路径",
+    "string 原始引用值到文本的转换",
+    "无初始 VC 的实际边界样本"
+  ],
+  "npi_reference": "npi",
+  "note": "本轮 NPI 查询参考使用 release/bin/vwave-npi-worker（2026 配套构建），与所选 FFR SDK 分别对照；2022 FFR 使用其配套 FSDB 6.0 样本。"
+}

@@ -1,0 +1,43 @@
+
+/opt/Synopsys/verdi/Y-2026.03-SP2/share/NPI/lib/linux64/libNPI.so:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+00000000021fc676 <fda_val_string_t::get_value_string(unsigned char const*) const>:
+ 21fc676:	53                   	push   %rbx
+ 21fc677:	48 89 f3             	mov    %rsi,%rbx
+ 21fc67a:	0f b6 05 bf 08 ad 03 	movzbl 0x3ad08bf(%rip),%eax        # 5cccf40 <guard variable for fda_val_string_t::get_value_string(unsigned char const*) const::returnVal>
+ 21fc681:	84 c0                	test   %al,%al
+ 21fc683:	74 21                	je     21fc6a6 <fda_val_string_t::get_value_string(unsigned char const*) const+0x30>
+ 21fc685:	48 85 db             	test   %rbx,%rbx
+ 21fc688:	74 65                	je     21fc6ef <fda_val_string_t::get_value_string(unsigned char const*) const+0x79>
+ 21fc68a:	48 89 de             	mov    %rbx,%rsi
+ 21fc68d:	48 8d 1d cc 08 ad 03 	lea    0x3ad08cc(%rip),%rbx        # 5cccf60 <fda_val_string_t::get_value_string(unsigned char const*) const::returnVal>
+ 21fc694:	48 89 df             	mov    %rbx,%rdi
+ 21fc697:	e8 66 ba 07 02       	callq  4278102 <vbt_string_t::operator=(char const*)>
+ 21fc69c:	48 89 df             	mov    %rbx,%rdi
+ 21fc69f:	e8 4e b0 07 02       	callq  42776f2 <vbt_string_t::getString() const>
+ 21fc6a4:	5b                   	pop    %rbx
+ 21fc6a5:	c3                   	retq   
+ 21fc6a6:	48 8d 3d 93 08 ad 03 	lea    0x3ad0893(%rip),%rdi        # 5cccf40 <guard variable for fda_val_string_t::get_value_string(unsigned char const*) const::returnVal>
+ 21fc6ad:	e8 ce df 6a 02       	callq  48aa680 <__cxa_guard_acquire>
+ 21fc6b2:	85 c0                	test   %eax,%eax
+ 21fc6b4:	74 cf                	je     21fc685 <fda_val_string_t::get_value_string(unsigned char const*) const+0xf>
+ 21fc6b6:	be 00 00 00 00       	mov    $0x0,%esi
+ 21fc6bb:	48 8d 3d 9e 08 ad 03 	lea    0x3ad089e(%rip),%rdi        # 5cccf60 <fda_val_string_t::get_value_string(unsigned char const*) const::returnVal>
+ 21fc6c2:	e8 a1 a8 07 02       	callq  4276f68 <vbt_string_t::vbt_string_t(_vmalloc_s*)>
+ 21fc6c7:	48 8d 15 f2 bf 6a 03 	lea    0x36abff2(%rip),%rdx        # 58a86c0 <__dso_handle>
+ 21fc6ce:	48 8d 35 8b 08 ad 03 	lea    0x3ad088b(%rip),%rsi        # 5cccf60 <fda_val_string_t::get_value_string(unsigned char const*) const::returnVal>
+ 21fc6d5:	48 8b 3d 2c a7 68 03 	mov    0x368a72c(%rip),%rdi        # 5886e08 <.got+0x1e8>
+ 21fc6dc:	e8 0f 39 f1 02       	callq  510fff0 <__cxa_atexit@plt>
+ 21fc6e1:	48 8d 3d 58 08 ad 03 	lea    0x3ad0858(%rip),%rdi        # 5cccf40 <guard variable for fda_val_string_t::get_value_string(unsigned char const*) const::returnVal>
+ 21fc6e8:	e8 93 e0 6a 02       	callq  48aa780 <__cxa_guard_release>
+ 21fc6ed:	eb 96                	jmp    21fc685 <fda_val_string_t::get_value_string(unsigned char const*) const+0xf>
+ 21fc6ef:	48 89 d8             	mov    %rbx,%rax
+ 21fc6f2:	eb b0                	jmp    21fc6a4 <fda_val_string_t::get_value_string(unsigned char const*) const+0x2e>
+ 21fc6f4:	48 89 c3             	mov    %rax,%rbx
+ 21fc6f7:	48 8d 3d 42 08 ad 03 	lea    0x3ad0842(%rip),%rdi        # 5cccf40 <guard variable for fda_val_string_t::get_value_string(unsigned char const*) const::returnVal>
+ 21fc6fe:	e8 2d e0 6a 02       	callq  48aa730 <__cxa_guard_abort>
+ 21fc703:	48 89 df             	mov    %rbx,%rdi
+ 21fc706:	e8 a5 21 ef 02       	callq  50ee8b0 <_Unwind_Resume>

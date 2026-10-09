@@ -1,0 +1,73 @@
+
+/opt/Synopsys/verdi/Y-2026.03-SP2/share/NPI/lib/linux64/libNPI.so:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+0000000002215ffc <fda_vch_leaf_t::goto_time(unsigned long long const&)>:
+ 2215ffc:	55                   	push   %rbp
+ 2215ffd:	53                   	push   %rbx
+ 2215ffe:	48 83 ec 18          	sub    $0x18,%rsp
+ 2216002:	80 67 20 fe          	andb   $0xfe,0x20(%rdi)
+ 2216006:	48 83 7f 28 00       	cmpq   $0x0,0x28(%rdi)
+ 221600b:	0f 84 c4 00 00 00    	je     22160d5 <fda_vch_leaf_t::goto_time(unsigned long long const&)+0xd9>
+ 2216011:	48 89 fb             	mov    %rdi,%rbx
+ 2216014:	48 89 e5             	mov    %rsp,%rbp
+ 2216017:	48 89 ea             	mov    %rbp,%rdx
+ 221601a:	e8 b7 ff ff ff       	callq  2215fd6 <fda_vch_t::convert_time_in_range(unsigned long long const&, fsdbXTag&) const>
+ 221601f:	48 8b 7b 28          	mov    0x28(%rbx),%rdi
+ 2216023:	ba 00 00 00 00       	mov    $0x0,%edx
+ 2216028:	48 89 ee             	mov    %rbp,%rsi
+ 221602b:	e8 52 3f da 01       	callq  3fb9f82 <ffrVCIterOne::ffrGotoXTag(void*, int*)>
+ 2216030:	85 c0                	test   %eax,%eax
+ 2216032:	75 12                	jne    2216046 <fda_vch_leaf_t::goto_time(unsigned long long const&)+0x4a>
+ 2216034:	48 89 e6             	mov    %rsp,%rsi
+ 2216037:	48 8b 7b 28          	mov    0x28(%rbx),%rdi
+ 221603b:	e8 82 3f da 01       	callq  3fb9fc2 <ffrVCIterOne::ffrGetXTag(void*)>
+ 2216040:	89 c5                	mov    %eax,%ebp
+ 2216042:	85 c0                	test   %eax,%eax
+ 2216044:	74 20                	je     2216066 <fda_vch_leaf_t::goto_time(unsigned long long const&)+0x6a>
+ 2216046:	48 8d 74 24 08       	lea    0x8(%rsp),%rsi
+ 221604b:	48 8b 7b 28          	mov    0x28(%rbx),%rdi
+ 221604f:	e8 18 9f da 01       	callq  3fbff6c <ffrVCIterOne::ffrGetMaxXTag(void*)>
+ 2216054:	bd ff ff ff ff       	mov    $0xffffffff,%ebp
+ 2216059:	85 c0                	test   %eax,%eax
+ 221605b:	74 1e                	je     221607b <fda_vch_leaf_t::goto_time(unsigned long long const&)+0x7f>
+ 221605d:	89 e8                	mov    %ebp,%eax
+ 221605f:	48 83 c4 18          	add    $0x18,%rsp
+ 2216063:	5b                   	pop    %rbx
+ 2216064:	5d                   	pop    %rbp
+ 2216065:	c3                   	retq   
+ 2216066:	80 4b 20 02          	orb    $0x2,0x20(%rbx)
+ 221606a:	48 89 e6             	mov    %rsp,%rsi
+ 221606d:	48 8b 03             	mov    (%rbx),%rax
+ 2216070:	48 89 df             	mov    %rbx,%rdi
+ 2216073:	ff 90 60 01 00 00    	callq  *0x160(%rax)
+ 2216079:	eb e2                	jmp    221605d <fda_vch_leaf_t::goto_time(unsigned long long const&)+0x61>
+ 221607b:	48 8d 74 24 08       	lea    0x8(%rsp),%rsi
+ 2216080:	48 89 e7             	mov    %rsp,%rdi
+ 2216083:	e8 00 06 ff ff       	callq  2206688 <fda_fsdb_xtag_larger(fsdbXTag const&, fsdbXTag const&)>
+ 2216088:	84 c0                	test   %al,%al
+ 221608a:	74 d1                	je     221605d <fda_vch_leaf_t::goto_time(unsigned long long const&)+0x61>
+ 221608c:	48 8d 74 24 08       	lea    0x8(%rsp),%rsi
+ 2216091:	48 8b 7b 28          	mov    0x28(%rbx),%rdi
+ 2216095:	ba 00 00 00 00       	mov    $0x0,%edx
+ 221609a:	e8 e3 3e da 01       	callq  3fb9f82 <ffrVCIterOne::ffrGotoXTag(void*, int*)>
+ 221609f:	85 c0                	test   %eax,%eax
+ 22160a1:	75 ba                	jne    221605d <fda_vch_leaf_t::goto_time(unsigned long long const&)+0x61>
+ 22160a3:	48 8d 74 24 08       	lea    0x8(%rsp),%rsi
+ 22160a8:	48 8b 7b 28          	mov    0x28(%rbx),%rdi
+ 22160ac:	e8 11 3f da 01       	callq  3fb9fc2 <ffrVCIterOne::ffrGetXTag(void*)>
+ 22160b1:	89 c5                	mov    %eax,%ebp
+ 22160b3:	85 c0                	test   %eax,%eax
+ 22160b5:	75 17                	jne    22160ce <fda_vch_leaf_t::goto_time(unsigned long long const&)+0xd2>
+ 22160b7:	80 4b 20 02          	orb    $0x2,0x20(%rbx)
+ 22160bb:	48 8d 74 24 08       	lea    0x8(%rsp),%rsi
+ 22160c0:	48 8b 03             	mov    (%rbx),%rax
+ 22160c3:	48 89 df             	mov    %rbx,%rdi
+ 22160c6:	ff 90 60 01 00 00    	callq  *0x160(%rax)
+ 22160cc:	eb 8f                	jmp    221605d <fda_vch_leaf_t::goto_time(unsigned long long const&)+0x61>
+ 22160ce:	bd ff ff ff ff       	mov    $0xffffffff,%ebp
+ 22160d3:	eb 88                	jmp    221605d <fda_vch_leaf_t::goto_time(unsigned long long const&)+0x61>
+ 22160d5:	bd ff ff ff ff       	mov    $0xffffffff,%ebp
+ 22160da:	eb 81                	jmp    221605d <fda_vch_leaf_t::goto_time(unsigned long long const&)+0x61>

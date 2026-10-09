@@ -1,0 +1,84 @@
+
+/opt/Synopsys/verdi/Y-2026.03-SP2/share/NPI/lib/linux64/libNPI.so:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+0000000002224520 <npi_fsdb_sig_by_name(void*, char const*, void*)>:
+ 2224520:	41 55                	push   %r13
+ 2224522:	41 54                	push   %r12
+ 2224524:	55                   	push   %rbp
+ 2224525:	53                   	push   %rbx
+ 2224526:	48 83 ec 18          	sub    $0x18,%rsp
+ 222452a:	48 89 fd             	mov    %rdi,%rbp
+ 222452d:	49 89 f4             	mov    %rsi,%r12
+ 2224530:	48 89 d3             	mov    %rdx,%rbx
+ 2224533:	48 8b 05 c6 4b 66 03 	mov    0x3664bc6(%rip),%rax        # 5889100 <.got+0x24e0>
+ 222453a:	48 83 38 00          	cmpq   $0x0,(%rax)
+ 222453e:	0f 84 89 00 00 00    	je     22245cd <npi_fsdb_sig_by_name(void*, char const*, void*)+0xad>
+ 2224544:	48 8b 05 b5 4b 66 03 	mov    0x3664bb5(%rip),%rax        # 5889100 <.got+0x24e0>
+ 222454b:	48 8b 00             	mov    (%rax),%rax
+ 222454e:	48 8b 40 10          	mov    0x10(%rax),%rax
+ 2224552:	48 85 c0             	test   %rax,%rax
+ 2224555:	74 6b                	je     22245c2 <npi_fsdb_sig_by_name(void*, char const*, void*)+0xa2>
+ 2224557:	48 85 ed             	test   %rbp,%rbp
+ 222455a:	0f 84 b6 00 00 00    	je     2224616 <npi_fsdb_sig_by_name(void*, char const*, void*)+0xf6>
+ 2224560:	48 8b 40 08          	mov    0x8(%rax),%rax
+ 2224564:	48 85 c0             	test   %rax,%rax
+ 2224567:	74 59                	je     22245c2 <npi_fsdb_sig_by_name(void*, char const*, void*)+0xa2>
+ 2224569:	48 8b 38             	mov    (%rax),%rdi
+ 222456c:	48 85 ff             	test   %rdi,%rdi
+ 222456f:	0f 84 b2 00 00 00    	je     2224627 <npi_fsdb_sig_by_name(void*, char const*, void*)+0x107>
+ 2224575:	48 8d 54 24 08       	lea    0x8(%rsp),%rdx
+ 222457a:	48 89 ee             	mov    %rbp,%rsi
+ 222457d:	e8 ba 4a 03 00       	callq  225903c <dbt_slist_t::find(void*, dbt_slistEntry_t*&)>
+ 2224582:	48 85 c0             	test   %rax,%rax
+ 2224585:	0f 84 9c 00 00 00    	je     2224627 <npi_fsdb_sig_by_name(void*, char const*, void*)+0x107>
+ 222458b:	4d 85 e4             	test   %r12,%r12
+ 222458e:	0f 84 87 00 00 00    	je     222461b <npi_fsdb_sig_by_name(void*, char const*, void*)+0xfb>
+ 2224594:	48 85 db             	test   %rbx,%rbx
+ 2224597:	74 70                	je     2224609 <npi_fsdb_sig_by_name(void*, char const*, void*)+0xe9>
+ 2224599:	48 89 ee             	mov    %rbp,%rsi
+ 222459c:	48 89 df             	mov    %rbx,%rdi
+ 222459f:	48 8b 05 0a 4b 66 03 	mov    0x3664b0a(%rip),%rax        # 58890b0 <.got+0x2490>
+ 22245a6:	ff 10                	callq  *(%rax)
+ 22245a8:	84 c0                	test   %al,%al
+ 22245aa:	74 74                	je     2224620 <npi_fsdb_sig_by_name(void*, char const*, void*)+0x100>
+ 22245ac:	48 8b 03             	mov    (%rbx),%rax
+ 22245af:	b9 00 00 00 00       	mov    $0x0,%ecx
+ 22245b4:	ba 00 00 00 00       	mov    $0x0,%edx
+ 22245b9:	4c 89 e6             	mov    %r12,%rsi
+ 22245bc:	48 89 df             	mov    %rbx,%rdi
+ 22245bf:	ff 50 30             	callq  *0x30(%rax)
+ 22245c2:	48 83 c4 18          	add    $0x18,%rsp
+ 22245c6:	5b                   	pop    %rbx
+ 22245c7:	5d                   	pop    %rbp
+ 22245c8:	41 5c                	pop    %r12
+ 22245ca:	41 5d                	pop    %r13
+ 22245cc:	c3                   	retq   
+ 22245cd:	bf 18 00 00 00       	mov    $0x18,%edi
+ 22245d2:	e8 99 cc 6b 02       	callq  48e1270 <operator new(unsigned long)>
+ 22245d7:	49 89 c5             	mov    %rax,%r13
+ 22245da:	48 89 c7             	mov    %rax,%rdi
+ 22245dd:	e8 1e 9a fe ff       	callq  220e000 <fda_file_mgr_t::fda_file_mgr_t()>
+ 22245e2:	48 8b 05 17 4b 66 03 	mov    0x3664b17(%rip),%rax        # 5889100 <.got+0x24e0>
+ 22245e9:	4c 89 28             	mov    %r13,(%rax)
+ 22245ec:	e9 53 ff ff ff       	jmpq   2224544 <npi_fsdb_sig_by_name(void*, char const*, void*)+0x24>
+ 22245f1:	48 89 c3             	mov    %rax,%rbx
+ 22245f4:	be 18 00 00 00       	mov    $0x18,%esi
+ 22245f9:	4c 89 ef             	mov    %r13,%rdi
+ 22245fc:	e8 ef 82 64 02       	callq  486c8f0 <operator delete(void*, unsigned long)>
+ 2224601:	48 89 df             	mov    %rbx,%rdi
+ 2224604:	e8 a7 a2 ec 02       	callq  50ee8b0 <_Unwind_Resume>
+ 2224609:	4c 89 e6             	mov    %r12,%rsi
+ 222460c:	48 89 ef             	mov    %rbp,%rdi
+ 222460f:	e8 9c 4a fe ff       	callq  22090b0 <fda_file_t::get_sig_by_name(char const*)>
+ 2224614:	eb ac                	jmp    22245c2 <npi_fsdb_sig_by_name(void*, char const*, void*)+0xa2>
+ 2224616:	48 89 e8             	mov    %rbp,%rax
+ 2224619:	eb a7                	jmp    22245c2 <npi_fsdb_sig_by_name(void*, char const*, void*)+0xa2>
+ 222461b:	4c 89 e0             	mov    %r12,%rax
+ 222461e:	eb a2                	jmp    22245c2 <npi_fsdb_sig_by_name(void*, char const*, void*)+0xa2>
+ 2224620:	b8 00 00 00 00       	mov    $0x0,%eax
+ 2224625:	eb 9b                	jmp    22245c2 <npi_fsdb_sig_by_name(void*, char const*, void*)+0xa2>
+ 2224627:	b8 00 00 00 00       	mov    $0x0,%eax
+ 222462c:	eb 94                	jmp    22245c2 <npi_fsdb_sig_by_name(void*, char const*, void*)+0xa2>

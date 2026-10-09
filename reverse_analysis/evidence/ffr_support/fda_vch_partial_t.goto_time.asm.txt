@@ -1,0 +1,49 @@
+
+/opt/Synopsys/verdi/Y-2026.03-SP2/share/NPI/lib/linux64/libNPI.so:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+00000000022160dc <fda_vch_partial_t::goto_time(unsigned long long const&)>:
+ 22160dc:	48 83 7f 28 00       	cmpq   $0x0,0x28(%rdi)
+ 22160e1:	74 7d                	je     2216160 <fda_vch_partial_t::goto_time(unsigned long long const&)+0x84>
+ 22160e3:	55                   	push   %rbp
+ 22160e4:	53                   	push   %rbx
+ 22160e5:	48 83 ec 18          	sub    $0x18,%rsp
+ 22160e9:	48 89 fb             	mov    %rdi,%rbx
+ 22160ec:	48 8d 6c 24 08       	lea    0x8(%rsp),%rbp
+ 22160f1:	48 89 ea             	mov    %rbp,%rdx
+ 22160f4:	e8 dd fe ff ff       	callq  2215fd6 <fda_vch_t::convert_time_in_range(unsigned long long const&, fsdbXTag&) const>
+ 22160f9:	48 8b 7b 28          	mov    0x28(%rbx),%rdi
+ 22160fd:	ba 00 00 00 00       	mov    $0x0,%edx
+ 2216102:	48 89 ee             	mov    %rbp,%rsi
+ 2216105:	e8 78 3e da 01       	callq  3fb9f82 <ffrVCIterOne::ffrGotoXTag(void*, int*)>
+ 221610a:	89 c2                	mov    %eax,%edx
+ 221610c:	b8 ff ff ff ff       	mov    $0xffffffff,%eax
+ 2216111:	85 d2                	test   %edx,%edx
+ 2216113:	74 07                	je     221611c <fda_vch_partial_t::goto_time(unsigned long long const&)+0x40>
+ 2216115:	48 83 c4 18          	add    $0x18,%rsp
+ 2216119:	5b                   	pop    %rbx
+ 221611a:	5d                   	pop    %rbp
+ 221611b:	c3                   	retq   
+ 221611c:	48 89 ee             	mov    %rbp,%rsi
+ 221611f:	48 8b 7b 28          	mov    0x28(%rbx),%rdi
+ 2216123:	e8 9a 3e da 01       	callq  3fb9fc2 <ffrVCIterOne::ffrGetXTag(void*)>
+ 2216128:	89 c2                	mov    %eax,%edx
+ 221612a:	b8 ff ff ff ff       	mov    $0xffffffff,%eax
+ 221612f:	85 d2                	test   %edx,%edx
+ 2216131:	75 e2                	jne    2216115 <fda_vch_partial_t::goto_time(unsigned long long const&)+0x39>
+ 2216133:	80 4b 20 02          	orb    $0x2,0x20(%rbx)
+ 2216137:	48 8b 03             	mov    (%rbx),%rax
+ 221613a:	48 89 df             	mov    %rbx,%rdi
+ 221613d:	ff 90 50 01 00 00    	callq  *0x150(%rax)
+ 2216143:	48 89 ee             	mov    %rbp,%rsi
+ 2216146:	48 8b 03             	mov    (%rbx),%rax
+ 2216149:	48 89 df             	mov    %rbx,%rdi
+ 221614c:	ff 90 48 01 00 00    	callq  *0x148(%rax)
+ 2216152:	48 8b 03             	mov    (%rbx),%rax
+ 2216155:	48 89 df             	mov    %rbx,%rdi
+ 2216158:	ff 90 20 01 00 00    	callq  *0x120(%rax)
+ 221615e:	eb b5                	jmp    2216115 <fda_vch_partial_t::goto_time(unsigned long long const&)+0x39>
+ 2216160:	b8 ff ff ff ff       	mov    $0xffffffff,%eax
+ 2216165:	c3                   	retq   

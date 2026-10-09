@@ -1,0 +1,39 @@
+
+/opt/Synopsys/verdi/Y-2026.03-SP2/share/NPI/lib/linux64/libNPI.so:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+0000000002208bbd <fda_double_to_char(double const&)>:
+ 2208bbd:	55                   	push   %rbp
+ 2208bbe:	53                   	push   %rbx
+ 2208bbf:	48 83 ec 08          	sub    $0x8,%rsp
+ 2208bc3:	48 89 fb             	mov    %rdi,%rbx
+ 2208bc6:	48 8d 3d 53 e0 67 03 	lea    0x367e053(%rip),%rdi        # 5886c20 <.got>
+ 2208bcd:	e8 8e 77 f0 02       	callq  5110360 <__tls_get_addr@plt>
+ 2208bd2:	48 83 b8 e8 10 00 00 	cmpq   $0x0,0x10e8(%rax)
+ 2208bd9:	00 
+ 2208bda:	74 4e                	je     2208c2a <fda_double_to_char(double const&)+0x6d>
+ 2208bdc:	48 8b 2b             	mov    (%rbx),%rbp
+ 2208bdf:	48 8d 3d 3a e0 67 03 	lea    0x367e03a(%rip),%rdi        # 5886c20 <.got>
+ 2208be6:	e8 75 77 f0 02       	callq  5110360 <__tls_get_addr@plt>
+ 2208beb:	48 89 c3             	mov    %rax,%rbx
+ 2208bee:	48 8b b8 e8 10 00 00 	mov    0x10e8(%rax),%rdi
+ 2208bf5:	66 48 0f 6e c5       	movq   %rbp,%xmm0
+ 2208bfa:	48 8d 35 b7 51 fa fe 	lea    -0x105ae49(%rip),%rsi        # 11addb8 <ul_jrand_seed+0x118e94c>
+ 2208c01:	b8 01 00 00 00       	mov    $0x1,%eax
+ 2208c06:	e8 55 04 07 02       	callq  4279060 <vbt_string_t::vFormat(char const*, ...)>
+ 2208c0b:	48 8b bb e8 10 00 00 	mov    0x10e8(%rbx),%rdi
+ 2208c12:	e8 d9 e5 06 02       	callq  42771f0 <vbt_string_t::makeUpper()>
+ 2208c17:	48 8b bb e8 10 00 00 	mov    0x10e8(%rbx),%rdi
+ 2208c1e:	e8 cf ea 06 02       	callq  42776f2 <vbt_string_t::getString() const>
+ 2208c23:	48 83 c4 08          	add    $0x8,%rsp
+ 2208c27:	5b                   	pop    %rbx
+ 2208c28:	5d                   	pop    %rbp
+ 2208c29:	c3                   	retq   
+ 2208c2a:	e8 22 dc ff ff       	callq  2206851 <fda_get_str()>
+ 2208c2f:	48 89 c5             	mov    %rax,%rbp
+ 2208c32:	48 8d 3d e7 df 67 03 	lea    0x367dfe7(%rip),%rdi        # 5886c20 <.got>
+ 2208c39:	e8 22 77 f0 02       	callq  5110360 <__tls_get_addr@plt>
+ 2208c3e:	48 89 a8 e8 10 00 00 	mov    %rbp,0x10e8(%rax)
+ 2208c45:	eb 95                	jmp    2208bdc <fda_double_to_char(double const&)+0x1f>

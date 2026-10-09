@@ -77,6 +77,8 @@ FFR 库来源为 `--verdi-home` 或当前 `VERDI_HOME`，加载配套 `share/Fsd
 
 FFR 首版支持四态数字信号、宽总线和数组元素，复用原有查询命令。real、string、事务/属性值以及整个数组的值读取目前返回明确的未支持错误。范围查询先输出起始时刻的值，`vc-count` 仅计真实记录；边沿查找保持原 NPI 命令的边界行为。
 
+补充测试发现：当前 FFR 尚未支持总线位选/片选、数组中间层和结构体字段；unpacked struct 还存在字段路径错误，packed struct 的父值格式与 NPI 不一致。问题复现及修复方案见 [FFR 功能缺口分析](plan/09_ffr_feature_gaps_and_solution.md)。
+
 运行时 `vwave` 与相应 `vwave-*-worker` 必须位于同一目录，发布包已包含两个 worker。FFR 前端和 worker 不直接链接厂商库，不需要完整 Verdi 安装；选定的配套 reader 库及其运行依赖必须可用。NPI 保留编译时配套安装和许可证行为。
 
 CentOS 7/glibc 2.17 已验证 **2022 reader** 的完整 open、查询和 close。2026 reader 自身需要更高 glibc，动态加载不能降低该要求。构建时静态链接 C++ 运行库，以减少用户切换 EDA 后的 GLIBCXX 冲突；发布仍应核验生成二进制的 GLIBC 要求。

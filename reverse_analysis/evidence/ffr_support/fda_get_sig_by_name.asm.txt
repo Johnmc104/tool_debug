@@ -1,0 +1,123 @@
+
+/opt/Synopsys/verdi/Y-2026.03-SP2/share/NPI/lib/linux64/libNPI.so:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+0000000002208f14 <fda_get_sig_by_name(char const*, fda_scope_t*)>:
+ 2208f14:	55                   	push   %rbp
+ 2208f15:	48 89 e5             	mov    %rsp,%rbp
+ 2208f18:	41 57                	push   %r15
+ 2208f1a:	41 56                	push   %r14
+ 2208f1c:	41 55                	push   %r13
+ 2208f1e:	41 54                	push   %r12
+ 2208f20:	53                   	push   %rbx
+ 2208f21:	48 83 e4 f0          	and    $0xfffffffffffffff0,%rsp
+ 2208f25:	48 83 ec 60          	sub    $0x60,%rsp
+ 2208f29:	48 89 7c 24 08       	mov    %rdi,0x8(%rsp)
+ 2208f2e:	48 85 ff             	test   %rdi,%rdi
+ 2208f31:	0f 84 4c 01 00 00    	je     2209083 <fda_get_sig_by_name(char const*, fda_scope_t*)+0x16f>
+ 2208f37:	49 89 ff             	mov    %rdi,%r15
+ 2208f3a:	48 89 f3             	mov    %rsi,%rbx
+ 2208f3d:	48 85 f6             	test   %rsi,%rsi
+ 2208f40:	0f 84 3d 01 00 00    	je     2209083 <fda_get_sig_by_name(char const*, fda_scope_t*)+0x16f>
+ 2208f46:	4c 8d 64 24 30       	lea    0x30(%rsp),%r12
+ 2208f4b:	4c 89 e7             	mov    %r12,%rdi
+ 2208f4e:	e8 33 10 07 02       	callq  4279f86 <vbt_usn_t::vbt_usn_t()>
+ 2208f53:	ba 2e 00 00 00       	mov    $0x2e,%edx
+ 2208f58:	4c 89 fe             	mov    %r15,%rsi
+ 2208f5b:	4c 89 e7             	mov    %r12,%rdi
+ 2208f5e:	e8 d3 4d 07 02       	callq  427dd36 <vbt_usn_t::set_usn_str(char const*, char)>
+ 2208f63:	4c 89 e7             	mov    %r12,%rdi
+ 2208f66:	e8 ef 10 07 02       	callq  427a05a <vbt_usn_t::get_scope_num()>
+ 2208f6b:	41 89 c6             	mov    %eax,%r14d
+ 2208f6e:	89 44 24 04          	mov    %eax,0x4(%rsp)
+ 2208f72:	85 c0                	test   %eax,%eax
+ 2208f74:	0f 8e 01 01 00 00    	jle    220907b <fda_get_sig_by_name(char const*, fda_scope_t*)+0x167>
+ 2208f7a:	48 8d 7c 24 10       	lea    0x10(%rsp),%rdi
+ 2208f7f:	be 00 00 00 00       	mov    $0x0,%esi
+ 2208f84:	e8 df df 06 02       	callq  4276f68 <vbt_string_t::vbt_string_t(_vmalloc_s*)>
+ 2208f89:	41 83 fe 01          	cmp    $0x1,%r14d
+ 2208f8d:	7e 7a                	jle    2209009 <fda_get_sig_by_name(char const*, fda_scope_t*)+0xf5>
+ 2208f8f:	45 8d 7e ff          	lea    -0x1(%r14),%r15d
+ 2208f93:	41 bc 00 00 00 00    	mov    $0x0,%r12d
+ 2208f99:	4c 8d 74 24 30       	lea    0x30(%rsp),%r14
+ 2208f9e:	eb 40                	jmp    2208fe0 <fda_get_sig_by_name(char const*, fda_scope_t*)+0xcc>
+ 2208fa0:	48 89 c7             	mov    %rax,%rdi
+ 2208fa3:	e8 de e3 ff ff       	callq  2207386 <fda_handle_escape_name(char const*)>
+ 2208fa8:	48 89 c6             	mov    %rax,%rsi
+ 2208fab:	48 8d 7c 24 10       	lea    0x10(%rsp),%rdi
+ 2208fb0:	e8 4d f1 06 02       	callq  4278102 <vbt_string_t::operator=(char const*)>
+ 2208fb5:	48 8b 03             	mov    (%rbx),%rax
+ 2208fb8:	4c 8b 68 18          	mov    0x18(%rax),%r13
+ 2208fbc:	48 8d 7c 24 10       	lea    0x10(%rsp),%rdi
+ 2208fc1:	e8 2c e7 06 02       	callq  42776f2 <vbt_string_t::getString() const>
+ 2208fc6:	48 89 c6             	mov    %rax,%rsi
+ 2208fc9:	48 89 df             	mov    %rbx,%rdi
+ 2208fcc:	41 ff d5             	callq  *%r13
+ 2208fcf:	48 85 c0             	test   %rax,%rax
+ 2208fd2:	74 1f                	je     2208ff3 <fda_get_sig_by_name(char const*, fda_scope_t*)+0xdf>
+ 2208fd4:	41 83 c4 01          	add    $0x1,%r12d
+ 2208fd8:	45 39 fc             	cmp    %r15d,%r12d
+ 2208fdb:	74 10                	je     2208fed <fda_get_sig_by_name(char const*, fda_scope_t*)+0xd9>
+ 2208fdd:	48 89 c3             	mov    %rax,%rbx
+ 2208fe0:	44 89 e6             	mov    %r12d,%esi
+ 2208fe3:	4c 89 f7             	mov    %r14,%rdi
+ 2208fe6:	e8 21 51 07 02       	callq  427e10c <vbt_usn_t::get_ith_seg(int)>
+ 2208feb:	eb b3                	jmp    2208fa0 <fda_get_sig_by_name(char const*, fda_scope_t*)+0x8c>
+ 2208fed:	48 89 c3             	mov    %rax,%rbx
+ 2208ff0:	45 89 fc             	mov    %r15d,%r12d
+ 2208ff3:	48 8b 03             	mov    (%rbx),%rax
+ 2208ff6:	4c 8b 68 30          	mov    0x30(%rax),%r13
+ 2208ffa:	48 8d 7c 24 30       	lea    0x30(%rsp),%rdi
+ 2208fff:	44 89 e6             	mov    %r12d,%esi
+ 2209002:	e8 13 52 07 02       	callq  427e21a <vbt_usn_t::truncate_front(int)>
+ 2209007:	eb 08                	jmp    2209011 <fda_get_sig_by_name(char const*, fda_scope_t*)+0xfd>
+ 2209009:	41 bc 00 00 00 00    	mov    $0x0,%r12d
+ 220900f:	eb e2                	jmp    2208ff3 <fda_get_sig_by_name(char const*, fda_scope_t*)+0xdf>
+ 2209011:	48 89 c6             	mov    %rax,%rsi
+ 2209014:	b9 00 00 00 00       	mov    $0x0,%ecx
+ 2209019:	ba 01 00 00 00       	mov    $0x1,%edx
+ 220901e:	48 89 df             	mov    %rbx,%rdi
+ 2209021:	41 ff d5             	callq  *%r13
+ 2209024:	49 89 c5             	mov    %rax,%r13
+ 2209027:	48 85 c0             	test   %rax,%rax
+ 220902a:	74 26                	je     2209052 <fda_get_sig_by_name(char const*, fda_scope_t*)+0x13e>
+ 220902c:	48 8d 7c 24 10       	lea    0x10(%rsp),%rdi
+ 2209031:	e8 0e 92 07 02       	callq  4282244 <vbt_string_t::~vbt_string_t()>
+ 2209036:	48 8d 7c 24 30       	lea    0x30(%rsp),%rdi
+ 220903b:	e8 32 9b 07 02       	callq  4282b72 <vbt_usn_t::~vbt_usn_t()>
+ 2209040:	4c 89 e8             	mov    %r13,%rax
+ 2209043:	48 8d 65 d8          	lea    -0x28(%rbp),%rsp
+ 2209047:	5b                   	pop    %rbx
+ 2209048:	41 5c                	pop    %r12
+ 220904a:	41 5d                	pop    %r13
+ 220904c:	41 5e                	pop    %r14
+ 220904e:	41 5f                	pop    %r15
+ 2209050:	5d                   	pop    %rbp
+ 2209051:	c3                   	retq   
+ 2209052:	45 85 e4             	test   %r12d,%r12d
+ 2209055:	75 d5                	jne    220902c <fda_get_sig_by_name(char const*, fda_scope_t*)+0x118>
+ 2209057:	83 7c 24 04 01       	cmpl   $0x1,0x4(%rsp)
+ 220905c:	7e ce                	jle    220902c <fda_get_sig_by_name(char const*, fda_scope_t*)+0x118>
+ 220905e:	48 8b 03             	mov    (%rbx),%rax
+ 2209061:	b9 01 00 00 00       	mov    $0x1,%ecx
+ 2209066:	ba 01 00 00 00       	mov    $0x1,%edx
+ 220906b:	48 8b 74 24 08       	mov    0x8(%rsp),%rsi
+ 2209070:	48 89 df             	mov    %rbx,%rdi
+ 2209073:	ff 50 30             	callq  *0x30(%rax)
+ 2209076:	49 89 c5             	mov    %rax,%r13
+ 2209079:	eb b1                	jmp    220902c <fda_get_sig_by_name(char const*, fda_scope_t*)+0x118>
+ 220907b:	41 bd 00 00 00 00    	mov    $0x0,%r13d
+ 2209081:	eb b3                	jmp    2209036 <fda_get_sig_by_name(char const*, fda_scope_t*)+0x122>
+ 2209083:	41 bd 00 00 00 00    	mov    $0x0,%r13d
+ 2209089:	eb b5                	jmp    2209040 <fda_get_sig_by_name(char const*, fda_scope_t*)+0x12c>
+ 220908b:	48 89 c3             	mov    %rax,%rbx
+ 220908e:	48 8d 7c 24 10       	lea    0x10(%rsp),%rdi
+ 2209093:	e8 ac 91 07 02       	callq  4282244 <vbt_string_t::~vbt_string_t()>
+ 2209098:	48 8d 7c 24 30       	lea    0x30(%rsp),%rdi
+ 220909d:	e8 d0 9a 07 02       	callq  4282b72 <vbt_usn_t::~vbt_usn_t()>
+ 22090a2:	48 89 df             	mov    %rbx,%rdi
+ 22090a5:	e8 06 58 ee 02       	callq  50ee8b0 <_Unwind_Resume>
+ 22090aa:	48 89 c3             	mov    %rax,%rbx
+ 22090ad:	eb e9                	jmp    2209098 <fda_get_sig_by_name(char const*, fda_scope_t*)+0x184>

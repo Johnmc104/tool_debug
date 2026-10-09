@@ -1,0 +1,31 @@
+
+/opt/Synopsys/verdi/Y-2026.03-SP2/share/NPI/lib/linux64/libNPI.so:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+0000000002216b98 <fda_val_real_t::get_value_str_bin(unsigned char const*) const>:
+ 2216b98:	53                   	push   %rbx
+ 2216b99:	48 83 ec 10          	sub    $0x10,%rsp
+ 2216b9d:	48 89 fb             	mov    %rdi,%rbx
+ 2216ba0:	48 c7 44 24 08 00 00 	movq   $0x0,0x8(%rsp)
+ 2216ba7:	00 00 
+ 2216ba9:	48 8d 54 24 08       	lea    0x8(%rsp),%rdx
+ 2216bae:	48 8b 07             	mov    (%rdi),%rax
+ 2216bb1:	ff 50 58             	callq  *0x58(%rax)
+ 2216bb4:	84 c0                	test   %al,%al
+ 2216bb6:	74 29                	je     2216be1 <fda_val_real_t::get_value_str_bin(unsigned char const*) const+0x49>
+ 2216bb8:	48 8b 7b 08          	mov    0x8(%rbx),%rdi
+ 2216bbc:	48 85 ff             	test   %rdi,%rdi
+ 2216bbf:	74 10                	je     2216bd1 <fda_val_real_t::get_value_str_bin(unsigned char const*) const+0x39>
+ 2216bc1:	f2 0f 10 44 24 08    	movsd  0x8(%rsp),%xmm0
+ 2216bc7:	e8 a2 ff ff ff       	callq  2216b6e <fda_wreal_xz_value_t::is_x_or_z(double)>
+ 2216bcc:	48 85 c0             	test   %rax,%rax
+ 2216bcf:	75 0a                	jne    2216bdb <fda_val_real_t::get_value_str_bin(unsigned char const*) const+0x43>
+ 2216bd1:	48 8d 7c 24 08       	lea    0x8(%rsp),%rdi
+ 2216bd6:	e8 e2 1f ff ff       	callq  2208bbd <fda_double_to_char(double const&)>
+ 2216bdb:	48 83 c4 10          	add    $0x10,%rsp
+ 2216bdf:	5b                   	pop    %rbx
+ 2216be0:	c3                   	retq   
+ 2216be1:	b8 00 00 00 00       	mov    $0x0,%eax
+ 2216be6:	eb f3                	jmp    2216bdb <fda_val_real_t::get_value_str_bin(unsigned char const*) const+0x43>

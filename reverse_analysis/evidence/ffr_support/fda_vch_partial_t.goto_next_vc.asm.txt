@@ -1,0 +1,37 @@
+
+/opt/Synopsys/verdi/Y-2026.03-SP2/share/NPI/lib/linux64/libNPI.so:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+00000000021fb0ce <fda_vch_partial_t::goto_next_vc()>:
+ 21fb0ce:	55                   	push   %rbp
+ 21fb0cf:	53                   	push   %rbx
+ 21fb0d0:	48 83 ec 08          	sub    $0x8,%rsp
+ 21fb0d4:	48 83 7f 28 00       	cmpq   $0x0,0x28(%rdi)
+ 21fb0d9:	74 46                	je     21fb121 <fda_vch_partial_t::goto_next_vc()+0x53>
+ 21fb0db:	48 89 fd             	mov    %rdi,%rbp
+ 21fb0de:	f6 47 20 02          	testb  $0x2,0x20(%rdi)
+ 21fb0e2:	74 28                	je     21fb10c <fda_vch_partial_t::goto_next_vc()+0x3e>
+ 21fb0e4:	48 8b 45 00          	mov    0x0(%rbp),%rax
+ 21fb0e8:	48 89 ef             	mov    %rbp,%rdi
+ 21fb0eb:	ff 90 58 01 00 00    	callq  *0x158(%rax)
+ 21fb0f1:	89 c3                	mov    %eax,%ebx
+ 21fb0f3:	85 c0                	test   %eax,%eax
+ 21fb0f5:	75 1c                	jne    21fb113 <fda_vch_partial_t::goto_next_vc()+0x45>
+ 21fb0f7:	f6 45 46 20          	testb  $0x20,0x46(%rbp)
+ 21fb0fb:	74 e7                	je     21fb0e4 <fda_vch_partial_t::goto_next_vc()+0x16>
+ 21fb0fd:	48 8b 45 00          	mov    0x0(%rbp),%rax
+ 21fb101:	48 89 ef             	mov    %rbp,%rdi
+ 21fb104:	ff 90 38 01 00 00    	callq  *0x138(%rax)
+ 21fb10a:	eb 0c                	jmp    21fb118 <fda_vch_partial_t::goto_next_vc()+0x4a>
+ 21fb10c:	bb ff ff ff ff       	mov    $0xffffffff,%ebx
+ 21fb111:	eb 05                	jmp    21fb118 <fda_vch_partial_t::goto_next_vc()+0x4a>
+ 21fb113:	bb ff ff ff ff       	mov    $0xffffffff,%ebx
+ 21fb118:	89 d8                	mov    %ebx,%eax
+ 21fb11a:	48 83 c4 08          	add    $0x8,%rsp
+ 21fb11e:	5b                   	pop    %rbx
+ 21fb11f:	5d                   	pop    %rbp
+ 21fb120:	c3                   	retq   
+ 21fb121:	bb ff ff ff ff       	mov    $0xffffffff,%ebx
+ 21fb126:	eb f0                	jmp    21fb118 <fda_vch_partial_t::goto_next_vc()+0x4a>

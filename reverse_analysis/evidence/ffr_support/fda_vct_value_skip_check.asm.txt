@@ -1,0 +1,131 @@
+
+/opt/Synopsys/verdi/Y-2026.03-SP2/share/NPI/lib/linux64/libNPI.so:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+00000000022171fe <fda_vct_value_skip_check(void*, npiFsdbValue*)>:
+ 22171fe:	55                   	push   %rbp
+ 22171ff:	53                   	push   %rbx
+ 2217200:	48 83 ec 08          	sub    $0x8,%rsp
+ 2217204:	83 3e 0b             	cmpl   $0xb,(%rsi)
+ 2217207:	0f 87 99 01 00 00    	ja     22173a6 <fda_vct_value_skip_check(void*, npiFsdbValue*)+0x1a8>
+ 221720d:	48 89 fd             	mov    %rdi,%rbp
+ 2217210:	48 89 f3             	mov    %rsi,%rbx
+ 2217213:	8b 06                	mov    (%rsi),%eax
+ 2217215:	48 8d 15 dc 4f 1a ff 	lea    -0xe5b024(%rip),%rdx        # 13bc1f8 <typeinfo name for vhdl_define_directive_hdl_t+0x7f8>
+ 221721c:	48 63 04 82          	movslq (%rdx,%rax,4),%rax
+ 2217220:	48 01 d0             	add    %rdx,%rax
+ 2217223:	ff e0                	jmpq   *%rax
+ 2217225:	48 8b 07             	mov    (%rdi),%rax
+ 2217228:	ff 90 90 00 00 00    	callq  *0x90(%rax)
+ 221722e:	48 89 c2             	mov    %rax,%rdx
+ 2217231:	b8 00 00 00 00       	mov    $0x0,%eax
+ 2217236:	48 85 d2             	test   %rdx,%rdx
+ 2217239:	74 7e                	je     22172b9 <fda_vct_value_skip_check(void*, npiFsdbValue*)+0xbb>
+ 221723b:	48 89 53 08          	mov    %rdx,0x8(%rbx)
+ 221723f:	b8 01 00 00 00       	mov    $0x1,%eax
+ 2217244:	eb 73                	jmp    22172b9 <fda_vct_value_skip_check(void*, npiFsdbValue*)+0xbb>
+ 2217246:	48 8b 07             	mov    (%rdi),%rax
+ 2217249:	ff 90 c8 00 00 00    	callq  *0xc8(%rax)
+ 221724f:	48 89 c2             	mov    %rax,%rdx
+ 2217252:	b8 00 00 00 00       	mov    $0x0,%eax
+ 2217257:	48 85 d2             	test   %rdx,%rdx
+ 221725a:	74 5d                	je     22172b9 <fda_vct_value_skip_check(void*, npiFsdbValue*)+0xbb>
+ 221725c:	48 89 53 08          	mov    %rdx,0x8(%rbx)
+ 2217260:	b8 01 00 00 00       	mov    $0x1,%eax
+ 2217265:	eb 52                	jmp    22172b9 <fda_vct_value_skip_check(void*, npiFsdbValue*)+0xbb>
+ 2217267:	48 8b 07             	mov    (%rdi),%rax
+ 221726a:	ff 90 c0 00 00 00    	callq  *0xc0(%rax)
+ 2217270:	48 89 c2             	mov    %rax,%rdx
+ 2217273:	b8 00 00 00 00       	mov    $0x0,%eax
+ 2217278:	48 85 d2             	test   %rdx,%rdx
+ 221727b:	74 3c                	je     22172b9 <fda_vct_value_skip_check(void*, npiFsdbValue*)+0xbb>
+ 221727d:	48 89 53 08          	mov    %rdx,0x8(%rbx)
+ 2217281:	b8 01 00 00 00       	mov    $0x1,%eax
+ 2217286:	eb 31                	jmp    22172b9 <fda_vct_value_skip_check(void*, npiFsdbValue*)+0xbb>
+ 2217288:	48 8b 07             	mov    (%rdi),%rax
+ 221728b:	ff 90 d0 00 00 00    	callq  *0xd0(%rax)
+ 2217291:	48 89 c2             	mov    %rax,%rdx
+ 2217294:	b8 00 00 00 00       	mov    $0x0,%eax
+ 2217299:	48 85 d2             	test   %rdx,%rdx
+ 221729c:	74 1b                	je     22172b9 <fda_vct_value_skip_check(void*, npiFsdbValue*)+0xbb>
+ 221729e:	48 89 53 08          	mov    %rdx,0x8(%rbx)
+ 22172a2:	b8 01 00 00 00       	mov    $0x1,%eax
+ 22172a7:	eb 10                	jmp    22172b9 <fda_vct_value_skip_check(void*, npiFsdbValue*)+0xbb>
+ 22172a9:	48 8d 76 08          	lea    0x8(%rsi),%rsi
+ 22172ad:	48 8b 07             	mov    (%rdi),%rax
+ 22172b0:	ff 90 98 00 00 00    	callq  *0x98(%rax)
+ 22172b6:	0f be c0             	movsbl %al,%eax
+ 22172b9:	48 83 c4 08          	add    $0x8,%rsp
+ 22172bd:	5b                   	pop    %rbx
+ 22172be:	5d                   	pop    %rbp
+ 22172bf:	c3                   	retq   
+ 22172c0:	48 8d 76 08          	lea    0x8(%rsi),%rsi
+ 22172c4:	48 8b 07             	mov    (%rdi),%rax
+ 22172c7:	ff 90 a0 00 00 00    	callq  *0xa0(%rax)
+ 22172cd:	0f be c0             	movsbl %al,%eax
+ 22172d0:	eb e7                	jmp    22172b9 <fda_vct_value_skip_check(void*, npiFsdbValue*)+0xbb>
+ 22172d2:	48 8d 76 08          	lea    0x8(%rsi),%rsi
+ 22172d6:	48 8b 07             	mov    (%rdi),%rax
+ 22172d9:	ff 90 a8 00 00 00    	callq  *0xa8(%rax)
+ 22172df:	0f be c0             	movsbl %al,%eax
+ 22172e2:	eb d5                	jmp    22172b9 <fda_vct_value_skip_check(void*, npiFsdbValue*)+0xbb>
+ 22172e4:	48 8d 76 08          	lea    0x8(%rsi),%rsi
+ 22172e8:	48 8b 07             	mov    (%rdi),%rax
+ 22172eb:	ff 90 b0 00 00 00    	callq  *0xb0(%rax)
+ 22172f1:	0f be c0             	movsbl %al,%eax
+ 22172f4:	eb c3                	jmp    22172b9 <fda_vct_value_skip_check(void*, npiFsdbValue*)+0xbb>
+ 22172f6:	48 8d 76 08          	lea    0x8(%rsi),%rsi
+ 22172fa:	48 8b 07             	mov    (%rdi),%rax
+ 22172fd:	ff 90 b8 00 00 00    	callq  *0xb8(%rax)
+ 2217303:	0f be c0             	movsbl %al,%eax
+ 2217306:	eb b1                	jmp    22172b9 <fda_vct_value_skip_check(void*, npiFsdbValue*)+0xbb>
+ 2217308:	48 8b 07             	mov    (%rdi),%rax
+ 221730b:	ff 90 f0 00 00 00    	callq  *0xf0(%rax)
+ 2217311:	48 89 c2             	mov    %rax,%rdx
+ 2217314:	b8 00 00 00 00       	mov    $0x0,%eax
+ 2217319:	48 85 d2             	test   %rdx,%rdx
+ 221731c:	74 9b                	je     22172b9 <fda_vct_value_skip_check(void*, npiFsdbValue*)+0xbb>
+ 221731e:	48 89 53 08          	mov    %rdx,0x8(%rbx)
+ 2217322:	b8 01 00 00 00       	mov    $0x1,%eax
+ 2217327:	eb 90                	jmp    22172b9 <fda_vct_value_skip_check(void*, npiFsdbValue*)+0xbb>
+ 2217329:	48 8b 07             	mov    (%rdi),%rax
+ 221732c:	ff 90 d8 00 00 00    	callq  *0xd8(%rax)
+ 2217332:	48 89 c2             	mov    %rax,%rdx
+ 2217335:	b8 00 00 00 00       	mov    $0x0,%eax
+ 221733a:	48 85 d2             	test   %rdx,%rdx
+ 221733d:	0f 84 76 ff ff ff    	je     22172b9 <fda_vct_value_skip_check(void*, npiFsdbValue*)+0xbb>
+ 2217343:	48 89 53 08          	mov    %rdx,0x8(%rbx)
+ 2217347:	b8 01 00 00 00       	mov    $0x1,%eax
+ 221734c:	e9 68 ff ff ff       	jmpq   22172b9 <fda_vct_value_skip_check(void*, npiFsdbValue*)+0xbb>
+ 2217351:	48 8b 07             	mov    (%rdi),%rax
+ 2217354:	ff 90 00 01 00 00    	callq  *0x100(%rax)
+ 221735a:	89 03                	mov    %eax,(%rbx)
+ 221735c:	83 f8 06             	cmp    $0x6,%eax
+ 221735f:	74 2c                	je     221738d <fda_vct_value_skip_check(void*, npiFsdbValue*)+0x18f>
+ 2217361:	48 8b 45 00          	mov    0x0(%rbp),%rax
+ 2217365:	48 89 ef             	mov    %rbp,%rdi
+ 2217368:	ff 90 f8 00 00 00    	callq  *0xf8(%rax)
+ 221736e:	48 89 c2             	mov    %rax,%rdx
+ 2217371:	b8 00 00 00 00       	mov    $0x0,%eax
+ 2217376:	48 85 d2             	test   %rdx,%rdx
+ 2217379:	0f 84 3a ff ff ff    	je     22172b9 <fda_vct_value_skip_check(void*, npiFsdbValue*)+0xbb>
+ 221737f:	48 89 53 08          	mov    %rdx,0x8(%rbx)
+ 2217383:	b8 01 00 00 00       	mov    $0x1,%eax
+ 2217388:	e9 2c ff ff ff       	jmpq   22172b9 <fda_vct_value_skip_check(void*, npiFsdbValue*)+0xbb>
+ 221738d:	48 8d 73 08          	lea    0x8(%rbx),%rsi
+ 2217391:	48 8b 45 00          	mov    0x0(%rbp),%rax
+ 2217395:	48 89 ef             	mov    %rbp,%rdi
+ 2217398:	ff 90 b8 00 00 00    	callq  *0xb8(%rax)
+ 221739e:	0f be c0             	movsbl %al,%eax
+ 22173a1:	e9 13 ff ff ff       	jmpq   22172b9 <fda_vct_value_skip_check(void*, npiFsdbValue*)+0xbb>
+ 22173a6:	e8 27 21 ff ff       	callq  22094d2 <fda_debug()>
+ 22173ab:	85 c0                	test   %eax,%eax
+ 22173ad:	0f 84 06 ff ff ff    	je     22172b9 <fda_vct_value_skip_check(void*, npiFsdbValue*)+0xbb>
+ 22173b3:	48 8d 35 76 5d fd fe 	lea    -0x102a28a(%rip),%rsi        # 11ed130 <ul_jrand_seed+0x11cdcc4>
+ 22173ba:	48 8d 3d c7 38 09 ff 	lea    -0xf6c739(%rip),%rdi        # 12aac88 <ul_jrand_seed+0x128b81c>
+ 22173c1:	b8 00 00 00 00       	mov    $0x0,%eax
+ 22173c6:	e8 15 8c ef 02       	callq  510ffe0 <dbt_log(char const*, ...)@plt>
+ 22173cb:	b8 00 00 00 00       	mov    $0x0,%eax
+ 22173d0:	e9 e4 fe ff ff       	jmpq   22172b9 <fda_vct_value_skip_check(void*, npiFsdbValue*)+0xbb>

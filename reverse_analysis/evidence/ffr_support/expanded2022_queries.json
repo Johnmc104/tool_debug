@@ -1,0 +1,978 @@
+{
+  "sample": "/home/zhhe/work/python_auto/tool_wave/build/backend_fixtures/T-2022.06-SP2/fixture.fsdb",
+  "sdk": "/opt/Synopsys/verdi/T-2022.06-SP2",
+  "checks": 202,
+  "different": 172,
+  "signal_info": [
+    {
+      "cmd": "signal_info",
+      "params": {
+        "signal": "fixture.data[3]"
+      },
+      "npi": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "name": "data[3]",
+          "full_name": "fixture.data[3]",
+          "left": 3,
+          "right": 3,
+          "direction": "none"
+        }
+      },
+      "ffr": {
+        "id": 1,
+        "status": "error",
+        "error": {
+          "code": "SIGNAL_NOT_FOUND",
+          "message": "Signal 'fixture.data[3]' not found"
+        }
+      },
+      "equal": false
+    },
+    {
+      "cmd": "signal_info",
+      "params": {
+        "signal": "fixture.data[7:4]"
+      },
+      "npi": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "name": "data[7:4]",
+          "full_name": "fixture.data[7:4]",
+          "left": 7,
+          "right": 4,
+          "direction": "none"
+        }
+      },
+      "ffr": {
+        "id": 1,
+        "status": "error",
+        "error": {
+          "code": "SIGNAL_NOT_FOUND",
+          "message": "Signal 'fixture.data[7:4]' not found"
+        }
+      },
+      "equal": false
+    },
+    {
+      "cmd": "signal_info",
+      "params": {
+        "signal": "fixture.ascending[0]"
+      },
+      "npi": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "name": "ascending[0]",
+          "full_name": "fixture.ascending[0]",
+          "left": 0,
+          "right": 0,
+          "direction": "none"
+        }
+      },
+      "ffr": {
+        "id": 1,
+        "status": "error",
+        "error": {
+          "code": "SIGNAL_NOT_FOUND",
+          "message": "Signal 'fixture.ascending[0]' not found"
+        }
+      },
+      "equal": false
+    },
+    {
+      "cmd": "signal_info",
+      "params": {
+        "signal": "fixture.memory"
+      },
+      "npi": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "name": "memory",
+          "full_name": "fixture.memory",
+          "left": 0,
+          "right": 1,
+          "direction": "none"
+        }
+      },
+      "ffr": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "name": "memory",
+          "full_name": "fixture.memory",
+          "left": 0,
+          "right": 1,
+          "direction": "none"
+        }
+      },
+      "equal": true
+    },
+    {
+      "cmd": "signal_info",
+      "params": {
+        "signal": "fixture.memory[1]"
+      },
+      "npi": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "name": "memory[1]",
+          "full_name": "fixture.memory[1]",
+          "left": 7,
+          "right": 0,
+          "direction": "none"
+        }
+      },
+      "ffr": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "name": "memory[1]",
+          "full_name": "fixture.memory[1]",
+          "left": 7,
+          "right": 0,
+          "direction": "none"
+        }
+      },
+      "equal": true
+    },
+    {
+      "cmd": "signal_info",
+      "params": {
+        "signal": "fixture.memory[1][3]"
+      },
+      "npi": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "name": "memory[1][3]",
+          "full_name": "fixture.memory[1][3]",
+          "left": 3,
+          "right": 3,
+          "direction": "none"
+        }
+      },
+      "ffr": {
+        "id": 1,
+        "status": "error",
+        "error": {
+          "code": "SIGNAL_NOT_FOUND",
+          "message": "Signal 'fixture.memory[1][3]' not found"
+        }
+      },
+      "equal": false
+    },
+    {
+      "cmd": "signal_info",
+      "params": {
+        "signal": "fixture.analog"
+      },
+      "npi": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "name": "analog",
+          "full_name": "fixture.analog",
+          "left": 0,
+          "right": 0,
+          "direction": "none"
+        }
+      },
+      "ffr": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "name": "analog",
+          "full_name": "fixture.analog",
+          "left": 0,
+          "right": 0,
+          "direction": "none"
+        }
+      },
+      "equal": true
+    },
+    {
+      "cmd": "signal_info",
+      "params": {
+        "signal": "fixture.message"
+      },
+      "npi": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "name": "message",
+          "full_name": "fixture.message",
+          "left": 0,
+          "right": 0,
+          "direction": "none"
+        }
+      },
+      "ffr": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "name": "message",
+          "full_name": "fixture.message",
+          "left": 0,
+          "right": 0,
+          "direction": "none"
+        }
+      },
+      "equal": true
+    }
+  ],
+  "examples": [
+    {
+      "cmd": "get_value_at",
+      "params": {
+        "signals": [
+          "fixture.data[3]"
+        ],
+        "time": 1000,
+        "radix": "dec"
+      },
+      "npi": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "time": 1000,
+          "values": [
+            {
+              "signal": "fixture.data[3]",
+              "value": "1",
+              "actual_time": 1000
+            }
+          ]
+        }
+      },
+      "ffr": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "time": 1000,
+          "values": [
+            {
+              "signal": "fixture.data[3]",
+              "error": "not found"
+            }
+          ]
+        }
+      },
+      "equal": false
+    },
+    {
+      "cmd": "get_value_between",
+      "params": {
+        "signal": "fixture.data[3]",
+        "begin": 0,
+        "end": 6000
+      },
+      "npi": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "signal": "fixture.data[3]",
+          "begin": 0,
+          "end": 6000,
+          "total_changes": 5,
+          "changes": [
+            {
+              "time": 0,
+              "value": "0"
+            },
+            {
+              "time": 1000,
+              "value": "1"
+            },
+            {
+              "time": 2000,
+              "value": "z"
+            },
+            {
+              "time": 3000,
+              "value": "1"
+            },
+            {
+              "time": 4000,
+              "value": "0"
+            }
+          ]
+        }
+      },
+      "ffr": {
+        "id": 1,
+        "status": "error",
+        "error": {
+          "code": "SIGNAL_NOT_FOUND",
+          "message": "Signal 'fixture.data[3]' not found"
+        }
+      },
+      "equal": false
+    },
+    {
+      "cmd": "vc_count",
+      "params": {
+        "signal": "fixture.data[3]",
+        "begin": 0,
+        "end": 6000
+      },
+      "npi": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "signal": "fixture.data[3]",
+          "begin": 0,
+          "end": 6000,
+          "count": 5
+        }
+      },
+      "ffr": {
+        "id": 1,
+        "status": "error",
+        "error": {
+          "code": "SIGNAL_NOT_FOUND",
+          "message": "Signal 'fixture.data[3]' not found"
+        }
+      },
+      "equal": false
+    },
+    {
+      "cmd": "get_value_at",
+      "params": {
+        "signals": [
+          "fixture.data[7:4]"
+        ],
+        "time": 1000,
+        "radix": "dec"
+      },
+      "npi": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "time": 1000,
+          "values": [
+            {
+              "signal": "fixture.data[7:4]",
+              "value": "10",
+              "actual_time": 1000
+            }
+          ]
+        }
+      },
+      "ffr": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "time": 1000,
+          "values": [
+            {
+              "signal": "fixture.data[7:4]",
+              "error": "not found"
+            }
+          ]
+        }
+      },
+      "equal": false
+    },
+    {
+      "cmd": "get_value_between",
+      "params": {
+        "signal": "fixture.data[7:4]",
+        "begin": 0,
+        "end": 6000
+      },
+      "npi": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "signal": "fixture.data[7:4]",
+          "begin": 0,
+          "end": 6000,
+          "total_changes": 6,
+          "changes": [
+            {
+              "time": 0,
+              "value": "0000"
+            },
+            {
+              "time": 1000,
+              "value": "1010"
+            },
+            {
+              "time": 2000,
+              "value": "zzzz"
+            },
+            {
+              "time": 3000,
+              "value": "x01z"
+            },
+            {
+              "time": 4000,
+              "value": "1111"
+            },
+            {
+              "time": 4000,
+              "value": "0000"
+            }
+          ]
+        }
+      },
+      "ffr": {
+        "id": 1,
+        "status": "error",
+        "error": {
+          "code": "SIGNAL_NOT_FOUND",
+          "message": "Signal 'fixture.data[7:4]' not found"
+        }
+      },
+      "equal": false
+    },
+    {
+      "cmd": "vc_count",
+      "params": {
+        "signal": "fixture.data[7:4]",
+        "begin": 0,
+        "end": 6000
+      },
+      "npi": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "signal": "fixture.data[7:4]",
+          "begin": 0,
+          "end": 6000,
+          "count": 6
+        }
+      },
+      "ffr": {
+        "id": 1,
+        "status": "error",
+        "error": {
+          "code": "SIGNAL_NOT_FOUND",
+          "message": "Signal 'fixture.data[7:4]' not found"
+        }
+      },
+      "equal": false
+    },
+    {
+      "cmd": "get_value_at",
+      "params": {
+        "signals": [
+          "fixture.ascending[0]"
+        ],
+        "time": 1000,
+        "radix": "dec"
+      },
+      "npi": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "time": 1000,
+          "values": [
+            {
+              "signal": "fixture.ascending[0]",
+              "value": "1",
+              "actual_time": 1000
+            }
+          ]
+        }
+      },
+      "ffr": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "time": 1000,
+          "values": [
+            {
+              "signal": "fixture.ascending[0]",
+              "error": "not found"
+            }
+          ]
+        }
+      },
+      "equal": false
+    },
+    {
+      "cmd": "get_value_between",
+      "params": {
+        "signal": "fixture.ascending[0]",
+        "begin": 0,
+        "end": 6000
+      },
+      "npi": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "signal": "fixture.ascending[0]",
+          "begin": 0,
+          "end": 6000,
+          "total_changes": 3,
+          "changes": [
+            {
+              "time": 0,
+              "value": "0"
+            },
+            {
+              "time": 1000,
+              "value": "1"
+            },
+            {
+              "time": 4000,
+              "value": "0"
+            }
+          ]
+        }
+      },
+      "ffr": {
+        "id": 1,
+        "status": "error",
+        "error": {
+          "code": "SIGNAL_NOT_FOUND",
+          "message": "Signal 'fixture.ascending[0]' not found"
+        }
+      },
+      "equal": false
+    },
+    {
+      "cmd": "vc_count",
+      "params": {
+        "signal": "fixture.ascending[0]",
+        "begin": 0,
+        "end": 6000
+      },
+      "npi": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "signal": "fixture.ascending[0]",
+          "begin": 0,
+          "end": 6000,
+          "count": 3
+        }
+      },
+      "ffr": {
+        "id": 1,
+        "status": "error",
+        "error": {
+          "code": "SIGNAL_NOT_FOUND",
+          "message": "Signal 'fixture.ascending[0]' not found"
+        }
+      },
+      "equal": false
+    },
+    {
+      "cmd": "get_value_at",
+      "params": {
+        "signals": [
+          "fixture.memory"
+        ],
+        "time": 1000,
+        "radix": "dec"
+      },
+      "npi": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "time": 1000,
+          "values": [
+            {
+              "signal": "fixture.memory",
+              "value": "{1,205}",
+              "actual_time": 1000
+            }
+          ]
+        }
+      },
+      "ffr": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "time": 1000,
+          "values": [
+            {
+              "signal": "fixture.memory",
+              "value": "x",
+              "error": "FFR currently supports four-state digital values: fixture.memory",
+              "error_code": "UNSUPPORTED_SIGNAL_TYPE",
+              "actual_time": 1000
+            }
+          ]
+        }
+      },
+      "equal": false
+    },
+    {
+      "cmd": "get_value_between",
+      "params": {
+        "signal": "fixture.memory",
+        "begin": 0,
+        "end": 6000
+      },
+      "npi": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "signal": "fixture.memory",
+          "begin": 0,
+          "end": 6000,
+          "total_changes": 2,
+          "changes": [
+            {
+              "time": 0,
+              "value": "{00000001,00000010}"
+            },
+            {
+              "time": 1000,
+              "value": "{00000001,11001101}"
+            }
+          ]
+        }
+      },
+      "ffr": {
+        "id": 1,
+        "status": "error",
+        "error": {
+          "code": "UNSUPPORTED_SIGNAL_TYPE",
+          "message": "FFR currently supports four-state digital values: fixture.memory"
+        }
+      },
+      "equal": false
+    },
+    {
+      "cmd": "vc_count",
+      "params": {
+        "signal": "fixture.memory",
+        "begin": 0,
+        "end": 6000
+      },
+      "npi": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "signal": "fixture.memory",
+          "begin": 0,
+          "end": 6000,
+          "count": 2
+        }
+      },
+      "ffr": {
+        "id": 1,
+        "status": "error",
+        "error": {
+          "code": "UNSUPPORTED_SIGNAL_TYPE",
+          "message": "FFR currently supports four-state digital values: fixture.memory"
+        }
+      },
+      "equal": false
+    },
+    {
+      "cmd": "get_value_at",
+      "params": {
+        "signals": [
+          "fixture.memory[1][3]"
+        ],
+        "time": 1000,
+        "radix": "dec"
+      },
+      "npi": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "time": 1000,
+          "values": [
+            {
+              "signal": "fixture.memory[1][3]",
+              "value": "1",
+              "actual_time": 1000
+            }
+          ]
+        }
+      },
+      "ffr": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "time": 1000,
+          "values": [
+            {
+              "signal": "fixture.memory[1][3]",
+              "error": "not found"
+            }
+          ]
+        }
+      },
+      "equal": false
+    },
+    {
+      "cmd": "get_value_between",
+      "params": {
+        "signal": "fixture.memory[1][3]",
+        "begin": 0,
+        "end": 6000
+      },
+      "npi": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "signal": "fixture.memory[1][3]",
+          "begin": 0,
+          "end": 6000,
+          "total_changes": 2,
+          "changes": [
+            {
+              "time": 0,
+              "value": "0"
+            },
+            {
+              "time": 1000,
+              "value": "1"
+            }
+          ]
+        }
+      },
+      "ffr": {
+        "id": 1,
+        "status": "error",
+        "error": {
+          "code": "SIGNAL_NOT_FOUND",
+          "message": "Signal 'fixture.memory[1][3]' not found"
+        }
+      },
+      "equal": false
+    },
+    {
+      "cmd": "vc_count",
+      "params": {
+        "signal": "fixture.memory[1][3]",
+        "begin": 0,
+        "end": 6000
+      },
+      "npi": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "signal": "fixture.memory[1][3]",
+          "begin": 0,
+          "end": 6000,
+          "count": 2
+        }
+      },
+      "ffr": {
+        "id": 1,
+        "status": "error",
+        "error": {
+          "code": "SIGNAL_NOT_FOUND",
+          "message": "Signal 'fixture.memory[1][3]' not found"
+        }
+      },
+      "equal": false
+    },
+    {
+      "cmd": "get_value_at",
+      "params": {
+        "signals": [
+          "fixture.analog"
+        ],
+        "time": 1000,
+        "radix": "dec"
+      },
+      "npi": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "time": 1000,
+          "values": [
+            {
+              "signal": "fixture.analog",
+              "value": "1.250000E+00",
+              "actual_time": 1000
+            }
+          ]
+        }
+      },
+      "ffr": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "time": 1000,
+          "values": [
+            {
+              "signal": "fixture.analog",
+              "value": "x",
+              "error": "FFR currently supports four-state digital values: fixture.analog",
+              "error_code": "UNSUPPORTED_SIGNAL_TYPE",
+              "actual_time": 1000
+            }
+          ]
+        }
+      },
+      "equal": false
+    },
+    {
+      "cmd": "get_value_between",
+      "params": {
+        "signal": "fixture.analog",
+        "begin": 0,
+        "end": 6000
+      },
+      "npi": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "signal": "fixture.analog",
+          "begin": 0,
+          "end": 6000,
+          "total_changes": 2,
+          "changes": [
+            {
+              "time": 0,
+              "value": "1.250000E+00"
+            },
+            {
+              "time": 3000,
+              "value": "-2.500000E+00"
+            }
+          ]
+        }
+      },
+      "ffr": {
+        "id": 1,
+        "status": "error",
+        "error": {
+          "code": "UNSUPPORTED_SIGNAL_TYPE",
+          "message": "FFR currently supports four-state digital values: fixture.analog"
+        }
+      },
+      "equal": false
+    },
+    {
+      "cmd": "vc_count",
+      "params": {
+        "signal": "fixture.analog",
+        "begin": 0,
+        "end": 6000
+      },
+      "npi": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "signal": "fixture.analog",
+          "begin": 0,
+          "end": 6000,
+          "count": 2
+        }
+      },
+      "ffr": {
+        "id": 1,
+        "status": "error",
+        "error": {
+          "code": "UNSUPPORTED_SIGNAL_TYPE",
+          "message": "FFR currently supports four-state digital values: fixture.analog"
+        }
+      },
+      "equal": false
+    },
+    {
+      "cmd": "get_value_at",
+      "params": {
+        "signals": [
+          "fixture.message"
+        ],
+        "time": 1000,
+        "radix": "dec"
+      },
+      "npi": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "time": 1000,
+          "values": [
+            {
+              "signal": "fixture.message",
+              "value": "x",
+              "error": "read failed",
+              "error_code": "FILE_READ_ERROR",
+              "actual_time": 1000
+            }
+          ]
+        }
+      },
+      "ffr": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "time": 1000,
+          "values": [
+            {
+              "signal": "fixture.message",
+              "value": "x",
+              "error": "FFR currently supports four-state digital values: fixture.message",
+              "error_code": "UNSUPPORTED_SIGNAL_TYPE",
+              "actual_time": 1000
+            }
+          ]
+        }
+      },
+      "equal": false
+    },
+    {
+      "cmd": "get_value_between",
+      "params": {
+        "signal": "fixture.message",
+        "begin": 0,
+        "end": 6000
+      },
+      "npi": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "signal": "fixture.message",
+          "begin": 0,
+          "end": 6000,
+          "total_changes": 0,
+          "changes": []
+        }
+      },
+      "ffr": {
+        "id": 1,
+        "status": "error",
+        "error": {
+          "code": "UNSUPPORTED_SIGNAL_TYPE",
+          "message": "FFR currently supports four-state digital values: fixture.message"
+        }
+      },
+      "equal": false
+    },
+    {
+      "cmd": "vc_count",
+      "params": {
+        "signal": "fixture.message",
+        "begin": 0,
+        "end": 6000
+      },
+      "npi": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "signal": "fixture.message",
+          "begin": 0,
+          "end": 6000,
+          "count": 2
+        }
+      },
+      "ffr": {
+        "id": 1,
+        "status": "error",
+        "error": {
+          "code": "UNSUPPORTED_SIGNAL_TYPE",
+          "message": "FFR currently supports four-state digital values: fixture.message"
+        }
+      },
+      "equal": false
+    }
+  ]
+}

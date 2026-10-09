@@ -12,6 +12,8 @@
 
 首版已接入主工程，结果见 [双后端实施与验收记录](../plan/08_vwave_dual_backend_implementation.md)。配套 2022 / 2026 数字波形已对照，2022 reader 的完整 CLI 流程已在 CentOS 7.9/glibc 2.17 用户空间验证。
 
+补充测试与定向 libNPI 分析见 [FFR 功能缺口与修复方案](../plan/09_ffr_feature_gaps_and_solution.md)。已复现位选、片选、结构体路径和组合值差异；前一阶段的数字矩阵不能代表完整功能兼容。
+
 ## 目录
 
 ```text
@@ -26,6 +28,7 @@ reverse_analysis/
 ├── evidence/centos7/     CentOS 7 运行记录、镜像指纹与结果对照
 ├── evidence/reader_switch/  同一探针切换两套 SDK 的库映射和结果
 ├── evidence/dynamic_backend/  主工程双后端差分、CentOS 7 及发布包验收
+├── evidence/ffr_support/  扩展类型差分、原始树回调和 FDA 调用链
 └── build/                本地编译产物，不纳入版本管理
 ```
 

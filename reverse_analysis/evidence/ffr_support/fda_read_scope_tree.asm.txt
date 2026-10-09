@@ -1,0 +1,81 @@
+
+/opt/Synopsys/verdi/Y-2026.03-SP2/share/NPI/lib/linux64/libNPI.so:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+000000000220a9f1 <fda_read_scope_tree(ffrObject*, char (*)(fsdbTreeCBType, void*, void*), void*)>:
+ 220a9f1:	48 85 ff             	test   %rdi,%rdi
+ 220a9f4:	0f 84 ed 00 00 00    	je     220aae7 <fda_read_scope_tree(ffrObject*, char (*)(fsdbTreeCBType, void*, void*), void*)+0xf6>
+ 220a9fa:	55                   	push   %rbp
+ 220a9fb:	48 89 e5             	mov    %rsp,%rbp
+ 220a9fe:	41 56                	push   %r14
+ 220aa00:	41 55                	push   %r13
+ 220aa02:	41 54                	push   %r12
+ 220aa04:	53                   	push   %rbx
+ 220aa05:	48 83 e4 f0          	and    $0xfffffffffffffff0,%rsp
+ 220aa09:	48 83 ec 20          	sub    $0x20,%rsp
+ 220aa0d:	48 89 fb             	mov    %rdi,%rbx
+ 220aa10:	49 89 f6             	mov    %rsi,%r14
+ 220aa13:	49 89 d4             	mov    %rdx,%r12
+ 220aa16:	48 85 d2             	test   %rdx,%rdx
+ 220aa19:	0f 84 a8 00 00 00    	je     220aac7 <fda_read_scope_tree(ffrObject*, char (*)(fsdbTreeCBType, void*, void*), void*)+0xd6>
+ 220aa1f:	4c 8b 6a 18          	mov    0x18(%rdx),%r13
+ 220aa23:	4d 85 ed             	test   %r13,%r13
+ 220aa26:	74 05                	je     220aa2d <fda_read_scope_tree(ffrObject*, char (*)(fsdbTreeCBType, void*, void*), void*)+0x3c>
+ 220aa28:	41 80 65 59 fb       	andb   $0xfb,0x59(%r13)
+ 220aa2d:	48 89 e7             	mov    %rsp,%rdi
+ 220aa30:	48 89 de             	mov    %rbx,%rsi
+ 220aa33:	e8 92 a2 ff ff       	callq  2204cca <fda_reader_cb_mgr_t::fda_reader_cb_mgr_t(ffrObject*)>
+ 220aa38:	48 8b 03             	mov    (%rbx),%rax
+ 220aa3b:	4c 89 e2             	mov    %r12,%rdx
+ 220aa3e:	4c 89 f6             	mov    %r14,%rsi
+ 220aa41:	48 89 df             	mov    %rbx,%rdi
+ 220aa44:	ff 50 18             	callq  *0x18(%rax)
+ 220aa47:	41 80 bc 24 cc 00 00 	cmpb   $0x0,0xcc(%r12)
+ 220aa4e:	00 00 
+ 220aa50:	75 0e                	jne    220aa60 <fda_read_scope_tree(ffrObject*, char (*)(fsdbTreeCBType, void*, void*), void*)+0x6f>
+ 220aa52:	48 8b 03             	mov    (%rbx),%rax
+ 220aa55:	48 89 df             	mov    %rbx,%rdi
+ 220aa58:	ff 90 c0 00 00 00    	callq  *0xc0(%rax)
+ 220aa5e:	eb 4a                	jmp    220aaaa <fda_read_scope_tree(ffrObject*, char (*)(fsdbTreeCBType, void*, void*), void*)+0xb9>
+ 220aa60:	e8 6d ea ff ff       	callq  22094d2 <fda_debug()>
+ 220aa65:	85 c0                	test   %eax,%eax
+ 220aa67:	75 19                	jne    220aa82 <fda_read_scope_tree(ffrObject*, char (*)(fsdbTreeCBType, void*, void*), void*)+0x91>
+ 220aa69:	41 80 bc 24 d0 00 00 	cmpb   $0x0,0xd0(%r12)
+ 220aa70:	00 00 
+ 220aa72:	74 2a                	je     220aa9e <fda_read_scope_tree(ffrObject*, char (*)(fsdbTreeCBType, void*, void*), void*)+0xad>
+ 220aa74:	48 8b 03             	mov    (%rbx),%rax
+ 220aa77:	48 89 df             	mov    %rbx,%rdi
+ 220aa7a:	ff 90 58 03 00 00    	callq  *0x358(%rax)
+ 220aa80:	eb 28                	jmp    220aaaa <fda_read_scope_tree(ffrObject*, char (*)(fsdbTreeCBType, void*, void*), void*)+0xb9>
+ 220aa82:	41 0f be b4 24 d0 00 	movsbl 0xd0(%r12),%esi
+ 220aa89:	00 00 
+ 220aa8b:	48 8d 3d 8c 11 fb fe 	lea    -0x104ee74(%rip),%rdi        # 11bbc1e <ul_jrand_seed+0x119c7b2>
+ 220aa92:	b8 00 00 00 00       	mov    $0x0,%eax
+ 220aa97:	e8 24 56 f0 02       	callq  51100c0 <printf@plt>
+ 220aa9c:	eb cb                	jmp    220aa69 <fda_read_scope_tree(ffrObject*, char (*)(fsdbTreeCBType, void*, void*), void*)+0x78>
+ 220aa9e:	48 8b 03             	mov    (%rbx),%rax
+ 220aaa1:	48 89 df             	mov    %rbx,%rdi
+ 220aaa4:	ff 90 10 01 00 00    	callq  *0x110(%rax)
+ 220aaaa:	41 80 bc 24 58 01 00 	cmpb   $0x0,0x158(%r12)
+ 220aab1:	00 00 
+ 220aab3:	74 0a                	je     220aabf <fda_read_scope_tree(ffrObject*, char (*)(fsdbTreeCBType, void*, void*), void*)+0xce>
+ 220aab5:	4d 85 ed             	test   %r13,%r13
+ 220aab8:	74 05                	je     220aabf <fda_read_scope_tree(ffrObject*, char (*)(fsdbTreeCBType, void*, void*), void*)+0xce>
+ 220aaba:	41 80 4d 59 04       	orb    $0x4,0x59(%r13)
+ 220aabf:	48 89 e7             	mov    %rsp,%rdi
+ 220aac2:	e8 39 a2 ff ff       	callq  2204d00 <fda_reader_cb_mgr_t::~fda_reader_cb_mgr_t()>
+ 220aac7:	48 8d 65 e0          	lea    -0x20(%rbp),%rsp
+ 220aacb:	5b                   	pop    %rbx
+ 220aacc:	41 5c                	pop    %r12
+ 220aace:	41 5d                	pop    %r13
+ 220aad0:	41 5e                	pop    %r14
+ 220aad2:	5d                   	pop    %rbp
+ 220aad3:	c3                   	retq   
+ 220aad4:	48 89 c3             	mov    %rax,%rbx
+ 220aad7:	48 89 e7             	mov    %rsp,%rdi
+ 220aada:	e8 21 a2 ff ff       	callq  2204d00 <fda_reader_cb_mgr_t::~fda_reader_cb_mgr_t()>
+ 220aadf:	48 89 df             	mov    %rbx,%rdi
+ 220aae2:	e8 c9 3d ee 02       	callq  50ee8b0 <_Unwind_Resume>
+ 220aae7:	c3                   	retq   

@@ -10,6 +10,7 @@
 #include <limits>
 #include <unordered_map>
 #include <unordered_set>
+#include <cstdio>
 
 namespace wave {
 
@@ -31,12 +32,22 @@ class FfrBackend : public WaveBackend {
     } ops_;
     ffrObject* (*open_)(str_T)=nullptr;
     fsdbRC (*file_info_)(str_T,ffrFSDBInfo&)=nullptr;
-    struct Var { SignalInfo info; fsdbVarIdcode id; unsigned type, bytes; };
+    struct Var {
+        SignalInfo info;
+        fsdbVarIdcode id = 0;
+        unsigned type = FSDB_VT_VCD_WIRE;
+        unsigned bytes = FSDB_BYTES_PER_BIT_UNKNOWN;
+        std::string source;
+        bool sliced = false;
+        int base_left = 0, base_right = 0;
+        int slice_left = 0, slice_right = 0;
+    };
     std::unordered_map<std::string,Var> variables_;
     std::unordered_map<std::string,std::vector<std::string>> children_;
     std::unordered_map<std::string,std::vector<SignalInfo>> signals_;
     std::unordered_set<fsdbVarIdcode> loaded_;
     std::vector<std::string> stack_;
+    std::vector<std::string> aggregate_stack_;
     std::vector<bool> hidden_;
     std::vector<bool> unpacked_arrays_;
     FileInfo info_;
@@ -64,7 +75,60 @@ class FfrBackend : public WaveBackend {
     static fsdbTag64 tag(int64_t t) {
         fsdbTag64 result{}; result.H=uint64_t(t)>>32; result.L=uint64_t(t); return result;
     }
-    std::string parent() const { return stack_.empty() ? "" : stack_.back(); }
+    std::string parent() const {
+        if (!aggregate_stack_.empty()) return aggregate_stack_.back();
+        return stack_.empty() ? "" : stack_.back();
+    }
+    static bool parse_range(const std::string& text, int& left, int& right) {
+        if (text.size() < 3 || text.front() != '[' || text.back() != ']') return false;
+        auto colon = text.find(':', 1);
+        try {
+            if (colon == std::string::npos) left = right = std::stoi(text.substr(1, text.size()-2));
+            else {
+                left = std::stoi(text.substr(1, colon-1));
+                right = std::stoi(text.substr(colon+1, text.size()-colon-2));
+            }
+        } catch (...) { return false; }
+        return true;
+    }
+    static std::vector<std::string> ranges_in(const std::string& text) {
+        std::vector<std::string> result;
+        for (size_t pos = text.find('['); pos != std::string::npos;) {
+            auto end = text.find(']', pos);
+            if (end == std::string::npos) break;
+            result.push_back(text.substr(pos, end-pos+1));
+            pos = text.find('[', end+1);
+        }
+        return result;
+    }
+    void add_array_prefixes(const std::string& raw, const std::string& scope_parent) {
+        auto first = raw.find('[');
+        if (first == std::string::npos) return;
+        auto base = raw.substr(0, first);
+        auto parts = ranges_in(raw.substr(first));
+        std::string full = scope_parent.empty() ? base : scope_parent + "." + base;
+        for (size_t i = 0; i < parts.size(); ++i) {
+            int left = 0, right = 0;
+            if (!parse_range(parts[i], left, right)) continue;
+            // The next dimension is the element's range. The last range belongs
+            // to the array itself when this callback describes the outer array.
+            std::string key = full;
+            if (i + 1 < parts.size()) {
+                int next_left = 0, next_right = 0;
+                parse_range(parts[i+1], next_left, next_right);
+                SignalInfo s; s.name = leaf_name(key); s.full_name = key;
+                s.left = next_left; s.right = next_right; s.direction = "none";
+                if (variables_.emplace(key, Var{s, 0, FSDB_VT_MDA, FSDB_BYTES_PER_BIT_UNKNOWN}).second)
+                    signals_[scope_parent].push_back(s);
+            } else {
+                SignalInfo s; s.name = leaf_name(key); s.full_name = key;
+                s.left = left; s.right = right; s.direction = "none";
+                if (variables_.emplace(key, Var{s, 0, FSDB_VT_MDA, FSDB_BYTES_PER_BIT_UNKNOWN}).second)
+                    signals_[scope_parent].push_back(s);
+            }
+            full += parts[i];
+        }
+    }
     static bool_T tree(fsdbTreeCBType type, void* client, void* data) {
         auto& b=*static_cast<FfrBackend*>(client);
         if (type==FSDB_TREE_CBT_SCOPE) {
@@ -84,19 +148,23 @@ class FfrBackend : public WaveBackend {
         } else if (type==FSDB_TREE_CBT_ARRAY_BEGIN) {
             auto* array=static_cast<fsdbTreeCBDataArrayBegin*>(data);
             bool unpacked=!array->is_packed_array;
-            if (unpacked && std::find(b.unpacked_arrays_.begin(),b.unpacked_arrays_.end(),true)==b.unpacked_arrays_.end() &&
-                (b.hidden_.empty() || !b.hidden_.back())) {
-                SignalInfo s; s.name=array->name ? array->name : ""; s.direction="none";
-                auto bracket=s.name.rfind('[');
-                if (bracket!=std::string::npos && sscanf(s.name.c_str()+bracket,"[%d:%d]",&s.left,&s.right)==2)
-                    s.name.resize(bracket);
-                s.full_name=b.parent().empty() ? s.name : b.parent()+"."+s.name;
-                if (b.variables_.emplace(s.full_name,Var{s,0,FSDB_VT_MDA,FSDB_BYTES_PER_BIT_UNKNOWN}).second)
-                    b.signals_[b.parent()].push_back(s);
-            }
+            if (unpacked && (b.hidden_.empty() || !b.hidden_.back()))
+                b.add_array_prefixes(array->name ? array->name : "", b.parent());
             b.unpacked_arrays_.push_back(unpacked);
         } else if (type==FSDB_TREE_CBT_ARRAY_END) {
             if (!b.unpacked_arrays_.empty()) b.unpacked_arrays_.pop_back();
+        } else if (type==FSDB_TREE_CBT_STRUCT_BEGIN) {
+            if (!b.hidden_.empty() && b.hidden_.back()) return 1;
+            auto* structure=static_cast<fsdbTreeCBDataStructBegin*>(data);
+            std::string name=structure->name ? structure->name : "";
+            std::string full=b.parent().empty() ? name : b.parent()+"."+name;
+            SignalInfo s; s.name=name; s.full_name=full; s.direction="none";
+            if (b.variables_.emplace(full,Var{s,0,FSDB_VT_MDA,FSDB_BYTES_PER_BIT_UNKNOWN}).second)
+                b.signals_[b.parent()].push_back(s);
+            b.signals_[full];
+            b.aggregate_stack_.push_back(full);
+        } else if (type==FSDB_TREE_CBT_STRUCT_END) {
+            if (!b.aggregate_stack_.empty()) b.aggregate_stack_.pop_back();
         } else if (type==FSDB_TREE_CBT_VAR) {
             if (!b.hidden_.empty() && b.hidden_.back()) return 1;
             auto* v=static_cast<fsdbTreeCBDataVar*>(data);
@@ -118,24 +186,50 @@ class FfrBackend : public WaveBackend {
         }
         return 1;
     }
+    Var lookup(const std::string& path) const {
+        auto exact=variables_.find(path);
+        if (exact!=variables_.end()) return exact->second;
+        size_t best=0; const Var* source=nullptr; std::string source_path;
+        for (const auto& item:variables_) {
+            if (!item.second.id || path.size()<=item.first.size() ||
+                path.compare(0,item.first.size(),item.first)!=0) continue;
+            auto suffix=path.substr(item.first.size());
+            int left=0,right=0;
+            if (!parse_range(suffix,left,right) || item.first.size()<=best) continue;
+            best=item.first.size(); source=&item.second; source_path=item.first;
+        }
+        if (!source) throw BackendError("SIGNAL_NOT_FOUND", "Signal '"+path+"' not found");
+        Var result=*source; result.source=source_path; result.sliced=true;
+        result.base_left=source->info.left; result.base_right=source->info.right;
+        if (!parse_range(path.substr(source_path.size()),result.slice_left,result.slice_right))
+            throw BackendError("SIGNAL_NOT_FOUND", "Signal '"+path+"' not found");
+        result.info.full_name=path; result.info.name=leaf_name(path);
+        result.info.left=result.slice_left; result.info.right=result.slice_right;
+        return result;
+    }
+    bool resolve(const std::string& path, SignalInfo& result) const {
+        try { result=lookup(path).info; return true; } catch (const BackendError&) { return false; }
+    }
     struct Cursor {
         FfrBackend& backend;
         ffrVCIterOne* handle;
-        Cursor(FfrBackend& b, const std::string& path) : backend(b), handle(nullptr) {
-            auto it=b.variables_.find(path);
-            if (it==b.variables_.end()) throw BackendError("SIGNAL_NOT_FOUND", "Signal '"+path+"' not found");
-            const auto& v=it->second;
+        Var var;
+        Cursor(FfrBackend& b, const std::string& path) : backend(b), handle(nullptr), var(b.lookup(path)) {
+            const auto& v=var;
             unsigned t=v.type & 0x3f;
-            if (v.bytes!=FSDB_BYTES_PER_BIT_1B || t==FSDB_VT_VCD_REAL || t==FSDB_VT_STRING ||
-                t>=FSDB_VT_SV_VARIABLE)
-                throw BackendError("UNSUPPORTED_SIGNAL_TYPE", "FFR currently supports four-state digital values: "+path);
+            if ((v.bytes!=FSDB_BYTES_PER_BIT_1B && t!=FSDB_VT_VCD_REAL && t!=FSDB_VT_STRING) ||
+                (t>=FSDB_VT_SV_VARIABLE && t!=FSDB_VT_STRING))
+                throw BackendError("UNSUPPORTED_SIGNAL_TYPE", "FFR currently supports four-state digital values, real and string events: "+path);
+            if (!v.id)
+                throw BackendError("UNSUPPORTED_SIGNAL_TYPE", "FFR composite value is not yet supported: "+path);
+            auto source_id=v.id;
             if (!b.loaded_.count(v.id)) {
-                if (b.file_->ffrAddToSignalList(v.id)!=FSDB_RC_SUCCESS ||
+                if (b.file_->ffrAddToSignalList(source_id)!=FSDB_RC_SUCCESS ||
                     b.file_->ffrLoadSignals()!=FSDB_RC_SUCCESS)
                     throw BackendError("FILE_READ_ERROR", "Failed to load signal: "+path);
-                b.loaded_.insert(v.id);
+                b.loaded_.insert(source_id);
             }
-            handle=b.file_->ffrCreateVCTraverseHandle(v.id);
+            handle=b.file_->ffrCreateVCTraverseHandle(source_id);
             if (!handle) throw BackendError("FILE_READ_ERROR", "Failed to create value cursor: "+path);
         }
         ~Cursor() { if (handle) backend.ops_.free(handle); }
@@ -146,12 +240,35 @@ class FfrBackend : public WaveBackend {
         fsdbTag64 t{}; byte_T* raw=nullptr;
         if (ops_.tag(c.handle,&t)!=FSDB_RC_SUCCESS || ops_.value(c.handle,&raw)!=FSDB_RC_SUCCESS || !raw)
             throw BackendError("FILE_READ_ERROR", "Cannot read current value");
+        unsigned type=c.var.type & 0x3f;
+        if (type==FSDB_VT_VCD_REAL) {
+            if (ops_.bytes(c.handle)!=FSDB_BYTES_PER_BIT_8B)
+                throw BackendError("UNSUPPORTED_SIGNAL_TYPE", "Unsupported real encoding");
+            double value=0.0; byte_T* bytes=raw;
+            std::memcpy(&value,bytes,sizeof(value));
+            char text[96]; std::snprintf(text,sizeof(text),"%.6E",value);
+            return {static_cast<int64_t>(time(t)),text};
+        }
+        if (type==FSDB_VT_STRING)
+            throw BackendError("UNSUPPORTED_SIGNAL_TYPE", "FFR string value formatting is not yet supported");
         if (ops_.bytes(c.handle)!=FSDB_BYTES_PER_BIT_1B)
             throw BackendError("UNSUPPORTED_SIGNAL_TYPE", "Unsupported value encoding");
         std::string bin;
         for (unsigned i=0,n=ops_.bits(c.handle);i<n;++i) {
             if (raw[i]>=4) throw BackendError("UNSUPPORTED_SIGNAL_TYPE", "Unsupported logic value encoding");
             bin.push_back("01xz"[raw[i]]);
+        }
+        if (c.var.sliced) {
+            int step=c.var.slice_left<=c.var.slice_right ? 1 : -1;
+            std::string selected;
+            for (int index=c.var.slice_left;;index+=step) {
+                int offset=c.var.base_left>c.var.base_right ? c.var.base_left-index : index-c.var.base_left;
+                if (offset<0 || static_cast<size_t>(offset)>=bin.size())
+                    throw BackendError("SIGNAL_NOT_FOUND", "Bit select outside signal range: "+c.var.info.full_name);
+                selected.push_back(bin[static_cast<size_t>(offset)]);
+                if (index==c.var.slice_right) break;
+            }
+            bin.swap(selected);
         }
         return {static_cast<int64_t>(time(t)),convert(bin,radix)};
     }
@@ -245,8 +362,7 @@ public:
     std::vector<std::string> children(const std::string& path) override { return children_.at(path); }
     std::vector<SignalInfo> signals(const std::string& path) override { return signals_.at(path); }
     bool signal(const std::string& path, SignalInfo& result) override {
-        auto it=variables_.find(path); if (it==variables_.end()) return false;
-        result=it->second.info; return true;
+        return resolve(path,result);
     }
     Value point(const std::string& path, int64_t t, const std::string& radix) override {
         Cursor c(*this,path); auto xtag=tag(std::min(t,info_.max_time));

@@ -1,0 +1,237 @@
+{
+  "library": "/opt/Synopsys/verdi/Y-2026.03-SP2/share/NPI/lib/linux64/libNPI.so",
+  "sha256": "fa34dd31985272732e6bd56ff3768c1611f8e9d86c2441c06e89d7948f68f3da",
+  "functions": [
+    {
+      "name": "fda_double_to_char(double const&)",
+      "symbol": "_Z18fda_double_to_charRKd",
+      "address": "0x2208bbd",
+      "size": 138,
+      "calls": [
+        "2208bcd:\te8 8e 77 f0 02       \tcallq  5110360 <__tls_get_addr@plt>",
+        "2208be6:\te8 75 77 f0 02       \tcallq  5110360 <__tls_get_addr@plt>",
+        "2208c06:\te8 55 04 07 02       \tcallq  4279060 <vbt_string_t::vFormat(char const*, ...)>",
+        "2208c12:\te8 d9 e5 06 02       \tcallq  42771f0 <vbt_string_t::makeUpper()>",
+        "2208c1e:\te8 cf ea 06 02       \tcallq  42776f2 <vbt_string_t::getString() const>",
+        "2208c2a:\te8 22 dc ff ff       \tcallq  2206851 <fda_get_str()>",
+        "2208c39:\te8 22 77 f0 02       \tcallq  5110360 <__tls_get_addr@plt>"
+      ]
+    },
+    {
+      "name": "npi_fsdb_goto_time(void*, unsigned long long)",
+      "symbol": "_Z18npi_fsdb_goto_timePvy",
+      "address": "0x2224e5b",
+      "size": 77,
+      "calls": [
+        "2224e73:\tff 10                \tcallq  *(%rax)",
+        "2224e90:\tff 50 10             \tcallq  *0x10(%rax)"
+      ]
+    },
+    {
+      "name": "npi_fsdb_vct_value(void*, npiFsdbValue*)",
+      "symbol": "_Z18npi_fsdb_vct_valuePvP12npiFsdbValue",
+      "address": "0x2225142",
+      "size": 127,
+      "calls": [
+        "222515a:\tff 10                \tcallq  *(%rax)",
+        "2225165:\te8 68 43 fe ff       \tcallq  22094d2 <fda_debug()>",
+        "2225181:\tff 90 18 01 00 00    \tcallq  *0x118(%rax)",
+        "2225191:\te8 68 20 ff ff       \tcallq  22171fe <fda_vct_value_skip_check(void*, npiFsdbValue*)>",
+        "22251a8:\te8 13 af ee 02       \tcallq  51100c0 <printf@plt>"
+      ]
+    },
+    {
+      "name": "fda_get_sig_by_name(char const*, fda_scope_t*)",
+      "symbol": "_Z19fda_get_sig_by_namePKcP11fda_scope_t",
+      "address": "0x2208f14",
+      "size": 411,
+      "calls": [
+        "2208f4e:\te8 33 10 07 02       \tcallq  4279f86 <vbt_usn_t::vbt_usn_t()>",
+        "2208f5e:\te8 d3 4d 07 02       \tcallq  427dd36 <vbt_usn_t::set_usn_str(char const*, char)>",
+        "2208f66:\te8 ef 10 07 02       \tcallq  427a05a <vbt_usn_t::get_scope_num()>",
+        "2208f84:\te8 df df 06 02       \tcallq  4276f68 <vbt_string_t::vbt_string_t(_vmalloc_s*)>",
+        "2208fa3:\te8 de e3 ff ff       \tcallq  2207386 <fda_handle_escape_name(char const*)>",
+        "2208fb0:\te8 4d f1 06 02       \tcallq  4278102 <vbt_string_t::operator=(char const*)>",
+        "2208fc1:\te8 2c e7 06 02       \tcallq  42776f2 <vbt_string_t::getString() const>",
+        "2208fcc:\t41 ff d5             \tcallq  *%r13",
+        "2208fe6:\te8 21 51 07 02       \tcallq  427e10c <vbt_usn_t::get_ith_seg(int)>",
+        "2209002:\te8 13 52 07 02       \tcallq  427e21a <vbt_usn_t::truncate_front(int)>",
+        "2209021:\t41 ff d5             \tcallq  *%r13",
+        "2209031:\te8 0e 92 07 02       \tcallq  4282244 <vbt_string_t::~vbt_string_t()>",
+        "220903b:\te8 32 9b 07 02       \tcallq  4282b72 <vbt_usn_t::~vbt_usn_t()>",
+        "2209073:\tff 50 30             \tcallq  *0x30(%rax)",
+        "2209093:\te8 ac 91 07 02       \tcallq  4282244 <vbt_string_t::~vbt_string_t()>",
+        "220909d:\te8 d0 9a 07 02       \tcallq  4282b72 <vbt_usn_t::~vbt_usn_t()>",
+        "22090a5:\te8 06 58 ee 02       \tcallq  50ee8b0 <_Unwind_Resume>"
+      ]
+    },
+    {
+      "name": "fda_read_scope_tree(ffrObject*, char (*)(fsdbTreeCBType, void*, void*), void*)",
+      "symbol": "_Z19fda_read_scope_treeP9ffrObjectPFc14fsdbTreeCBTypePvS2_ES2_",
+      "address": "0x220a9f1",
+      "size": 247,
+      "calls": [
+        "220aa33:\te8 92 a2 ff ff       \tcallq  2204cca <fda_reader_cb_mgr_t::fda_reader_cb_mgr_t(ffrObject*)>",
+        "220aa44:\tff 50 18             \tcallq  *0x18(%rax)",
+        "220aa58:\tff 90 c0 00 00 00    \tcallq  *0xc0(%rax)",
+        "220aa60:\te8 6d ea ff ff       \tcallq  22094d2 <fda_debug()>",
+        "220aa7a:\tff 90 58 03 00 00    \tcallq  *0x358(%rax)",
+        "220aa97:\te8 24 56 f0 02       \tcallq  51100c0 <printf@plt>",
+        "220aaa4:\tff 90 10 01 00 00    \tcallq  *0x110(%rax)",
+        "220aac2:\te8 39 a2 ff ff       \tcallq  2204d00 <fda_reader_cb_mgr_t::~fda_reader_cb_mgr_t()>",
+        "220aada:\te8 21 a2 ff ff       \tcallq  2204d00 <fda_reader_cb_mgr_t::~fda_reader_cb_mgr_t()>",
+        "220aae2:\te8 c9 3d ee 02       \tcallq  50ee8b0 <_Unwind_Resume>"
+      ]
+    },
+    {
+      "name": "npi_fsdb_sig_by_name(void*, char const*, void*)",
+      "symbol": "_Z20npi_fsdb_sig_by_namePvPKcS_",
+      "address": "0x2224520",
+      "size": 270,
+      "calls": [
+        "222457d:\te8 ba 4a 03 00       \tcallq  225903c <dbt_slist_t::find(void*, dbt_slistEntry_t*&)>",
+        "22245a6:\tff 10                \tcallq  *(%rax)",
+        "22245bf:\tff 50 30             \tcallq  *0x30(%rax)",
+        "22245d2:\te8 99 cc 6b 02       \tcallq  48e1270 <operator new(unsigned long)>",
+        "22245dd:\te8 1e 9a fe ff       \tcallq  220e000 <fda_file_mgr_t::fda_file_mgr_t()>",
+        "22245fc:\te8 ef 82 64 02       \tcallq  486c8f0 <operator delete(void*, unsigned long)>",
+        "2224604:\te8 a7 a2 ec 02       \tcallq  50ee8b0 <_Unwind_Resume>",
+        "222460f:\te8 9c 4a fe ff       \tcallq  22090b0 <fda_file_t::get_sig_by_name(char const*)>"
+      ]
+    },
+    {
+      "name": "fda_vct_value_skip_check(void*, npiFsdbValue*)",
+      "symbol": "_Z24fda_vct_value_skip_checkPvP12npiFsdbValue",
+      "address": "0x22171fe",
+      "size": 471,
+      "calls": [
+        "2217228:\tff 90 90 00 00 00    \tcallq  *0x90(%rax)",
+        "2217249:\tff 90 c8 00 00 00    \tcallq  *0xc8(%rax)",
+        "221726a:\tff 90 c0 00 00 00    \tcallq  *0xc0(%rax)",
+        "221728b:\tff 90 d0 00 00 00    \tcallq  *0xd0(%rax)",
+        "22172b0:\tff 90 98 00 00 00    \tcallq  *0x98(%rax)",
+        "22172c7:\tff 90 a0 00 00 00    \tcallq  *0xa0(%rax)",
+        "22172d9:\tff 90 a8 00 00 00    \tcallq  *0xa8(%rax)",
+        "22172eb:\tff 90 b0 00 00 00    \tcallq  *0xb0(%rax)",
+        "22172fd:\tff 90 b8 00 00 00    \tcallq  *0xb8(%rax)",
+        "221730b:\tff 90 f0 00 00 00    \tcallq  *0xf0(%rax)",
+        "221732c:\tff 90 d8 00 00 00    \tcallq  *0xd8(%rax)",
+        "2217354:\tff 90 00 01 00 00    \tcallq  *0x100(%rax)",
+        "2217368:\tff 90 f8 00 00 00    \tcallq  *0xf8(%rax)",
+        "2217398:\tff 90 b8 00 00 00    \tcallq  *0xb8(%rax)",
+        "22173a6:\te8 27 21 ff ff       \tcallq  22094d2 <fda_debug()>",
+        "22173c6:\te8 15 8c ef 02       \tcallq  510ffe0 <dbt_log(char const*, ...)@plt>"
+      ]
+    },
+    {
+      "name": "fda_create_packed_struct_field(fsdbTreeCBDataStruct*, fda_file_t*)",
+      "symbol": "_Z30fda_create_packed_struct_fieldP20fsdbTreeCBDataStructP10fda_file_t",
+      "address": "0x2218ede",
+      "size": 37,
+      "calls": [
+        "2218ef3:\te8 60 ff ff ff       \tcallq  2218e58 <fda_dt_mgr_t::cr_struct_dt(int, fsdbStructType)>"
+      ]
+    },
+    {
+      "name": "fda_create_unpacked_struct_field(fsdbTreeCBDataStruct*, fda_file_t*)",
+      "symbol": "_Z32fda_create_unpacked_struct_fieldP20fsdbTreeCBDataStructP10fda_file_t",
+      "address": "0x2218eb9",
+      "size": 37,
+      "calls": [
+        "2218ece:\te8 85 ff ff ff       \tcallq  2218e58 <fda_dt_mgr_t::cr_struct_dt(int, fsdbStructType)>"
+      ]
+    },
+    {
+      "name": "fda_file_t::get_sig_by_name(char const*)",
+      "symbol": "_ZN10fda_file_t15get_sig_by_nameEPKc",
+      "address": "0x22090b0",
+      "size": 50,
+      "calls": [
+        "22090c0:\te8 4f fe ff ff       \tcallq  2208f14 <fda_get_sig_by_name(char const*, fda_scope_t*)>",
+        "22090d3:\te8 e2 6e ff ff       \tcallq  21fffba <fda_file_t::add_to_sig_hash(void*)>"
+      ]
+    },
+    {
+      "name": "fda_vch_leaf_t::goto_time(unsigned long long const&)",
+      "symbol": "_ZN14fda_vch_leaf_t9goto_timeERKy",
+      "address": "0x2215ffc",
+      "size": 224,
+      "calls": [
+        "221601a:\te8 b7 ff ff ff       \tcallq  2215fd6 <fda_vch_t::convert_time_in_range(unsigned long long const&, fsdbXTag&) const>",
+        "221602b:\te8 52 3f da 01       \tcallq  3fb9f82 <ffrVCIterOne::ffrGotoXTag(void*, int*)>",
+        "221603b:\te8 82 3f da 01       \tcallq  3fb9fc2 <ffrVCIterOne::ffrGetXTag(void*)>",
+        "221604f:\te8 18 9f da 01       \tcallq  3fbff6c <ffrVCIterOne::ffrGetMaxXTag(void*)>",
+        "2216073:\tff 90 60 01 00 00    \tcallq  *0x160(%rax)",
+        "2216083:\te8 00 06 ff ff       \tcallq  2206688 <fda_fsdb_xtag_larger(fsdbXTag const&, fsdbXTag const&)>",
+        "221609a:\te8 e3 3e da 01       \tcallq  3fb9f82 <ffrVCIterOne::ffrGotoXTag(void*, int*)>",
+        "22160ac:\te8 11 3f da 01       \tcallq  3fb9fc2 <ffrVCIterOne::ffrGetXTag(void*)>",
+        "22160c6:\tff 90 60 01 00 00    \tcallq  *0x160(%rax)"
+      ]
+    },
+    {
+      "name": "fda_vch_partial_t::goto_next_vc()",
+      "symbol": "_ZN17fda_vch_partial_t12goto_next_vcEv",
+      "address": "0x21fb0ce",
+      "size": 90,
+      "calls": [
+        "21fb0eb:\tff 90 58 01 00 00    \tcallq  *0x158(%rax)",
+        "21fb104:\tff 90 38 01 00 00    \tcallq  *0x138(%rax)"
+      ]
+    },
+    {
+      "name": "fda_vch_partial_t::goto_time(unsigned long long const&)",
+      "symbol": "_ZN17fda_vch_partial_t9goto_timeERKy",
+      "address": "0x22160dc",
+      "size": 138,
+      "calls": [
+        "22160f4:\te8 dd fe ff ff       \tcallq  2215fd6 <fda_vch_t::convert_time_in_range(unsigned long long const&, fsdbXTag&) const>",
+        "2216105:\te8 78 3e da 01       \tcallq  3fb9f82 <ffrVCIterOne::ffrGotoXTag(void*, int*)>",
+        "2216123:\te8 9a 3e da 01       \tcallq  3fb9fc2 <ffrVCIterOne::ffrGetXTag(void*)>",
+        "221613d:\tff 90 50 01 00 00    \tcallq  *0x150(%rax)",
+        "221614c:\tff 90 48 01 00 00    \tcallq  *0x148(%rax)",
+        "2216158:\tff 90 20 01 00 00    \tcallq  *0x120(%rax)"
+      ]
+    },
+    {
+      "name": "fda_vch_composite_t::goto_time(unsigned long long const&)",
+      "symbol": "_ZN19fda_vch_composite_t9goto_timeERKy",
+      "address": "0x220d7f8",
+      "size": 210,
+      "calls": [
+        "220d836:\te8 5b 08 07 02       \tcallq  427e096 <vbt_dyn_ary_t::get_ith(int)>",
+        "220d84c:\tff 50 10             \tcallq  *0x10(%rax)",
+        "220d84f:\te8 23 fe ff ff       \tcallq  220d677 <fda_env_disable_composite_glitch()>",
+        "220d863:\tff 90 88 01 00 00    \tcallq  *0x188(%rax)",
+        "220d870:\te8 d3 b5 04 00       \tcallq  2258e48 <dbt_heap_t::buildHeap()>",
+        "220d89b:\tff 50 40             \tcallq  *0x40(%rax)"
+      ]
+    },
+    {
+      "name": "fda_val_real_t::get_value_str_bin(unsigned char const*) const",
+      "symbol": "_ZNK14fda_val_real_t17get_value_str_binEPKh",
+      "address": "0x2216b98",
+      "size": 80,
+      "calls": [
+        "2216bb1:\tff 50 58             \tcallq  *0x58(%rax)",
+        "2216bc7:\te8 a2 ff ff ff       \tcallq  2216b6e <fda_wreal_xz_value_t::is_x_or_z(double)>",
+        "2216bd6:\te8 e2 1f ff ff       \tcallq  2208bbd <fda_double_to_char(double const&)>"
+      ]
+    },
+    {
+      "name": "fda_val_string_t::get_value_string(unsigned char const*) const",
+      "symbol": "_ZNK16fda_val_string_t16get_value_stringEPKh",
+      "address": "0x21fc676",
+      "size": 149,
+      "calls": [
+        "21fc697:\te8 66 ba 07 02       \tcallq  4278102 <vbt_string_t::operator=(char const*)>",
+        "21fc69f:\te8 4e b0 07 02       \tcallq  42776f2 <vbt_string_t::getString() const>",
+        "21fc6ad:\te8 ce df 6a 02       \tcallq  48aa680 <__cxa_guard_acquire>",
+        "21fc6c2:\te8 a1 a8 07 02       \tcallq  4276f68 <vbt_string_t::vbt_string_t(_vmalloc_s*)>",
+        "21fc6dc:\te8 0f 39 f1 02       \tcallq  510fff0 <__cxa_atexit@plt>",
+        "21fc6e8:\te8 93 e0 6a 02       \tcallq  48aa780 <__cxa_guard_release>",
+        "21fc6fe:\te8 2d e0 6a 02       \tcallq  48aa730 <__cxa_guard_abort>",
+        "21fc706:\te8 a5 21 ef 02       \tcallq  50ee8b0 <_Unwind_Resume>"
+      ]
+    }
+  ]
+}

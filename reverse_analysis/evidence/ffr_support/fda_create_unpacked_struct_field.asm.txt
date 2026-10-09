@@ -1,0 +1,17 @@
+
+/opt/Synopsys/verdi/Y-2026.03-SP2/share/NPI/lib/linux64/libNPI.so:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+0000000002218eb9 <fda_create_unpacked_struct_field(fsdbTreeCBDataStruct*, fda_file_t*)>:
+ 2218eb9:	48 83 ec 08          	sub    $0x8,%rsp
+ 2218ebd:	48 89 f0             	mov    %rsi,%rax
+ 2218ec0:	8b 37                	mov    (%rdi),%esi
+ 2218ec2:	48 8b b8 b0 00 00 00 	mov    0xb0(%rax),%rdi
+ 2218ec9:	ba 0a 00 00 00       	mov    $0xa,%edx
+ 2218ece:	e8 85 ff ff ff       	callq  2218e58 <fda_dt_mgr_t::cr_struct_dt(int, fsdbStructType)>
+ 2218ed3:	48 85 c0             	test   %rax,%rax
+ 2218ed6:	0f 95 c0             	setne  %al
+ 2218ed9:	48 83 c4 08          	add    $0x8,%rsp
+ 2218edd:	c3                   	retq   

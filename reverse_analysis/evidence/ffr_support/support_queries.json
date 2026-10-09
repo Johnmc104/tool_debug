@@ -1,0 +1,1877 @@
+{
+  "sample": "/home/zhhe/work/python_auto/tool_wave/build/ffr_support_analysis/support.fsdb",
+  "sdk": "/opt/Synopsys/verdi/Y-2026.03-SP2",
+  "checks": 377,
+  "different": 297,
+  "signal_info": [
+    {
+      "cmd": "list_signals",
+      "params": {
+        "path": "support_fixture"
+      },
+      "npi": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "path": "support_fixture",
+          "signals": [
+            {
+              "name": "packet",
+              "full_name": "support_fixture.packet",
+              "left": 0,
+              "right": 0,
+              "direction": "none"
+            },
+            {
+              "name": "pair_value",
+              "full_name": "support_fixture.pair_value",
+              "left": 0,
+              "right": 0,
+              "direction": "none"
+            },
+            {
+              "name": "matrix",
+              "full_name": "support_fixture.matrix",
+              "left": 1,
+              "right": 0,
+              "direction": "none"
+            },
+            {
+              "name": "two_state",
+              "full_name": "support_fixture.two_state",
+              "left": 7,
+              "right": 0,
+              "direction": "none"
+            },
+            {
+              "name": "delayed",
+              "full_name": "support_fixture.delayed",
+              "left": 0,
+              "right": 0,
+              "direction": "none"
+            },
+            {
+              "name": "analog",
+              "full_name": "support_fixture.analog",
+              "left": 0,
+              "right": 0,
+              "direction": "none"
+            },
+            {
+              "name": "text_value",
+              "full_name": "support_fixture.text_value",
+              "left": 0,
+              "right": 0,
+              "direction": "none"
+            }
+          ]
+        }
+      },
+      "ffr": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "path": "support_fixture",
+          "signals": [
+            {
+              "name": "packet",
+              "full_name": "support_fixture.packet",
+              "left": 11,
+              "right": 0,
+              "direction": "none"
+            },
+            {
+              "name": "a",
+              "full_name": "support_fixture.a",
+              "left": 7,
+              "right": 0,
+              "direction": "none"
+            },
+            {
+              "name": "b",
+              "full_name": "support_fixture.b",
+              "left": 7,
+              "right": 0,
+              "direction": "none"
+            },
+            {
+              "name": "matrix",
+              "full_name": "support_fixture.matrix",
+              "left": 1,
+              "right": 0,
+              "direction": "none"
+            },
+            {
+              "name": "two_state",
+              "full_name": "support_fixture.two_state",
+              "left": 7,
+              "right": 0,
+              "direction": "none"
+            },
+            {
+              "name": "delayed",
+              "full_name": "support_fixture.delayed",
+              "left": 0,
+              "right": 0,
+              "direction": "none"
+            },
+            {
+              "name": "analog",
+              "full_name": "support_fixture.analog",
+              "left": 0,
+              "right": 0,
+              "direction": "none"
+            },
+            {
+              "name": "text_value",
+              "full_name": "support_fixture.text_value",
+              "left": 0,
+              "right": 0,
+              "direction": "none"
+            }
+          ]
+        }
+      },
+      "equal": false
+    },
+    {
+      "cmd": "list_scopes",
+      "params": {
+        "path": "support_fixture",
+        "depth": 3
+      },
+      "npi": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "path": "support_fixture",
+          "scopes": [],
+          "count": 0
+        }
+      },
+      "ffr": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "path": "support_fixture",
+          "scopes": [],
+          "count": 0
+        }
+      },
+      "equal": true
+    },
+    {
+      "cmd": "signal_info",
+      "params": {
+        "signal": "support_fixture.packet"
+      },
+      "npi": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "name": "packet",
+          "full_name": "support_fixture.packet",
+          "left": 0,
+          "right": 0,
+          "direction": "none"
+        }
+      },
+      "ffr": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "name": "packet",
+          "full_name": "support_fixture.packet",
+          "left": 11,
+          "right": 0,
+          "direction": "none"
+        }
+      },
+      "equal": false
+    },
+    {
+      "cmd": "signal_info",
+      "params": {
+        "signal": "support_fixture.packet.payload"
+      },
+      "npi": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "name": "packet.payload",
+          "full_name": "support_fixture.packet.payload",
+          "left": 7,
+          "right": 0,
+          "direction": "none"
+        }
+      },
+      "ffr": {
+        "id": 1,
+        "status": "error",
+        "error": {
+          "code": "SIGNAL_NOT_FOUND",
+          "message": "Signal 'support_fixture.packet.payload' not found"
+        }
+      },
+      "equal": false
+    },
+    {
+      "cmd": "signal_info",
+      "params": {
+        "signal": "support_fixture.packet.tag"
+      },
+      "npi": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "name": "packet.tag",
+          "full_name": "support_fixture.packet.tag",
+          "left": 3,
+          "right": 0,
+          "direction": "none"
+        }
+      },
+      "ffr": {
+        "id": 1,
+        "status": "error",
+        "error": {
+          "code": "SIGNAL_NOT_FOUND",
+          "message": "Signal 'support_fixture.packet.tag' not found"
+        }
+      },
+      "equal": false
+    },
+    {
+      "cmd": "signal_info",
+      "params": {
+        "signal": "support_fixture.packet[7:0]"
+      },
+      "npi": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "name": "packet.7:0",
+          "full_name": "support_fixture.packet.7:0",
+          "left": 0,
+          "right": 0,
+          "direction": "none"
+        }
+      },
+      "ffr": {
+        "id": 1,
+        "status": "error",
+        "error": {
+          "code": "SIGNAL_NOT_FOUND",
+          "message": "Signal 'support_fixture.packet[7:0]' not found"
+        }
+      },
+      "equal": false
+    },
+    {
+      "cmd": "signal_info",
+      "params": {
+        "signal": "support_fixture.pair_value"
+      },
+      "npi": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "name": "pair_value",
+          "full_name": "support_fixture.pair_value",
+          "left": 0,
+          "right": 0,
+          "direction": "none"
+        }
+      },
+      "ffr": {
+        "id": 1,
+        "status": "error",
+        "error": {
+          "code": "SIGNAL_NOT_FOUND",
+          "message": "Signal 'support_fixture.pair_value' not found"
+        }
+      },
+      "equal": false
+    },
+    {
+      "cmd": "signal_info",
+      "params": {
+        "signal": "support_fixture.pair_value.a"
+      },
+      "npi": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "name": "pair_value.a",
+          "full_name": "support_fixture.pair_value.a",
+          "left": 7,
+          "right": 0,
+          "direction": "none"
+        }
+      },
+      "ffr": {
+        "id": 1,
+        "status": "error",
+        "error": {
+          "code": "SIGNAL_NOT_FOUND",
+          "message": "Signal 'support_fixture.pair_value.a' not found"
+        }
+      },
+      "equal": false
+    },
+    {
+      "cmd": "signal_info",
+      "params": {
+        "signal": "support_fixture.matrix"
+      },
+      "npi": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "name": "matrix",
+          "full_name": "support_fixture.matrix",
+          "left": 1,
+          "right": 0,
+          "direction": "none"
+        }
+      },
+      "ffr": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "name": "matrix",
+          "full_name": "support_fixture.matrix",
+          "left": 1,
+          "right": 0,
+          "direction": "none"
+        }
+      },
+      "equal": true
+    },
+    {
+      "cmd": "signal_info",
+      "params": {
+        "signal": "support_fixture.matrix[1]"
+      },
+      "npi": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "name": "matrix[1]",
+          "full_name": "support_fixture.matrix[1]",
+          "left": 2,
+          "right": 1,
+          "direction": "none"
+        }
+      },
+      "ffr": {
+        "id": 1,
+        "status": "error",
+        "error": {
+          "code": "SIGNAL_NOT_FOUND",
+          "message": "Signal 'support_fixture.matrix[1]' not found"
+        }
+      },
+      "equal": false
+    },
+    {
+      "cmd": "signal_info",
+      "params": {
+        "signal": "support_fixture.matrix[1][2]"
+      },
+      "npi": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "name": "matrix[1][2]",
+          "full_name": "support_fixture.matrix[1][2]",
+          "left": 7,
+          "right": 0,
+          "direction": "none"
+        }
+      },
+      "ffr": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "name": "matrix[1][2]",
+          "full_name": "support_fixture.matrix[1][2]",
+          "left": 7,
+          "right": 0,
+          "direction": "none"
+        }
+      },
+      "equal": true
+    },
+    {
+      "cmd": "signal_info",
+      "params": {
+        "signal": "support_fixture.matrix[1][2][3]"
+      },
+      "npi": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "name": "matrix[1][2][3]",
+          "full_name": "support_fixture.matrix[1][2][3]",
+          "left": 3,
+          "right": 3,
+          "direction": "none"
+        }
+      },
+      "ffr": {
+        "id": 1,
+        "status": "error",
+        "error": {
+          "code": "SIGNAL_NOT_FOUND",
+          "message": "Signal 'support_fixture.matrix[1][2][3]' not found"
+        }
+      },
+      "equal": false
+    },
+    {
+      "cmd": "signal_info",
+      "params": {
+        "signal": "support_fixture.two_state"
+      },
+      "npi": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "name": "two_state",
+          "full_name": "support_fixture.two_state",
+          "left": 7,
+          "right": 0,
+          "direction": "none"
+        }
+      },
+      "ffr": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "name": "two_state",
+          "full_name": "support_fixture.two_state",
+          "left": 7,
+          "right": 0,
+          "direction": "none"
+        }
+      },
+      "equal": true
+    },
+    {
+      "cmd": "signal_info",
+      "params": {
+        "signal": "support_fixture.two_state[0]"
+      },
+      "npi": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "name": "two_state[0]",
+          "full_name": "support_fixture.two_state[0]",
+          "left": 0,
+          "right": 0,
+          "direction": "none"
+        }
+      },
+      "ffr": {
+        "id": 1,
+        "status": "error",
+        "error": {
+          "code": "SIGNAL_NOT_FOUND",
+          "message": "Signal 'support_fixture.two_state[0]' not found"
+        }
+      },
+      "equal": false
+    },
+    {
+      "cmd": "signal_info",
+      "params": {
+        "signal": "support_fixture.delayed"
+      },
+      "npi": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "name": "delayed",
+          "full_name": "support_fixture.delayed",
+          "left": 0,
+          "right": 0,
+          "direction": "none"
+        }
+      },
+      "ffr": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "name": "delayed",
+          "full_name": "support_fixture.delayed",
+          "left": 0,
+          "right": 0,
+          "direction": "none"
+        }
+      },
+      "equal": true
+    },
+    {
+      "cmd": "signal_info",
+      "params": {
+        "signal": "support_fixture.analog"
+      },
+      "npi": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "name": "analog",
+          "full_name": "support_fixture.analog",
+          "left": 0,
+          "right": 0,
+          "direction": "none"
+        }
+      },
+      "ffr": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "name": "analog",
+          "full_name": "support_fixture.analog",
+          "left": 0,
+          "right": 0,
+          "direction": "none"
+        }
+      },
+      "equal": true
+    },
+    {
+      "cmd": "signal_info",
+      "params": {
+        "signal": "support_fixture.text_value"
+      },
+      "npi": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "name": "text_value",
+          "full_name": "support_fixture.text_value",
+          "left": 0,
+          "right": 0,
+          "direction": "none"
+        }
+      },
+      "ffr": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "name": "text_value",
+          "full_name": "support_fixture.text_value",
+          "left": 0,
+          "right": 0,
+          "direction": "none"
+        }
+      },
+      "equal": true
+    }
+  ],
+  "examples": [
+    {
+      "cmd": "get_value_at",
+      "params": {
+        "signals": [
+          "support_fixture.packet"
+        ],
+        "time": 1000,
+        "radix": "dec"
+      },
+      "npi": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "time": 1000,
+          "values": [
+            {
+              "signal": "support_fixture.packet",
+              "value": "{10,19}",
+              "actual_time": 1000
+            }
+          ]
+        }
+      },
+      "ffr": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "time": 1000,
+          "values": [
+            {
+              "signal": "support_fixture.packet",
+              "value": "2579",
+              "actual_time": 1000
+            }
+          ]
+        }
+      },
+      "equal": false
+    },
+    {
+      "cmd": "get_value_between",
+      "params": {
+        "signal": "support_fixture.packet",
+        "begin": 0,
+        "end": 6000
+      },
+      "npi": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "signal": "support_fixture.packet",
+          "begin": 0,
+          "end": 6000,
+          "total_changes": 4,
+          "changes": [
+            {
+              "time": 0,
+              "value": "{1010,00010010}"
+            },
+            {
+              "time": 1000,
+              "value": "{1010,00010011}"
+            },
+            {
+              "time": 2000,
+              "value": "{xxxx,xxxxxxxx}"
+            },
+            {
+              "time": 4000,
+              "value": "{1010,00010011}"
+            }
+          ]
+        }
+      },
+      "ffr": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "signal": "support_fixture.packet",
+          "begin": 0,
+          "end": 6000,
+          "total_changes": 4,
+          "changes": [
+            {
+              "time": 0,
+              "value": "101000010010"
+            },
+            {
+              "time": 1000,
+              "value": "101000010011"
+            },
+            {
+              "time": 2000,
+              "value": "xxxxxxxxxxxx"
+            },
+            {
+              "time": 4000,
+              "value": "101000010011"
+            }
+          ]
+        }
+      },
+      "equal": false
+    },
+    {
+      "cmd": "get_value_at",
+      "params": {
+        "signals": [
+          "support_fixture.packet.payload"
+        ],
+        "time": 1000,
+        "radix": "dec"
+      },
+      "npi": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "time": 1000,
+          "values": [
+            {
+              "signal": "support_fixture.packet.payload",
+              "value": "19",
+              "actual_time": 1000
+            }
+          ]
+        }
+      },
+      "ffr": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "time": 1000,
+          "values": [
+            {
+              "signal": "support_fixture.packet.payload",
+              "error": "not found"
+            }
+          ]
+        }
+      },
+      "equal": false
+    },
+    {
+      "cmd": "get_value_between",
+      "params": {
+        "signal": "support_fixture.packet.payload",
+        "begin": 0,
+        "end": 6000
+      },
+      "npi": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "signal": "support_fixture.packet.payload",
+          "begin": 0,
+          "end": 6000,
+          "total_changes": 4,
+          "changes": [
+            {
+              "time": 0,
+              "value": "00010010"
+            },
+            {
+              "time": 1000,
+              "value": "00010011"
+            },
+            {
+              "time": 2000,
+              "value": "xxxxxxxx"
+            },
+            {
+              "time": 4000,
+              "value": "00010011"
+            }
+          ]
+        }
+      },
+      "ffr": {
+        "id": 1,
+        "status": "error",
+        "error": {
+          "code": "SIGNAL_NOT_FOUND",
+          "message": "Signal 'support_fixture.packet.payload' not found"
+        }
+      },
+      "equal": false
+    },
+    {
+      "cmd": "vc_count",
+      "params": {
+        "signal": "support_fixture.packet.payload",
+        "begin": 0,
+        "end": 6000
+      },
+      "npi": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "signal": "support_fixture.packet.payload",
+          "begin": 0,
+          "end": 6000,
+          "count": 4
+        }
+      },
+      "ffr": {
+        "id": 1,
+        "status": "error",
+        "error": {
+          "code": "SIGNAL_NOT_FOUND",
+          "message": "Signal 'support_fixture.packet.payload' not found"
+        }
+      },
+      "equal": false
+    },
+    {
+      "cmd": "get_value_at",
+      "params": {
+        "signals": [
+          "support_fixture.packet.tag"
+        ],
+        "time": 1000,
+        "radix": "dec"
+      },
+      "npi": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "time": 1000,
+          "values": [
+            {
+              "signal": "support_fixture.packet.tag",
+              "value": "10",
+              "actual_time": 1000
+            }
+          ]
+        }
+      },
+      "ffr": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "time": 1000,
+          "values": [
+            {
+              "signal": "support_fixture.packet.tag",
+              "error": "not found"
+            }
+          ]
+        }
+      },
+      "equal": false
+    },
+    {
+      "cmd": "get_value_between",
+      "params": {
+        "signal": "support_fixture.packet.tag",
+        "begin": 0,
+        "end": 6000
+      },
+      "npi": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "signal": "support_fixture.packet.tag",
+          "begin": 0,
+          "end": 6000,
+          "total_changes": 3,
+          "changes": [
+            {
+              "time": 0,
+              "value": "1010"
+            },
+            {
+              "time": 2000,
+              "value": "xxxx"
+            },
+            {
+              "time": 4000,
+              "value": "1010"
+            }
+          ]
+        }
+      },
+      "ffr": {
+        "id": 1,
+        "status": "error",
+        "error": {
+          "code": "SIGNAL_NOT_FOUND",
+          "message": "Signal 'support_fixture.packet.tag' not found"
+        }
+      },
+      "equal": false
+    },
+    {
+      "cmd": "vc_count",
+      "params": {
+        "signal": "support_fixture.packet.tag",
+        "begin": 0,
+        "end": 6000
+      },
+      "npi": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "signal": "support_fixture.packet.tag",
+          "begin": 0,
+          "end": 6000,
+          "count": 3
+        }
+      },
+      "ffr": {
+        "id": 1,
+        "status": "error",
+        "error": {
+          "code": "SIGNAL_NOT_FOUND",
+          "message": "Signal 'support_fixture.packet.tag' not found"
+        }
+      },
+      "equal": false
+    },
+    {
+      "cmd": "get_value_at",
+      "params": {
+        "signals": [
+          "support_fixture.packet[7:0]"
+        ],
+        "time": 1000,
+        "radix": "dec"
+      },
+      "npi": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "time": 1000,
+          "values": [
+            {
+              "signal": "support_fixture.packet[7:0]",
+              "value": "19",
+              "actual_time": 1000
+            }
+          ]
+        }
+      },
+      "ffr": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "time": 1000,
+          "values": [
+            {
+              "signal": "support_fixture.packet[7:0]",
+              "error": "not found"
+            }
+          ]
+        }
+      },
+      "equal": false
+    },
+    {
+      "cmd": "get_value_between",
+      "params": {
+        "signal": "support_fixture.packet[7:0]",
+        "begin": 0,
+        "end": 6000
+      },
+      "npi": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "signal": "support_fixture.packet[7:0]",
+          "begin": 0,
+          "end": 6000,
+          "total_changes": 4,
+          "changes": [
+            {
+              "time": 0,
+              "value": "00010010"
+            },
+            {
+              "time": 1000,
+              "value": "00010011"
+            },
+            {
+              "time": 2000,
+              "value": "xxxxxxxx"
+            },
+            {
+              "time": 4000,
+              "value": "00010011"
+            }
+          ]
+        }
+      },
+      "ffr": {
+        "id": 1,
+        "status": "error",
+        "error": {
+          "code": "SIGNAL_NOT_FOUND",
+          "message": "Signal 'support_fixture.packet[7:0]' not found"
+        }
+      },
+      "equal": false
+    },
+    {
+      "cmd": "vc_count",
+      "params": {
+        "signal": "support_fixture.packet[7:0]",
+        "begin": 0,
+        "end": 6000
+      },
+      "npi": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "signal": "support_fixture.packet[7:0]",
+          "begin": 0,
+          "end": 6000,
+          "count": 4
+        }
+      },
+      "ffr": {
+        "id": 1,
+        "status": "error",
+        "error": {
+          "code": "SIGNAL_NOT_FOUND",
+          "message": "Signal 'support_fixture.packet[7:0]' not found"
+        }
+      },
+      "equal": false
+    },
+    {
+      "cmd": "get_value_at",
+      "params": {
+        "signals": [
+          "support_fixture.pair_value"
+        ],
+        "time": 1000,
+        "radix": "dec"
+      },
+      "npi": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "time": 1000,
+          "values": [
+            {
+              "signal": "support_fixture.pair_value",
+              "value": "{53,86}",
+              "actual_time": 1000
+            }
+          ]
+        }
+      },
+      "ffr": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "time": 1000,
+          "values": [
+            {
+              "signal": "support_fixture.pair_value",
+              "error": "not found"
+            }
+          ]
+        }
+      },
+      "equal": false
+    },
+    {
+      "cmd": "get_value_between",
+      "params": {
+        "signal": "support_fixture.pair_value",
+        "begin": 0,
+        "end": 6000
+      },
+      "npi": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "signal": "support_fixture.pair_value",
+          "begin": 0,
+          "end": 6000,
+          "total_changes": 4,
+          "changes": [
+            {
+              "time": 0,
+              "value": "{00110100,01010110}"
+            },
+            {
+              "time": 1000,
+              "value": "{00110101,01010110}"
+            },
+            {
+              "time": 2000,
+              "value": "{xxxxxxxx,xxxxxxxx}"
+            },
+            {
+              "time": 4000,
+              "value": "{00110101,01010110}"
+            }
+          ]
+        }
+      },
+      "ffr": {
+        "id": 1,
+        "status": "error",
+        "error": {
+          "code": "SIGNAL_NOT_FOUND",
+          "message": "Signal 'support_fixture.pair_value' not found"
+        }
+      },
+      "equal": false
+    },
+    {
+      "cmd": "vc_count",
+      "params": {
+        "signal": "support_fixture.pair_value",
+        "begin": 0,
+        "end": 6000
+      },
+      "npi": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "signal": "support_fixture.pair_value",
+          "begin": 0,
+          "end": 6000,
+          "count": 4
+        }
+      },
+      "ffr": {
+        "id": 1,
+        "status": "error",
+        "error": {
+          "code": "SIGNAL_NOT_FOUND",
+          "message": "Signal 'support_fixture.pair_value' not found"
+        }
+      },
+      "equal": false
+    },
+    {
+      "cmd": "get_value_at",
+      "params": {
+        "signals": [
+          "support_fixture.pair_value.a"
+        ],
+        "time": 1000,
+        "radix": "dec"
+      },
+      "npi": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "time": 1000,
+          "values": [
+            {
+              "signal": "support_fixture.pair_value.a",
+              "value": "53",
+              "actual_time": 1000
+            }
+          ]
+        }
+      },
+      "ffr": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "time": 1000,
+          "values": [
+            {
+              "signal": "support_fixture.pair_value.a",
+              "error": "not found"
+            }
+          ]
+        }
+      },
+      "equal": false
+    },
+    {
+      "cmd": "get_value_between",
+      "params": {
+        "signal": "support_fixture.pair_value.a",
+        "begin": 0,
+        "end": 6000
+      },
+      "npi": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "signal": "support_fixture.pair_value.a",
+          "begin": 0,
+          "end": 6000,
+          "total_changes": 4,
+          "changes": [
+            {
+              "time": 0,
+              "value": "00110100"
+            },
+            {
+              "time": 1000,
+              "value": "00110101"
+            },
+            {
+              "time": 2000,
+              "value": "xxxxxxxx"
+            },
+            {
+              "time": 4000,
+              "value": "00110101"
+            }
+          ]
+        }
+      },
+      "ffr": {
+        "id": 1,
+        "status": "error",
+        "error": {
+          "code": "SIGNAL_NOT_FOUND",
+          "message": "Signal 'support_fixture.pair_value.a' not found"
+        }
+      },
+      "equal": false
+    },
+    {
+      "cmd": "vc_count",
+      "params": {
+        "signal": "support_fixture.pair_value.a",
+        "begin": 0,
+        "end": 6000
+      },
+      "npi": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "signal": "support_fixture.pair_value.a",
+          "begin": 0,
+          "end": 6000,
+          "count": 4
+        }
+      },
+      "ffr": {
+        "id": 1,
+        "status": "error",
+        "error": {
+          "code": "SIGNAL_NOT_FOUND",
+          "message": "Signal 'support_fixture.pair_value.a' not found"
+        }
+      },
+      "equal": false
+    },
+    {
+      "cmd": "get_value_at",
+      "params": {
+        "signals": [
+          "support_fixture.matrix"
+        ],
+        "time": 1000,
+        "radix": "dec"
+      },
+      "npi": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "time": 1000,
+          "values": [
+            {
+              "signal": "support_fixture.matrix",
+              "value": "{{121,154},{188,222}}",
+              "actual_time": 1000
+            }
+          ]
+        }
+      },
+      "ffr": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "time": 1000,
+          "values": [
+            {
+              "signal": "support_fixture.matrix",
+              "value": "x",
+              "error": "FFR currently supports four-state digital values: support_fixture.matrix",
+              "error_code": "UNSUPPORTED_SIGNAL_TYPE",
+              "actual_time": 1000
+            }
+          ]
+        }
+      },
+      "equal": false
+    },
+    {
+      "cmd": "get_value_between",
+      "params": {
+        "signal": "support_fixture.matrix",
+        "begin": 0,
+        "end": 6000
+      },
+      "npi": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "signal": "support_fixture.matrix",
+          "begin": 0,
+          "end": 6000,
+          "total_changes": 4,
+          "changes": [
+            {
+              "time": 0,
+              "value": "{{01111000,10011010},{10111100,11011110}}"
+            },
+            {
+              "time": 1000,
+              "value": "{{01111001,10011010},{10111100,11011110}}"
+            },
+            {
+              "time": 2000,
+              "value": "{{xxxxxxxx,xxxxxxxx},{xxxxxxxx,xxxxxxxx}}"
+            },
+            {
+              "time": 4000,
+              "value": "{{01111001,10011010},{10111100,11011110}}"
+            }
+          ]
+        }
+      },
+      "ffr": {
+        "id": 1,
+        "status": "error",
+        "error": {
+          "code": "UNSUPPORTED_SIGNAL_TYPE",
+          "message": "FFR currently supports four-state digital values: support_fixture.matrix"
+        }
+      },
+      "equal": false
+    },
+    {
+      "cmd": "vc_count",
+      "params": {
+        "signal": "support_fixture.matrix",
+        "begin": 0,
+        "end": 6000
+      },
+      "npi": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "signal": "support_fixture.matrix",
+          "begin": 0,
+          "end": 6000,
+          "count": 4
+        }
+      },
+      "ffr": {
+        "id": 1,
+        "status": "error",
+        "error": {
+          "code": "UNSUPPORTED_SIGNAL_TYPE",
+          "message": "FFR currently supports four-state digital values: support_fixture.matrix"
+        }
+      },
+      "equal": false
+    },
+    {
+      "cmd": "get_value_at",
+      "params": {
+        "signals": [
+          "support_fixture.matrix[1]"
+        ],
+        "time": 1000,
+        "radix": "dec"
+      },
+      "npi": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "time": 1000,
+          "values": [
+            {
+              "signal": "support_fixture.matrix[1]",
+              "value": "{121,154}",
+              "actual_time": 1000
+            }
+          ]
+        }
+      },
+      "ffr": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "time": 1000,
+          "values": [
+            {
+              "signal": "support_fixture.matrix[1]",
+              "error": "not found"
+            }
+          ]
+        }
+      },
+      "equal": false
+    },
+    {
+      "cmd": "get_value_between",
+      "params": {
+        "signal": "support_fixture.matrix[1]",
+        "begin": 0,
+        "end": 6000
+      },
+      "npi": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "signal": "support_fixture.matrix[1]",
+          "begin": 0,
+          "end": 6000,
+          "total_changes": 4,
+          "changes": [
+            {
+              "time": 0,
+              "value": "{01111000,10011010}"
+            },
+            {
+              "time": 1000,
+              "value": "{01111001,10011010}"
+            },
+            {
+              "time": 2000,
+              "value": "{xxxxxxxx,xxxxxxxx}"
+            },
+            {
+              "time": 4000,
+              "value": "{01111001,10011010}"
+            }
+          ]
+        }
+      },
+      "ffr": {
+        "id": 1,
+        "status": "error",
+        "error": {
+          "code": "SIGNAL_NOT_FOUND",
+          "message": "Signal 'support_fixture.matrix[1]' not found"
+        }
+      },
+      "equal": false
+    },
+    {
+      "cmd": "vc_count",
+      "params": {
+        "signal": "support_fixture.matrix[1]",
+        "begin": 0,
+        "end": 6000
+      },
+      "npi": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "signal": "support_fixture.matrix[1]",
+          "begin": 0,
+          "end": 6000,
+          "count": 4
+        }
+      },
+      "ffr": {
+        "id": 1,
+        "status": "error",
+        "error": {
+          "code": "SIGNAL_NOT_FOUND",
+          "message": "Signal 'support_fixture.matrix[1]' not found"
+        }
+      },
+      "equal": false
+    },
+    {
+      "cmd": "get_value_at",
+      "params": {
+        "signals": [
+          "support_fixture.matrix[1][2][3]"
+        ],
+        "time": 1000,
+        "radix": "dec"
+      },
+      "npi": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "time": 1000,
+          "values": [
+            {
+              "signal": "support_fixture.matrix[1][2][3]",
+              "value": "1",
+              "actual_time": 1000
+            }
+          ]
+        }
+      },
+      "ffr": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "time": 1000,
+          "values": [
+            {
+              "signal": "support_fixture.matrix[1][2][3]",
+              "error": "not found"
+            }
+          ]
+        }
+      },
+      "equal": false
+    },
+    {
+      "cmd": "get_value_between",
+      "params": {
+        "signal": "support_fixture.matrix[1][2][3]",
+        "begin": 0,
+        "end": 6000
+      },
+      "npi": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "signal": "support_fixture.matrix[1][2][3]",
+          "begin": 0,
+          "end": 6000,
+          "total_changes": 3,
+          "changes": [
+            {
+              "time": 0,
+              "value": "1"
+            },
+            {
+              "time": 2000,
+              "value": "x"
+            },
+            {
+              "time": 4000,
+              "value": "1"
+            }
+          ]
+        }
+      },
+      "ffr": {
+        "id": 1,
+        "status": "error",
+        "error": {
+          "code": "SIGNAL_NOT_FOUND",
+          "message": "Signal 'support_fixture.matrix[1][2][3]' not found"
+        }
+      },
+      "equal": false
+    },
+    {
+      "cmd": "vc_count",
+      "params": {
+        "signal": "support_fixture.matrix[1][2][3]",
+        "begin": 0,
+        "end": 6000
+      },
+      "npi": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "signal": "support_fixture.matrix[1][2][3]",
+          "begin": 0,
+          "end": 6000,
+          "count": 3
+        }
+      },
+      "ffr": {
+        "id": 1,
+        "status": "error",
+        "error": {
+          "code": "SIGNAL_NOT_FOUND",
+          "message": "Signal 'support_fixture.matrix[1][2][3]' not found"
+        }
+      },
+      "equal": false
+    },
+    {
+      "cmd": "get_value_at",
+      "params": {
+        "signals": [
+          "support_fixture.two_state[0]"
+        ],
+        "time": 1000,
+        "radix": "dec"
+      },
+      "npi": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "time": 1000,
+          "values": [
+            {
+              "signal": "support_fixture.two_state[0]",
+              "value": "0",
+              "actual_time": 1000
+            }
+          ]
+        }
+      },
+      "ffr": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "time": 1000,
+          "values": [
+            {
+              "signal": "support_fixture.two_state[0]",
+              "error": "not found"
+            }
+          ]
+        }
+      },
+      "equal": false
+    },
+    {
+      "cmd": "get_value_between",
+      "params": {
+        "signal": "support_fixture.two_state[0]",
+        "begin": 0,
+        "end": 6000
+      },
+      "npi": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "signal": "support_fixture.two_state[0]",
+          "begin": 0,
+          "end": 6000,
+          "total_changes": 4,
+          "changes": [
+            {
+              "time": 0,
+              "value": "1"
+            },
+            {
+              "time": 1000,
+              "value": "0"
+            },
+            {
+              "time": 2000,
+              "value": "x"
+            },
+            {
+              "time": 4000,
+              "value": "0"
+            }
+          ]
+        }
+      },
+      "ffr": {
+        "id": 1,
+        "status": "error",
+        "error": {
+          "code": "SIGNAL_NOT_FOUND",
+          "message": "Signal 'support_fixture.two_state[0]' not found"
+        }
+      },
+      "equal": false
+    },
+    {
+      "cmd": "vc_count",
+      "params": {
+        "signal": "support_fixture.two_state[0]",
+        "begin": 0,
+        "end": 6000
+      },
+      "npi": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "signal": "support_fixture.two_state[0]",
+          "begin": 0,
+          "end": 6000,
+          "count": 4
+        }
+      },
+      "ffr": {
+        "id": 1,
+        "status": "error",
+        "error": {
+          "code": "SIGNAL_NOT_FOUND",
+          "message": "Signal 'support_fixture.two_state[0]' not found"
+        }
+      },
+      "equal": false
+    },
+    {
+      "cmd": "get_value_at",
+      "params": {
+        "signals": [
+          "support_fixture.analog"
+        ],
+        "time": 1000,
+        "radix": "dec"
+      },
+      "npi": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "time": 1000,
+          "values": [
+            {
+              "signal": "support_fixture.analog",
+              "value": "-2.500000E+00",
+              "actual_time": 1000
+            }
+          ]
+        }
+      },
+      "ffr": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "time": 1000,
+          "values": [
+            {
+              "signal": "support_fixture.analog",
+              "value": "x",
+              "error": "FFR currently supports four-state digital values: support_fixture.analog",
+              "error_code": "UNSUPPORTED_SIGNAL_TYPE",
+              "actual_time": 1000
+            }
+          ]
+        }
+      },
+      "equal": false
+    },
+    {
+      "cmd": "get_value_between",
+      "params": {
+        "signal": "support_fixture.analog",
+        "begin": 0,
+        "end": 6000
+      },
+      "npi": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "signal": "support_fixture.analog",
+          "begin": 0,
+          "end": 6000,
+          "total_changes": 4,
+          "changes": [
+            {
+              "time": 0,
+              "value": "1.250000E+00"
+            },
+            {
+              "time": 1000,
+              "value": "-2.500000E+00"
+            },
+            {
+              "time": 2000,
+              "value": "-2.500000E+00"
+            },
+            {
+              "time": 4000,
+              "value": "-2.500000E+00"
+            }
+          ]
+        }
+      },
+      "ffr": {
+        "id": 1,
+        "status": "error",
+        "error": {
+          "code": "UNSUPPORTED_SIGNAL_TYPE",
+          "message": "FFR currently supports four-state digital values: support_fixture.analog"
+        }
+      },
+      "equal": false
+    },
+    {
+      "cmd": "vc_count",
+      "params": {
+        "signal": "support_fixture.analog",
+        "begin": 0,
+        "end": 6000
+      },
+      "npi": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "signal": "support_fixture.analog",
+          "begin": 0,
+          "end": 6000,
+          "count": 4
+        }
+      },
+      "ffr": {
+        "id": 1,
+        "status": "error",
+        "error": {
+          "code": "UNSUPPORTED_SIGNAL_TYPE",
+          "message": "FFR currently supports four-state digital values: support_fixture.analog"
+        }
+      },
+      "equal": false
+    },
+    {
+      "cmd": "get_value_at",
+      "params": {
+        "signals": [
+          "support_fixture.text_value"
+        ],
+        "time": 1000,
+        "radix": "dec"
+      },
+      "npi": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "time": 1000,
+          "values": [
+            {
+              "signal": "support_fixture.text_value",
+              "value": "x",
+              "error": "read failed",
+              "error_code": "FILE_READ_ERROR",
+              "actual_time": 1000
+            }
+          ]
+        }
+      },
+      "ffr": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "time": 1000,
+          "values": [
+            {
+              "signal": "support_fixture.text_value",
+              "value": "x",
+              "error": "FFR currently supports four-state digital values: support_fixture.text_value",
+              "error_code": "UNSUPPORTED_SIGNAL_TYPE",
+              "actual_time": 1000
+            }
+          ]
+        }
+      },
+      "equal": false
+    },
+    {
+      "cmd": "get_value_between",
+      "params": {
+        "signal": "support_fixture.text_value",
+        "begin": 0,
+        "end": 6000
+      },
+      "npi": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "signal": "support_fixture.text_value",
+          "begin": 0,
+          "end": 6000,
+          "total_changes": 0,
+          "changes": []
+        }
+      },
+      "ffr": {
+        "id": 1,
+        "status": "error",
+        "error": {
+          "code": "UNSUPPORTED_SIGNAL_TYPE",
+          "message": "FFR currently supports four-state digital values: support_fixture.text_value"
+        }
+      },
+      "equal": false
+    },
+    {
+      "cmd": "vc_count",
+      "params": {
+        "signal": "support_fixture.text_value",
+        "begin": 0,
+        "end": 6000
+      },
+      "npi": {
+        "id": 1,
+        "status": "ok",
+        "data": {
+          "signal": "support_fixture.text_value",
+          "begin": 0,
+          "end": 6000,
+          "count": 4
+        }
+      },
+      "ffr": {
+        "id": 1,
+        "status": "error",
+        "error": {
+          "code": "UNSUPPORTED_SIGNAL_TYPE",
+          "message": "FFR currently supports four-state digital values: support_fixture.text_value"
+        }
+      },
+      "equal": false
+    }
+  ]
+}
