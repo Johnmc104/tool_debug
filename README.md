@@ -1,4 +1,4 @@
-# tool_wave — FSDB 波形读取 & 网表信号追踪
+# tool_wave v1.7 — FSDB 波形读取 & 网表信号追踪
 
 命令行工具集。vwave 支持 NPI 和动态加载 FsdbReader 两种后端，vsignal 使用 Verdi NPI。包含两个独立工具：
 
@@ -75,13 +75,20 @@ FFR 库来源为 `--verdi-home` 或当前 `VERDI_HOME`，加载配套 `share/Fsd
 
 切换 EDA 环境不会改变已有会话。再次 `open --backend ffr` 时，如果安装目录或库哈希变化，会重启该会话；加载预检失败则保留原会话。`status/info` 的 JSON 包含实际 backend、SDK 路径、库路径和 SHA-256。查询可显式指定 `--backend` 核对当前模式，不匹配时提示重新 open。
 
-FFR 支持四态数字信号、宽总线、位选/片选、普通 unpacked struct 和静态数组组合值，复用原有查询命令；real 已支持普通值、范围和计数。string、事务/属性值以及 packed struct 字段目前仍返回明确的未支持错误。范围查询先输出起始时刻的值，`vc-count` 仅计真实记录；边沿查找保持原 NPI 命令的边界行为。
+FFR 支持四态数字信号、宽总线、位选/片选、unpacked/packed struct 字段和静态数组组合值，复用原有查询命令；real 已支持普通值、范围和计数。string 按 NPI 当前行为处理：点值返回读取错误，范围为空，计数和 edge 事件仍可查询；事务/属性值仍返回明确的未支持错误。范围查询先输出起始时刻的值，`vc-count` 仅计真实记录；边沿查找保持原 NPI 命令的边界行为。
 
-补充测试曾发现总线位选/片选、数组中间层和 unpacked struct 字段路径问题，现已完成第一阶段修复；packed struct 字段布局、string 和更复杂的组合类型仍需后续处理。问题复现及修复方案见 [FFR 功能缺口分析](plan/09_ffr_feature_gaps_and_solution.md)。
+补充测试曾发现总线位选/片选、数组中间层、struct 字段路径和 packed struct 展开问题，现已完成修复。当前支持范围、Reader 版本限制和 string 兼容语义见 [FFR 功能缺口分析](plan/09_ffr_feature_gaps_and_solution.md)。
 
 运行时 `vwave` 与相应 `vwave-*-worker` 必须位于同一目录，发布包已包含两个 worker。FFR 前端和 worker 不直接链接厂商库，不需要完整 Verdi 安装；选定的配套 reader 库及其运行依赖必须可用。NPI 保留编译时配套安装和许可证行为。
 
 CentOS 7/glibc 2.17 已验证 **2022 reader** 的完整 open、查询和 close。2026 reader 自身需要更高 glibc，动态加载不能降低该要求。构建时静态链接 C++ 运行库，以减少用户切换 EDA 后的 GLIBCXX 冲突；发布仍应核验生成二进制的 GLIBC 要求。
+
+### v1.7 发布说明
+
+- FFR 与 NPI 的普通位选、二维数组、struct、packed struct、real 和组合信号查询已完成对照验证。
+- T-2022.06-SP2、Y-2026.03-SP2 配套样本及 CentOS 7/2022 reader 验证通过；FFR worker 仍不携带厂商 reader，运行时需提供配套 SDK。
+- packed struct 展开依赖已验证 Reader 的内部开关，新增 EDA/Reader 版本必须重新做 ABI 和行为验证。
+- 当前发布归档：`tool_wave-1.7-linux-x86_64.tar.gz`，同时提供 SHA-256 校验文件。
 
 ### vwave 命令速查
 
