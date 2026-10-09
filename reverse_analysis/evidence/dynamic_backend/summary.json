@@ -1,0 +1,86 @@
+{
+  "date": "2026-10-09",
+  "checkpoint_commit": "f2f7412",
+  "implementation_committed": true,
+  "adapter": "vwave-backend-v1",
+  "validated_reader_builds": [
+    "Verdi_T-2022.06-SP2",
+    "Verdi_Y-2026.03-SP2"
+  ],
+  "paired_fsdb_versions": {
+    "T-2022.06-SP2": "6.0",
+    "Y-2026.03-SP2": "6.4"
+  },
+  "backend_checks": 4342,
+  "backend_differences": 0,
+  "npi_regression": {
+    "pass": 62,
+    "fail": 0,
+    "skip": 0
+  },
+  "compiler": "g++ (GCC) 9.5.0",
+  "elf": {
+    "vwave": {
+      "sha256": "1135541c14ff28e80ca3ebc13e0cdfef1f3b6f26e161959efb51097e0c56c29c",
+      "max_glibc": "2.17",
+      "needed": [
+        "libpthread.so.0",
+        "librt.so.1",
+        "libdl.so.2",
+        "libm.so.6",
+        "libc.so.6",
+        "ld-linux-x86-64.so.2"
+      ],
+      "vendor_needed": false,
+      "sdk_rpath": false
+    },
+    "vwave-ffr-worker": {
+      "sha256": "56bc88950624fc1b5bfe02e3d6d2ab7370ad0127ba682ec9e3ce8958ea63ea99",
+      "max_glibc": "2.17",
+      "needed": [
+        "libpthread.so.0",
+        "librt.so.1",
+        "libdl.so.2",
+        "libm.so.6",
+        "libc.so.6",
+        "ld-linux-x86-64.so.2"
+      ],
+      "vendor_needed": false,
+      "sdk_rpath": false
+    }
+  },
+  "centos7": {
+    "release": "7.9.2009",
+    "glibc": "2.17",
+    "method": "unshare -Ur chroot; no mounts; full CLI + worker fork/exec",
+    "runtime_image": "quay.io/centos/centos:7",
+    "image_layer_sha256": "2d473b07cdd5f0912cd6f1a703352c82b512407db6b05b43f2553732b55df3bc",
+    "reader_2022": "pass",
+    "reader_2026": "dlopen fails on GLIBC_2.25; original session preserved",
+    "license_environment": "1@127.0.0.1",
+    "network_isolated": false,
+    "strace_inet_calls": 0,
+    "docker_build_completed": false,
+    "docker_validation": "container creation / mount stalled; used verified CentOS user space instead"
+  },
+  "npi_worker_selection": {
+    "cli_and_2022_worker": "open/query/close passed with shell VERDI_HOME=2026; worker reported 2022 SDK"
+  },
+  "package": {
+    "path": "dist/tool_wave-1.6-linux-x86_64.tar.gz",
+    "sha256": "812af27baeb22906ff4f5c1d81c2fd8ffd4a24704af608d2d9acc11831a2c8dc",
+    "binaries": [
+      "vwave",
+      "vsignal",
+      "vwave-npi-worker",
+      "vwave-ffr-worker"
+    ],
+    "vendor_libraries_included": false,
+    "published": false
+  },
+  "limits": [
+    "Only the two listed FFR builds are accepted",
+    "FFR real/string/transaction/non-four-state/whole-array values unsupported",
+    "Complex struct/class groups, live files and production-scale performance not yet validated"
+  ]
+}

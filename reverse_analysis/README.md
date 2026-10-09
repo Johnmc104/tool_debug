@@ -8,7 +8,9 @@
 
 方案比较：[动态加载与自包含兼容计划](../plan/06_fsdb_reader_compatibility_plan.md)。按用户选择使用配套库，不以旧 reader 读取新年代波形作为前提。
 
-当前开发评估：[vwave 双后端开发计划](../plan/07_vwave_dual_backend_dev_plan.md)。建议 `--backend npi|ffr`，默认保留 NPI；拆分轻量 CLI 与后台读取进程，动态库选择固定在会话打开时。
+开发评估：[vwave 双后端开发计划](../plan/07_vwave_dual_backend_dev_plan.md)。建议 `--backend npi|ffr`，默认保留 NPI；拆分轻量 CLI 与后台读取进程，动态库选择固定在会话打开时。
+
+首版已接入主工程，结果见 [双后端实施与验收记录](../plan/08_vwave_dual_backend_implementation.md)。配套 2022 / 2026 数字波形已对照，2022 reader 的完整 CLI 流程已在 CentOS 7.9/glibc 2.17 用户空间验证。
 
 ## 目录
 
@@ -23,6 +25,7 @@ reverse_analysis/
 ├── evidence/compatibility/  两版本 ABI 要求、NPI 内置 reader 调用链
 ├── evidence/centos7/     CentOS 7 运行记录、镜像指纹与结果对照
 ├── evidence/reader_switch/  同一探针切换两套 SDK 的库映射和结果
+├── evidence/dynamic_backend/  主工程双后端差分、CentOS 7 及发布包验收
 └── build/                本地编译产物，不纳入版本管理
 ```
 

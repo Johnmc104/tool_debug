@@ -1,6 +1,6 @@
 # tool_wave — FSDB 波形读取 & 网表信号追踪
 
-命令行工具集，基于 Verdi NPI。包含两个独立工具：
+命令行工具集。vwave 支持 NPI 和动态加载 FsdbReader 两种后端，vsignal 使用 Verdi NPI。包含两个独立工具：
 
 - **vwave** — 读取 FSDB 波形：信号值查询、边沿查找、变化计数
 - **vsignal** — 追踪网表连接：驱动/负载、fanin/fanout、路径追踪、端口连接
@@ -11,7 +11,10 @@
 
 ```bash
 # 编译（需要 VERDI_HOME 环境变量）
-make
+make VERDI_HOME=/path/to/verdi FFR_SDK_HOME=/path/to/verdi
+
+# 仅构建无需 NPI 的 vwave CLI + FFR worker
+make vwave-ffr FFR_SDK_HOME=/path/to/verdi
 
 # 部署到 $VTOOL_HOME/bin/
 make deploy-bin
@@ -45,6 +48,39 @@ vwave find "*HCLK*"                            # 通配符搜索
 vwave close
 ```
 
+### 选择读取后端
+
+原用法默认使用 NPI。选择 FsdbReader 时，加一个参数：
+
+```bash
+# 使用当前 VERDI_HOME 中的配套 reader
+vwave open tb_top.fsdb --backend ffr
+
+# 显式选择另一套安装
+vwave open tb_top.fsdb --backend ffr --verdi-home /path/to/verdi
+
+# 查询沿用打开时的后端和库
+vwave get -s tb_top.clk -t 500000 --json
+vwave status --json
+
+# 同一波形切回 NPI
+vwave open tb_top.fsdb --backend npi
+
+# 多会话使用不同运行目录
+vwave open other.fsdb --backend ffr --run-dir /tmp/other-wave
+vwave info --run-dir /tmp/other-wave --json
+```
+
+FFR 库来源为 `--verdi-home` 或当前 `VERDI_HOME`，加载配套 `share/FsdbReader/linux64/libnffr.so` 和 `libnsys.so`。库加载失败会报告原因，不自动换成 NPI。当前已验证并接受的 reader 构建为 **T-2022.06-SP2**、**Y-2026.03-SP2**；其他构建明确报未验证，后续按 ABI 和行为验证扩展。
+
+切换 EDA 环境不会改变已有会话。再次 `open --backend ffr` 时，如果安装目录或库哈希变化，会重启该会话；加载预检失败则保留原会话。`status/info` 的 JSON 包含实际 backend、SDK 路径、库路径和 SHA-256。查询可显式指定 `--backend` 核对当前模式，不匹配时提示重新 open。
+
+FFR 首版支持四态数字信号、宽总线和数组元素，复用原有查询命令。real、string、事务/属性值以及整个数组的值读取目前返回明确的未支持错误。范围查询先输出起始时刻的值，`vc-count` 仅计真实记录；边沿查找保持原 NPI 命令的边界行为。
+
+运行时 `vwave` 与相应 `vwave-*-worker` 必须位于同一目录，发布包已包含两个 worker。FFR 前端和 worker 不直接链接厂商库，不需要完整 Verdi 安装；选定的配套 reader 库及其运行依赖必须可用。NPI 保留编译时配套安装和许可证行为。
+
+CentOS 7/glibc 2.17 已验证 **2022 reader** 的完整 open、查询和 close。2026 reader 自身需要更高 glibc，动态加载不能降低该要求。构建时静态链接 C++ 运行库，以减少用户切换 EDA 后的 GLIBCXX 冲突；发布仍应核验生成二进制的 GLIBC 要求。
+
 ### vwave 命令速查
 
 | 命令 | 用法 | 说明 |
@@ -65,7 +101,7 @@ vwave close
 
 **edge 选项**: `--rising`、`--falling`、`--dir forward|backward`
 
-**全局选项**: `--json`、`--compact`、`--depth N`、`--fsdb <path>`
+**全局选项**: `--json`、`--compact`、`--depth N`、`--fsdb <path>`、`--run-dir <path>`、`--backend npi|ffr`；`--verdi-home` 仅用于 `open --backend ffr`
 
 ---
 
@@ -176,8 +212,34 @@ make clean            # 清理 release/ dist/ build/
 | **Linux** | Unix Domain Socket, fork/setsid |
 | **VCS -kdb** | vsignal 需要 KDB 数据库（`vcs -kdb ...` 编译生成） |
 
-> 二进制通过 RPATH 绑定编译时的 Verdi NPI 库，不受 `LD_LIBRARY_PATH` 中其它 Verdi 版本影响；
-> 若编译时的 Verdi 路径存在，运行时 `VERDI_HOME` 会自动对齐到该版本。
+> NPI worker 和 vsignal 通过 RPATH 绑定编译时的 NPI 库；NPI 运行时对齐配套环境。
+> FFR worker 独立动态加载打开时选中的 reader，不调用 NPI 初始化。
+
+### 双后端验证
+
+```bash
+# 原 NPI 回归
+make test-vwave
+
+# 现有样本，两套 reader 与 NPI 对照；使用临时会话目录
+python3 test_vwave/test_backends.py \
+  --sdk /opt/Synopsys/verdi/T-2022.06-SP2 \
+  --sdk /opt/Synopsys/verdi/Y-2026.03-SP2
+
+# 用指定 VCS/Verdi 生成配套数字、数组、X/Z 和 glitch 样本
+bash test_vwave/build_backend_fixture.sh /path/to/vcs /path/to/verdi
+python3 test_vwave/test_backends.py --fixture \
+  --sample build/backend_fixtures/<version>/fixture.fsdb --sdk /path/to/verdi
+
+# Docker 中构建并验证 CentOS 7（需要已缓存镜像）
+bash test_vwave/test_centos7_backend.sh
+
+# 无挂载替代验收：提取公开 CentOS 7 库，使用用户命名空间 chroot
+python3 reverse_analysis/scripts/extract_centos7_runtime.py
+python3 test_vwave/test_centos7_chroot.py --rootfs build/centos7_backend/rootfs
+```
+
+开发与验收记录见 [双后端实施记录](plan/08_vwave_dual_backend_implementation.md)。
 >
 > 已验证 Verdi 版本：T-2022.06-SP2、Y-2026.03-SP2。2026.03 起 NPI 签出 License feature
 > `VerdiNPI`，若 License 服务器无此 feature，可 `export NPI_LICENSE=Verdi` 回退使用 `Verdi` feature。

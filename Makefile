@@ -11,7 +11,8 @@
 #
 # 编译:
 #   make              — 编译 vwave + vsignal
-#   make vwave        — 仅编译 vwave
+#   make vwave        — 编译 CLI 与两个 worker
+#   make vwave-ffr    — 仅编译无需 NPI 的 CLI 与 FFR worker
 #   make vsignal      — 仅编译 vsignal
 #
 # 测试:
@@ -21,7 +22,7 @@
 
 # ── 公共打包变量 (在 include 之前设置) ──────────────────────────────────────────
 PROJECT_NAME  := tool_wave
-BINARIES      := vwave vsignal
+BINARIES      := vwave vsignal vwave-npi-worker vwave-ffr-worker
 PACKAGE_FILES := README.md .github/skills
 
 # ── 引入公共打包目标: build / deploy-bin / package / release / tag / version ──
@@ -41,12 +42,15 @@ _C_RESET      ?= \033[0m
 # ── Verdi NPI paths ──────────────────────────────────────────────────────────
 # 已验证: T-2022.06-SP2, Y-2026.03-SP2 (2026.03+ 需 License feature VerdiNPI)
 VERDI_HOME   ?= /opt/Synopsys/verdi/Y-2026.03-SP2
+FFR_SDK_HOME ?= /opt/Synopsys/verdi/T-2022.06-SP2
+FFR_INC       = $(FFR_SDK_HOME)/share/FsdbReader
 NPI_INC       = $(VERDI_HOME)/share/NPI/inc
 NPI_L1_INC    = $(VERDI_HOME)/share/NPI/L1/C/inc
 NPI_LIB_DIR   = $(VERDI_HOME)/share/NPI/lib/linux64
 
 # ── Compiler ─────────────────────────────────────────────────────────────────
 CXX          ?= g++
+RUNTIME_LDFLAGS ?= -static-libstdc++ -static-libgcc
 CXXFLAGS      = -std=c++14 -Wall -Wextra -O2 -DTW_BUILD_VERDI_HOME='"$(VERDI_HOME)"'
 INCLUDES      = -I$(NPI_INC) -I$(NPI_L1_INC)
 # RPATH (disable-new-dtags) 优先于 LD_LIBRARY_PATH，避免误加载其它 Verdi 版本的 libNPI
@@ -67,7 +71,7 @@ VSIGNAL_BIN   = $(BIN_DIR)/vsignal
 
 # vwave sources
 VWAVE_MAIN    = src_vwave/main.cpp
-VWAVE_HDRS    = $(wildcard src_vwave/common/*.h src_vwave/server/*.h src_vwave/client/*.h)
+VWAVE_HDRS    = $(wildcard src_vwave/common/*.h src_vwave/server/*.h src_vwave/client/*.h src_vwave/backend/*.h)
 VWAVE_INC     = -Isrc_vwave $(TW_INC) $(INCLUDES)
 
 # vsignal sources
@@ -78,13 +82,14 @@ VSIGNAL_INC   = -Isrc_vsignal $(TW_INC) $(INCLUDES)
 # ── Default target ───────────────────────────────────────────────────────────
 .DEFAULT_GOAL := all
 
-.PHONY: all compile vwave vsignal test test-vwave test-vsignal clean help
+.PHONY: all compile vwave vwave-ffr vsignal test test-vwave test-vsignal clean help
 
 all: compile
 
-compile: $(VWAVE_BIN) $(VSIGNAL_BIN)
+compile: vwave $(VSIGNAL_BIN)
 
-vwave: $(VWAVE_BIN)
+vwave: $(VWAVE_BIN) $(BIN_DIR)/vwave-npi-worker $(BIN_DIR)/vwave-ffr-worker
+vwave-ffr: $(VWAVE_BIN) $(BIN_DIR)/vwave-ffr-worker
 vsignal: $(VSIGNAL_BIN)
 
 # Symlink so #include "tw/xxx.h" resolves to src_common/xxx.h
@@ -94,13 +99,22 @@ $(TW_INC_DIR)/tw: $(COMMON_HDRS)
 
 $(VWAVE_BIN): $(VWAVE_MAIN) $(VWAVE_HDRS) $(COMMON_HDRS) $(TW_INC_DIR)/tw
 	@mkdir -p $(BIN_DIR)
-	$(CXX) $(CXXFLAGS) $(VWAVE_INC) -o $@ $(VWAVE_MAIN) $(LDFLAGS) $(LIBS)
+	$(CXX) $(CXXFLAGS) -Isrc_vwave $(TW_INC) -o $@ $(VWAVE_MAIN) $(RUNTIME_LDFLAGS) $(EXTRA_LDFLAGS) -lpthread -lrt -ldl
 	@printf '%b\n' "$(_C_GREEN)[OK]$(_C_RESET)    $@ ($$(du -h $@ | cut -f1))"
 
 $(VSIGNAL_BIN): $(VSIGNAL_MAIN) $(VSIGNAL_HDRS) $(COMMON_HDRS) $(TW_INC_DIR)/tw
 	@mkdir -p $(BIN_DIR)
 	$(CXX) $(CXXFLAGS) $(VSIGNAL_INC) -o $@ $(VSIGNAL_MAIN) $(LDFLAGS) $(LIBS)
 	@printf '%b\n' "$(_C_GREEN)[OK]$(_C_RESET)    $@ ($$(du -h $@ | cut -f1))"
+
+# Isolated workers: only the NPI target links vendor libraries.
+$(BIN_DIR)/vwave-npi-worker: src_vwave/worker.cpp $(VWAVE_HDRS) $(COMMON_HDRS) $(TW_INC_DIR)/tw
+	@mkdir -p $(BIN_DIR)
+	$(CXX) $(CXXFLAGS) $(VWAVE_INC) -o $@ $< $(LDFLAGS) $(RUNTIME_LDFLAGS) $(EXTRA_LDFLAGS) $(LIBS)
+
+$(BIN_DIR)/vwave-ffr-worker: src_vwave/worker.cpp $(VWAVE_HDRS) $(COMMON_HDRS) $(TW_INC_DIR)/tw
+	@mkdir -p $(BIN_DIR)
+	$(CXX) $(CXXFLAGS) -DWAVE_FFR_WORKER -Isrc_vwave $(TW_INC) -isystem $(FFR_INC) -o $@ $< $(RUNTIME_LDFLAGS) $(EXTRA_LDFLAGS) -lpthread -lrt -ldl
 
 # ── Build hooks: C++ 原生编译覆盖 Docker/PyInstaller 流程 ────────────────────
 _do-build _do-build-local:
@@ -110,7 +124,7 @@ _do-build _do-build-local:
 # ── Test targets ──────────────────────────────────────────────────────────────
 test: test-vwave test-vsignal
 
-test-vwave: $(VWAVE_BIN)
+test-vwave: vwave
 	@echo "\n══════ Running vwave tests ══════"
 	BIN_DIR=$(abspath $(BIN_DIR)) bash test_vwave/run_test.sh
 
@@ -129,7 +143,8 @@ help: ## 显示帮助
 	@echo ""
 	@echo "Compile:"
 	@echo "  make               Compile vwave + vsignal"
-	@echo "  make vwave         Compile vwave only"
+	@echo "  make vwave         Compile vwave and both workers"
+	@echo "  make vwave-ffr     Compile NPI-free CLI and FFR worker"
 	@echo "  make vsignal       Compile vsignal only"
 	@echo ""
 	@echo "Build & Deploy:"
@@ -150,4 +165,5 @@ help: ## 显示帮助
 	@echo ""
 	@echo "Environment:"
 	@echo "  VERDI_HOME=$(VERDI_HOME)"
+	@echo "  FFR_SDK_HOME=$(FFR_SDK_HOME)"
 	@echo "  CXX=$(CXX)"

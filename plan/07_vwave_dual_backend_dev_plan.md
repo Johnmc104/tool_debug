@@ -2,7 +2,7 @@
 
 日期：2026-10-09
 
-状态：开发评估，尚未实施主工程改造。前期证据见 [兼容方案](06_fsdb_reader_compatibility_plan.md) 和 [reader 实测报告](../reverse_analysis/reports/02_reader_centos7_and_npi_relationship.md)。
+状态：启动前开发评估。首版已实施，实际结构和验收结果见 [08 实施记录](08_vwave_dual_backend_implementation.md)。前期证据见 [兼容方案](06_fsdb_reader_compatibility_plan.md) 和 [reader 实测报告](../reverse_analysis/reports/02_reader_centos7_and_npi_relationship.md)。
 
 ## 1. 结论与工作量
 

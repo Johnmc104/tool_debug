@@ -1,0 +1,40 @@
+[
+  {
+    "id": 1,
+    "status": "ok",
+    "data": {
+      "file": "/home/zhhe/work/python_auto/tool_wave/build/backend_fixtures/T-2022.06-SP2/fixture.fsdb",
+      "min_time": 0,
+      "max_time": 5000,
+      "scale_unit": "1ps",
+      "version": "6.0",
+      "is_completed": 1,
+      "backend": "ffr",
+      "sdk_home": "/opt/Synopsys/verdi/T-2022.06-SP2",
+      "adapter": "vwave-backend-v1",
+      "reader_library": "/opt/Synopsys/verdi/T-2022.06-SP2/share/FsdbReader/linux64/libnffr.so",
+      "support_library": "/opt/Synopsys/verdi/T-2022.06-SP2/share/FsdbReader/linux64/libnsys.so",
+      "reader_sha256": "9edea072d20d000852437f6b12d4fadc128255a3f28a905ad2c594ac5d1d55de",
+      "support_sha256": "4f74074dee038a573006570c35c386f9d6b290c2cc37467c89af3f4f93d26326"
+    }
+  },
+  {
+    "id": 1,
+    "status": "ok",
+    "data": {
+      "file": "/home/zhhe/work/python_auto/tool_wave/build/backend_fixtures/Y-2026.03-SP2/fixture.fsdb",
+      "min_time": 0,
+      "max_time": 5000,
+      "scale_unit": "1ps",
+      "version": "6.4",
+      "is_completed": 1,
+      "backend": "ffr",
+      "sdk_home": "/opt/Synopsys/verdi/Y-2026.03-SP2",
+      "adapter": "vwave-backend-v1",
+      "reader_library": "/opt/Synopsys/verdi/Y-2026.03-SP2/share/FsdbReader/linux64/libnffr.so",
+      "support_library": "/opt/Synopsys/verdi/Y-2026.03-SP2/share/FsdbReader/linux64/libnsys.so",
+      "reader_sha256": "dad1ed19f6f9bf4b521a4f0bbb3cfc06ef6b4f151e4bf0eb34067a898a9575f3",
+      "support_sha256": "4e6b5e8dfb690b018263dcaec2bba852f4f1e4dc34fdedd90185e6315ec0797b"
+    }
+  }
+]

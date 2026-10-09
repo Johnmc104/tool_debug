@@ -1,0 +1,133 @@
+{
+  "runtime": "CentOS 7.9 / glibc 2.17",
+  "method": "unshare -Ur chroot; no mounts; full CLI fork/exec path",
+  "network_isolation": false,
+  "license_env": "1@127.0.0.1",
+  "records": [
+    {
+      "command": [
+        "/lib64/libc.so.6"
+      ],
+      "exit": 0,
+      "stdout": "GNU C Library (GNU libc) stable release version 2.17, by Roland McGrath et al.\nCopyright (C) 2012 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.\nThere is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A\nPARTICULAR PURPOSE.\nCompiled by GNU CC version 4.8.5 20150623 (Red Hat 4.8.5-39).\nCompiled on a Linux 3.10.0 system on 2020-09-30.\nAvailable extensions:\n\tThe C stubs add-on version 2.1.2.\n\tcrypt add-on version 2.1 by Michael Glad and others\n\tGNU Libidn by Simon Josefsson\n\tNative POSIX Threads Library by Ulrich Drepper et al\n\tBIND-8.2.3-T5B\n\tRT using linux kernel aio\nlibc ABIs: UNIQUE IFUNC\nFor bug reporting instructions, please see:\n<http://www.gnu.org/software/libc/bugs.html>.\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/app/vwave",
+        "open",
+        "/sample.fsdb",
+        "--backend",
+        "ffr",
+        "--verdi-home",
+        "/sdk2022",
+        "--run-dir",
+        "/tmp/session",
+        "--json"
+      ],
+      "exit": 0,
+      "stdout": "{\"status\":\"ok\",\"message\":\"Loaded\",\"pid\":3064125,\"socket\":\"/tmp/session/wave_server.sock\",\"log\":\"/tmp/session/wave_server.log\"}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/app/vwave",
+        "info",
+        "--run-dir",
+        "/tmp/session",
+        "--json"
+      ],
+      "exit": 0,
+      "stdout": "{\"id\":1,\"status\":\"ok\",\"data\":{\"file\":\"/sample.fsdb\",\"min_time\":0,\"max_time\":3275000,\"scale_unit\":\"1ps\",\"version\":\"6.0\",\"is_completed\":1,\"backend\":\"ffr\",\"sdk_home\":\"/sdk2022\",\"adapter\":\"vwave-backend-v1\",\"reader_library\":\"/sdk2022/share/FsdbReader/linux64/libnffr.so\",\"support_library\":\"/sdk2022/share/FsdbReader/linux64/libnsys.so\",\"reader_sha256\":\"9edea072d20d000852437f6b12d4fadc128255a3f28a905ad2c594ac5d1d55de\",\"support_sha256\":\"4f74074dee038a573006570c35c386f9d6b290c2cc37467c89af3f4f93d26326\"}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/app/vwave",
+        "get",
+        "-s",
+        "tb.clk",
+        "-t",
+        "25000",
+        "--run-dir",
+        "/tmp/session",
+        "--json"
+      ],
+      "exit": 0,
+      "stdout": "{\"id\":1,\"status\":\"ok\",\"data\":{\"time\":25000,\"values\":[{\"signal\":\"tb.clk\",\"value\":\"1\",\"actual_time\":25000}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/app/vwave",
+        "vc-count",
+        "-s",
+        "tb.clk",
+        "--run-dir",
+        "/tmp/session",
+        "--json"
+      ],
+      "exit": 0,
+      "stdout": "{\"id\":1,\"status\":\"ok\",\"data\":{\"signal\":\"tb.clk\",\"begin\":0,\"end\":3275000,\"count\":132}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/app/vwave",
+        "open",
+        "/sample.fsdb",
+        "--backend",
+        "ffr",
+        "--verdi-home",
+        "/sdk2026",
+        "--run-dir",
+        "/tmp/session",
+        "--json"
+      ],
+      "exit": 1,
+      "stdout": "",
+      "stderr": "Error: Backend preflight failed.\n[vwave-server] ERROR: dlopen /sdk2026/share/FsdbReader/linux64/libnsys.so: /lib64/libc.so.6: version `GLIBC_2.25' not found (required by /sdk2026/share/FsdbReader/linux64/libnsys.so)\n"
+    },
+    {
+      "command": [
+        "/app/vwave",
+        "status",
+        "--run-dir",
+        "/tmp/session",
+        "--json"
+      ],
+      "exit": 0,
+      "stdout": "{\"id\":1,\"status\":\"ok\",\"data\":{\"fsdb_file\":\"/sample.fsdb\",\"uptime_seconds\":0,\"pid\":3064125,\"backend\":\"ffr\",\"sdk_home\":\"/sdk2022\",\"adapter\":\"vwave-backend-v1\",\"reader_library\":\"/sdk2022/share/FsdbReader/linux64/libnffr.so\",\"support_library\":\"/sdk2022/share/FsdbReader/linux64/libnsys.so\",\"reader_sha256\":\"9edea072d20d000852437f6b12d4fadc128255a3f28a905ad2c594ac5d1d55de\",\"support_sha256\":\"4f74074dee038a573006570c35c386f9d6b290c2cc37467c89af3f4f93d26326\"}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/app/vwave",
+        "open",
+        "/sample.fsdb",
+        "--backend",
+        "ffr",
+        "--verdi-home",
+        "/sdk2022",
+        "--run-dir",
+        "/tmp/session",
+        "--json"
+      ],
+      "exit": 0,
+      "stdout": "{\"status\":\"ok\",\"message\":\"Server already running\",\"pid\":3064125}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/app/vwave",
+        "close",
+        "--run-dir",
+        "/tmp/session",
+        "--json"
+      ],
+      "exit": 0,
+      "stdout": "{\"status\":\"ok\",\"message\":\"Waveform closed\"}\n",
+      "stderr": ""
+    }
+  ]
+}

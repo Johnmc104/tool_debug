@@ -13,13 +13,12 @@
 
 #include <unistd.h>
 
-#include "npi.h"
-#include "npi_fsdb.h"
+#include "backend/backend.h"
+#include "common/session.h"
 
 #include "tw/json.h"
 #include "tw/protocol.h"
 #include "tw/server_loop.h"
-#include "tw/npi_env.h"
 
 #include "common/protocol.h"
 #include "common/json_parser.h"
@@ -30,7 +29,8 @@ namespace server {
 
 // ─── Server state ───────────────────────────────────────────────────────────
 
-static npiFsdbFileHandle g_file_hdl = nullptr;
+static WaveBackend*     g_backend = nullptr;
+static Session          g_session;
 static std::string       g_fsdb_path;
 static RunDir*           g_run_dir = nullptr;
 static std::chrono::steady_clock::time_point g_start_time;
@@ -60,6 +60,7 @@ static std::string dispatch_request(const std::string& request_json) {
     else
         params = req;
 
+    try {
     if (cmd_str == cmd::STATUS)            return handle_status(id);
     if (cmd_str == cmd::SHUTDOWN) {
         tw::server::g_running = 0;
@@ -77,39 +78,27 @@ static std::string dispatch_request(const std::string& request_json) {
 
     return make_error_response(id, err::INVALID_PARAMS,
                                "Unknown command: " + cmd_str);
+    } catch (const BackendError& e) {
+        return make_error_response(id,e.code,e.what());
+    } catch (const std::exception& e) {
+        return make_error_response(id,err::INTERNAL_ERROR,e.what());
+    }
 }
 
 // ─── Server entry point ─────────────────────────────────────────────────────
 
-inline int run_server(int argc, char** argv,
-                      RunDir& run_dir, const std::string& fsdb_path) {
-    g_run_dir   = &run_dir;
-    g_fsdb_path = fsdb_path;
-
-    std::cerr << "[vwave-server] Initializing NPI...\n";
-    if (!npi_init(argc, argv)) {
-        tw::npi_env::report_init_failure("vwave-server");
-        npi_end();
-        return 1;
-    }
-
-    std::cerr << "[vwave-server] Loading FSDB: " << fsdb_path << "\n";
-    g_file_hdl = npi_fsdb_open(fsdb_path.c_str());
-    if (!g_file_hdl) {
-        std::cerr << "[vwave-server] ERROR: Failed to open FSDB: "
-                  << fsdb_path << "\n";
-        npi_end();
-        return 1;
-    }
-
-    npiFsdbTime min_t = 0, max_t = 0;
-    npi_fsdb_min_time(g_file_hdl, &min_t);
-    npi_fsdb_max_time(g_file_hdl, &max_t);
-    std::cerr << "[vwave-server] FSDB loaded. Time range: "
-              << min_t << " ~ " << max_t << "\n";
-
-    run_dir.write_pid(getpid());
-    run_dir.write_fsdb_path();
+inline int run_server(WaveBackend& backend, const Session& session, RunDir& run_dir) {
+    g_backend = &backend;
+    g_session = session;
+    g_run_dir = &run_dir;
+    g_fsdb_path = session.file;
+    std::cerr << "[vwave-server] Loading " << session.backend << ": " << session.file << "\n";
+    backend.open(session.file);
+    auto info = backend.info();
+    std::cerr << "[vwave-server] Time range: " << info.min_time << " ~ " << info.max_time << "\n";
+    session.write(run_dir.dir());
+    if (!run_dir.write_pid(getpid()) || !run_dir.write_fsdb_path())
+        throw std::runtime_error("Cannot publish server state");
     g_start_time = std::chrono::steady_clock::now();
 
     tw::server::install_signal_handlers();
@@ -123,11 +112,6 @@ inline int run_server(int argc, char** argv,
         run_dir.socket_path(), dispatch_request, cfg);
 
     run_dir.cleanup();
-    if (g_file_hdl) {
-        npi_fsdb_close(g_file_hdl);
-        g_file_hdl = nullptr;
-    }
-    npi_end();
     std::cerr << "[vwave-server] Bye.\n";
     return rc;
 }

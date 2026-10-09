@@ -1,0 +1,7 @@
+═══ Summary ═══
+  Total:  62
+  Pass:   62
+  Fail:   0
+  Skip:   0
+
+All tests passed!

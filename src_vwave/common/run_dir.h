@@ -10,6 +10,7 @@
 #define WAVE_RUN_DIR_H
 
 #include "tw/run_dir.h"
+#include "common/session.h"
 
 namespace wave {
 
@@ -22,13 +23,13 @@ public:
 
     /** Construct from an FSDB path (used by `vwave open`). */
     RunDir(const std::string& fsdb_path, const std::string& run_dir_override = "")
-        : base_(DOT_DIR, PREFIX, fsdb_path, run_dir_override)
+        : base_(DOT_DIR, PREFIX, fsdb_path, run_dir_override.empty() ? "" : absolute_path(run_dir_override))
     {}
 
     /** Reconstruct from a known .vtool/wave_run directory (used by auto-detect). */
     static RunDir from_dir(const std::string& run_dir_path) {
         RunDir rd;
-        rd.base_ = tw::RunDir::from_dir(run_dir_path, DOT_DIR, PREFIX);
+        rd.base_ = tw::RunDir::from_dir(absolute_path(run_dir_path), DOT_DIR, PREFIX);
         return rd;
     }
 
@@ -52,8 +53,12 @@ public:
     void   remove_pid()      const { base_.remove_pid(); }
     bool   write_fsdb_path() const { return base_.write_source_info(); }
     void   remove_socket()   const { base_.remove_socket(); }
-    void   cleanup()         const { base_.cleanup(); }
-    void   cleanup_all()     const { base_.cleanup_all(); }
+    void   cleanup()         const {
+        unlink((dir() + "/session.json").c_str());
+        unlink((dir() + "/session.json.tmp").c_str());
+        base_.cleanup();
+    }
+    void   cleanup_all()     const { cleanup(); base_.cleanup_all(); }
     bool   is_server_alive() const { return base_.is_server_alive(); }
 
     // ─── Auto-detect ─────────────────────────────────────────────────────────

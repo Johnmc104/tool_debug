@@ -1,0 +1,8 @@
+.
+./bin
+./bin/vwave
+./bin/vsignal
+./bin/vwave-npi-worker
+./bin/vwave-ffr-worker
+./VERSION
+./README.md

@@ -1,0 +1,154 @@
+3064103 +++ exited with 0 +++
+3063947 --- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=3064103, si_uid=1000, si_status=0, si_utime=0, si_stime=0} ---
+3064124 +++ exited with 0 +++
+3064104 --- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=3064124, si_uid=0, si_status=0, si_utime=0, si_stime=0} ---
+3064125 socket(AF_UNIX, SOCK_STREAM, 0) = 6
+3064125 bind(6, {sa_family=AF_UNIX, sun_path="/tmp/session/wave_server.sock"}, 110) = 0
+3064125 listen(6, 5)                    = 0
+3064104 socket(AF_UNIX, SOCK_STREAM, 0) = 3
+3064104 setsockopt(3, SOL_SOCKET, SO_RCVTIMEO_OLD, "\36\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0", 16) = 0
+3064104 setsockopt(3, SOL_SOCKET, SO_SNDTIMEO_OLD, "\36\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0", 16) = 0
+3064104 connect(3, {sa_family=AF_UNIX, sun_path="/tmp/session/wave_server.sock"}, 110) = 0
+3064104 sendto(3, "{\"id\":0,\"cmd\":\"status\",\"params\":"..., 36, MSG_NOSIGNAL, NULL, 0 <unfinished ...>
+3064125 accept(6, NULL, NULL <unfinished ...>
+3064104 <... sendto resumed>)           = 36
+3064125 <... accept resumed>)           = 7
+3064104 recvfrom(3,  <unfinished ...>
+3064125 setsockopt(7, SOL_SOCKET, SO_RCVTIMEO_OLD, "\36\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0", 16) = 0
+3064125 setsockopt(7, SOL_SOCKET, SO_SNDTIMEO_OLD, "\36\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0", 16) = 0
+3064125 recvfrom(7, "{\"id\":0,\"cmd\":\"status\",\"params\":"..., 4096, 0, NULL, NULL) = 36
+3064125 sendto(7, "{\"id\":0,\"status\":\"ok\",\"data\":{\"f"..., 455, MSG_NOSIGNAL, NULL, 0) = 455
+3064104 <... recvfrom resumed>"{\"id\":0,\"status\":\"ok\",\"data\":{\"f"..., 4096, 0, NULL, NULL) = 455
+3064104 +++ exited with 0 +++
+3063947 --- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=3064104, si_uid=1000, si_status=0, si_utime=17, si_stime=2} ---
+3064126 socket(AF_UNIX, SOCK_STREAM, 0) = 3
+3064126 setsockopt(3, SOL_SOCKET, SO_RCVTIMEO_OLD, "\36\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0", 16) = 0
+3064126 setsockopt(3, SOL_SOCKET, SO_SNDTIMEO_OLD, "\36\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0", 16) = 0
+3064126 connect(3, {sa_family=AF_UNIX, sun_path="/tmp/session/wave_server.sock"}, 110) = 0
+3064126 sendto(3, "{\"id\":1,\"cmd\":\"file_info\",\"param"..., 39, MSG_NOSIGNAL, NULL, 0 <unfinished ...>
+3064125 accept(6, NULL, NULL <unfinished ...>
+3064126 <... sendto resumed>)           = 39
+3064125 <... accept resumed>)           = 7
+3064125 setsockopt(7, SOL_SOCKET, SO_RCVTIMEO_OLD, "\36\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0", 16 <unfinished ...>
+3064126 recvfrom(3,  <unfinished ...>
+3064125 <... setsockopt resumed>)       = 0
+3064125 setsockopt(7, SOL_SOCKET, SO_SNDTIMEO_OLD, "\36\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0", 16) = 0
+3064125 recvfrom(7, "{\"id\":1,\"cmd\":\"file_info\",\"param"..., 4096, 0, NULL, NULL) = 39
+3064125 sendto(7, "{\"id\":1,\"status\":\"ok\",\"data\":{\"f"..., 501, MSG_NOSIGNAL, NULL, 0) = 501
+3064126 <... recvfrom resumed>"{\"id\":1,\"status\":\"ok\",\"data\":{\"f"..., 4096, 0, NULL, NULL) = 501
+3064126 +++ exited with 0 +++
+3063947 --- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=3064126, si_uid=1000, si_status=0, si_utime=0, si_stime=0} ---
+3064127 socket(AF_UNIX, SOCK_STREAM, 0) = 3
+3064127 setsockopt(3, SOL_SOCKET, SO_RCVTIMEO_OLD, "\36\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0", 16) = 0
+3064127 setsockopt(3, SOL_SOCKET, SO_SNDTIMEO_OLD, "\36\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0", 16) = 0
+3064127 connect(3, {sa_family=AF_UNIX, sun_path="/tmp/session/wave_server.sock"}, 110) = 0
+3064127 sendto(3, "{\"id\":1,\"cmd\":\"get_value_at\",\"pa"..., 89, MSG_NOSIGNAL, NULL, 0 <unfinished ...>
+3064125 accept(6, NULL, NULL <unfinished ...>
+3064127 <... sendto resumed>)           = 89
+3064125 <... accept resumed>)           = 7
+3064127 recvfrom(3,  <unfinished ...>
+3064125 setsockopt(7, SOL_SOCKET, SO_RCVTIMEO_OLD, "\36\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0", 16) = 0
+3064125 setsockopt(7, SOL_SOCKET, SO_SNDTIMEO_OLD, "\36\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0", 16) = 0
+3064125 recvfrom(7, "{\"id\":1,\"cmd\":\"get_value_at\",\"pa"..., 4096, 0, NULL, NULL) = 89
+3064125 sendto(7, "{\"id\":1,\"status\":\"ok\",\"data\":{\"t"..., 108, MSG_NOSIGNAL, NULL, 0) = 108
+3064127 <... recvfrom resumed>"{\"id\":1,\"status\":\"ok\",\"data\":{\"t"..., 4096, 0, NULL, NULL) = 108
+3064127 +++ exited with 0 +++
+3063947 --- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=3064127, si_uid=1000, si_status=0, si_utime=0, si_stime=0} ---
+3064128 socket(AF_UNIX, SOCK_STREAM, 0) = 3
+3064128 setsockopt(3, SOL_SOCKET, SO_RCVTIMEO_OLD, "\36\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0", 16) = 0
+3064128 setsockopt(3, SOL_SOCKET, SO_SNDTIMEO_OLD, "\36\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0", 16) = 0
+3064128 connect(3, {sa_family=AF_UNIX, sun_path="/tmp/session/wave_server.sock"}, 110) = 0
+3064128 sendto(3, "{\"id\":1,\"cmd\":\"vc_count\",\"params"..., 55, MSG_NOSIGNAL, NULL, 0 <unfinished ...>
+3064125 accept(6, NULL, NULL <unfinished ...>
+3064128 <... sendto resumed>)           = 55
+3064128 recvfrom(3,  <unfinished ...>
+3064125 <... accept resumed>)           = 7
+3064125 setsockopt(7, SOL_SOCKET, SO_RCVTIMEO_OLD, "\36\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0", 16) = 0
+3064125 setsockopt(7, SOL_SOCKET, SO_SNDTIMEO_OLD, "\36\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0", 16) = 0
+3064125 recvfrom(7, "{\"id\":1,\"cmd\":\"vc_count\",\"params"..., 4096, 0, NULL, NULL) = 55
+3064125 sendto(7, "{\"id\":1,\"status\":\"ok\",\"data\":{\"s"..., 86, MSG_NOSIGNAL, NULL, 0) = 86
+3064128 <... recvfrom resumed>"{\"id\":1,\"status\":\"ok\",\"data\":{\"s"..., 4096, 0, NULL, NULL) = 86
+3064128 +++ exited with 0 +++
+3063947 --- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=3064128, si_uid=1000, si_status=0, si_utime=0, si_stime=0} ---
+3064129 socket(AF_UNIX, SOCK_STREAM, 0) = 3
+3064129 setsockopt(3, SOL_SOCKET, SO_RCVTIMEO_OLD, "\36\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0", 16) = 0
+3064129 setsockopt(3, SOL_SOCKET, SO_SNDTIMEO_OLD, "\36\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0", 16) = 0
+3064129 connect(3, {sa_family=AF_UNIX, sun_path="/tmp/session/wave_server.sock"}, 110) = 0
+3064129 sendto(3, "{\"id\":0,\"cmd\":\"status\",\"params\":"..., 36, MSG_NOSIGNAL, NULL, 0 <unfinished ...>
+3064125 accept(6, NULL, NULL <unfinished ...>
+3064129 <... sendto resumed>)           = 36
+3064125 <... accept resumed>)           = 7
+3064129 recvfrom(3,  <unfinished ...>
+3064125 setsockopt(7, SOL_SOCKET, SO_RCVTIMEO_OLD, "\36\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0", 16) = 0
+3064125 setsockopt(7, SOL_SOCKET, SO_SNDTIMEO_OLD, "\36\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0", 16) = 0
+3064125 recvfrom(7, "{\"id\":0,\"cmd\":\"status\",\"params\":"..., 4096, 0, NULL, NULL) = 36
+3064125 sendto(7, "{\"id\":0,\"status\":\"ok\",\"data\":{\"f"..., 455, MSG_NOSIGNAL, NULL, 0) = 455
+3064129 <... recvfrom resumed>"{\"id\":0,\"status\":\"ok\",\"data\":{\"f"..., 4096, 0, NULL, NULL) = 455
+3064154 +++ exited with 1 +++
+3064129 --- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=3064154, si_uid=0, si_status=1, si_utime=0, si_stime=0} ---
+3064129 +++ exited with 1 +++
+3063947 --- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=3064129, si_uid=1000, si_status=1, si_utime=18, si_stime=2} ---
+3064155 socket(AF_UNIX, SOCK_STREAM, 0) = 3
+3064155 setsockopt(3, SOL_SOCKET, SO_RCVTIMEO_OLD, "\36\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0", 16) = 0
+3064155 setsockopt(3, SOL_SOCKET, SO_SNDTIMEO_OLD, "\36\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0", 16) = 0
+3064155 connect(3, {sa_family=AF_UNIX, sun_path="/tmp/session/wave_server.sock"}, 110) = 0
+3064155 sendto(3, "{\"id\":1,\"cmd\":\"status\",\"params\":"..., 36, MSG_NOSIGNAL, NULL, 0 <unfinished ...>
+3064125 accept(6, NULL, NULL <unfinished ...>
+3064155 <... sendto resumed>)           = 36
+3064125 <... accept resumed>)           = 7
+3064155 recvfrom(3,  <unfinished ...>
+3064125 setsockopt(7, SOL_SOCKET, SO_RCVTIMEO_OLD, "\36\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0", 16) = 0
+3064125 setsockopt(7, SOL_SOCKET, SO_SNDTIMEO_OLD, "\36\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0", 16) = 0
+3064125 recvfrom(7, "{\"id\":1,\"cmd\":\"status\",\"params\":"..., 4096, 0, NULL, NULL) = 36
+3064125 sendto(7, "{\"id\":1,\"status\":\"ok\",\"data\":{\"f"..., 455, MSG_NOSIGNAL, NULL, 0) = 455
+3064155 <... recvfrom resumed>"{\"id\":1,\"status\":\"ok\",\"data\":{\"f"..., 4096, 0, NULL, NULL) = 455
+3064155 +++ exited with 0 +++
+3063947 --- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=3064155, si_uid=1000, si_status=0, si_utime=0, si_stime=0} ---
+3064156 socket(AF_UNIX, SOCK_STREAM, 0) = 3
+3064156 setsockopt(3, SOL_SOCKET, SO_RCVTIMEO_OLD, "\36\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0", 16) = 0
+3064156 setsockopt(3, SOL_SOCKET, SO_SNDTIMEO_OLD, "\36\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0", 16) = 0
+3064156 connect(3, {sa_family=AF_UNIX, sun_path="/tmp/session/wave_server.sock"}, 110) = 0
+3064156 sendto(3, "{\"id\":0,\"cmd\":\"status\",\"params\":"..., 36, MSG_NOSIGNAL, NULL, 0 <unfinished ...>
+3064125 accept(6, NULL, NULL <unfinished ...>
+3064156 <... sendto resumed>)           = 36
+3064156 recvfrom(3,  <unfinished ...>
+3064125 <... accept resumed>)           = 7
+3064125 setsockopt(7, SOL_SOCKET, SO_RCVTIMEO_OLD, "\36\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0", 16) = 0
+3064125 setsockopt(7, SOL_SOCKET, SO_SNDTIMEO_OLD, "\36\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0", 16) = 0
+3064125 recvfrom(7, "{\"id\":0,\"cmd\":\"status\",\"params\":"..., 4096, 0, NULL, NULL) = 36
+3064125 sendto(7, "{\"id\":0,\"status\":\"ok\",\"data\":{\"f"..., 455, MSG_NOSIGNAL, NULL, 0) = 455
+3064156 <... recvfrom resumed>"{\"id\":0,\"status\":\"ok\",\"data\":{\"f"..., 4096, 0, NULL, NULL) = 455
+3064156 +++ exited with 0 +++
+3063947 --- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=3064156, si_uid=1000, si_status=0, si_utime=17, si_stime=2} ---
+3064159 socket(AF_UNIX, SOCK_STREAM, 0) = 3
+3064159 setsockopt(3, SOL_SOCKET, SO_RCVTIMEO_OLD, "\36\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0", 16) = 0
+3064159 setsockopt(3, SOL_SOCKET, SO_SNDTIMEO_OLD, "\36\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0", 16) = 0
+3064159 connect(3, {sa_family=AF_UNIX, sun_path="/tmp/session/wave_server.sock"}, 110) = 0
+3064159 sendto(3, "{\"id\":0,\"cmd\":\"status\",\"params\":"..., 36, MSG_NOSIGNAL, NULL, 0 <unfinished ...>
+3064125 accept(6, NULL, NULL <unfinished ...>
+3064159 <... sendto resumed>)           = 36
+3064125 <... accept resumed>)           = 7
+3064159 recvfrom(3,  <unfinished ...>
+3064125 setsockopt(7, SOL_SOCKET, SO_RCVTIMEO_OLD, "\36\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0", 16) = 0
+3064125 setsockopt(7, SOL_SOCKET, SO_SNDTIMEO_OLD, "\36\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0", 16) = 0
+3064125 recvfrom(7, "{\"id\":0,\"cmd\":\"status\",\"params\":"..., 4096, 0, NULL, NULL) = 36
+3064125 sendto(7, "{\"id\":0,\"status\":\"ok\",\"data\":{\"f"..., 455, MSG_NOSIGNAL, NULL, 0) = 455
+3064159 <... recvfrom resumed>"{\"id\":0,\"status\":\"ok\",\"data\":{\"f"..., 4096, 0, NULL, NULL) = 455
+3064159 socket(AF_UNIX, SOCK_STREAM, 0) = 3
+3064159 setsockopt(3, SOL_SOCKET, SO_RCVTIMEO_OLD, "\36\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0", 16) = 0
+3064159 setsockopt(3, SOL_SOCKET, SO_SNDTIMEO_OLD, "\36\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0", 16) = 0
+3064159 connect(3, {sa_family=AF_UNIX, sun_path="/tmp/session/wave_server.sock"}, 110) = 0
+3064159 sendto(3, "{\"id\":1,\"cmd\":\"shutdown\",\"params"..., 38, MSG_NOSIGNAL, NULL, 0 <unfinished ...>
+3064125 accept(6, NULL, NULL <unfinished ...>
+3064159 <... sendto resumed>)           = 38
+3064159 recvfrom(3,  <unfinished ...>
+3064125 <... accept resumed>)           = 7
+3064125 setsockopt(7, SOL_SOCKET, SO_RCVTIMEO_OLD, "\36\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0", 16) = 0
+3064125 setsockopt(7, SOL_SOCKET, SO_SNDTIMEO_OLD, "\36\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0", 16) = 0
+3064125 recvfrom(7, "{\"id\":1,\"cmd\":\"shutdown\",\"params"..., 4096, 0, NULL, NULL) = 38
+3064125 sendto(7, "{\"id\":1,\"status\":\"ok\",\"data\":{\"m"..., 58, MSG_NOSIGNAL, NULL, 0) = 58
+3064159 <... recvfrom resumed>"{\"id\":1,\"status\":\"ok\",\"data\":{\"m"..., 4096, 0, NULL, NULL) = 58
+3064125 +++ exited with 0 +++
+3064159 +++ exited with 0 +++
+3063947 --- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=3064159, si_uid=1000, si_status=0, si_utime=0, si_stime=0} ---
+3063947 +++ exited with 0 +++

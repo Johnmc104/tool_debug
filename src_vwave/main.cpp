@@ -2,7 +2,7 @@
  * @file main.cpp
  * @brief vwave — unified FSDB waveform reader CLI.
  *
- * Single binary that:
+ * CLI with isolated backend workers:
  *   1. `vwave open <file.fsdb>` — forks a background server daemon
  *   2. `vwave <query-command>`  — auto-detects the running server and queries it
  *   3. `vwave close`            — stops the server
@@ -21,6 +21,9 @@
 #include <cstdlib>
 #include <csignal>
 #include <sstream>
+#include <poll.h>
+#include <chrono>
+#include <stdexcept>
 
 #include <unistd.h>
 #include <fcntl.h>
@@ -29,21 +32,25 @@
 
 // Client-side code (NPI-free)
 #include "tw/daemon.h"
-#include "tw/npi_env.h"
 #include "common/protocol.h"
 #include "common/json_parser.h"
 #include "common/run_dir.h"
 #include "client/client_core.h"
 
-// Server-side code (NPI-dependent, only executes in forked child)
-#include "server/server_core.h"
+// No vendor code or SDK headers in the CLI.
+#include "common/session.h"
 
 // ─── CLI options ────────────────────────────────────────────────────────────
+
+static std::string g_executable;
 
 struct CliOptions {
     std::string command;
     std::string fsdb_path;
     std::string run_dir_override;
+    std::string backend; // empty on queries means use the open session
+    std::string verdi_home;
+    std::string error;
     bool json_mode       = false;
     int open_timeout_sec = 30;
 
@@ -125,6 +132,8 @@ Global options:
   --depth <N>               Scope recursion depth (default: 1)
   --fsdb <path>             Explicit FSDB path (skip auto-detect)
   --run-dir <path>          Override runtime directory (.vtool/wave_run/)
+  --backend npi|ffr        Reader backend (open default: npi; queries: current session)
+  --verdi-home <path>       FsdbReader install (ffr open; default: VERDI_HOME)
   --timeout <sec>           Server start timeout (default: 30, open only)
   -h, --help                Show this help
 
@@ -156,6 +165,10 @@ static bool resolve_run_dir(const std::string& fsdb_path,
         out = wave::RunDir(fsdb_path, run_dir_override);
         return true;
     }
+    if (!run_dir_override.empty()) {
+        out = wave::RunDir::from_dir(run_dir_override);
+        return true;
+    }
     // Auto-detect: search upward from CWD
     if (wave::RunDir::auto_detect(out)) {
         return true;
@@ -168,69 +181,132 @@ static bool resolve_run_dir(const std::string& fsdb_path,
 
 // ─── Command: open ───────────────────────────────────────────────────────────
 
-static int cmd_open(int argc, char** argv,
-                    const std::string& fsdb_path,
-                    const std::string& run_dir_override,
-                    bool json_mode,
-                    int open_timeout_sec) {
-    if (fsdb_path.empty()) {
-        std::cerr << "Error: Missing FSDB file path.\n"
-                  << "Usage: vwave open <file.fsdb>\n";
+static std::string worker_path(const std::string& backend) {
+    char executable[PATH_MAX];
+    auto size = readlink("/proc/self/exe", executable, sizeof(executable)-1);
+    std::string path;
+    if (size >= 0) {
+        executable[size]=0;
+        path=executable;
+    } else if (g_executable.find('/')!=std::string::npos) {
+        // 最小 chroot 中可以没有 /proc；明确的启动路径仍可定位相邻 worker。
+        path=wave::absolute_path(g_executable);
+    } else throw std::runtime_error("Cannot locate vwave executable; mount /proc or use an explicit executable path");
+    return path.substr(0,path.rfind('/')+1)+"vwave-"+backend+"-worker";
+}
+
+static int exec_worker(const std::string& worker, const wave::Session& session,
+                       const std::string& mode, const std::string& dir) {
+    if (session.backend=="ffr") {
+        // exec 前设置，仅作用于子进程；同一个 reader 的依赖优先使用配套目录。
+        std::string libs=session.sdk_home+"/share/FsdbReader/linux64";
+        setenv("LD_LIBRARY_PATH",libs.c_str(),1);
+        setenv("VERDI_HOME",session.sdk_home.c_str(),1);
+    }
+    auto config=session.json();
+    if (mode=="--describe") {
+        execl(worker.c_str(),worker.c_str(),mode.c_str(),nullptr);
+        std::cerr<<"ERROR: Cannot execute worker "<<worker<<": "<<strerror(errno)<<"\n";
         return 1;
     }
+    execl(worker.c_str(),worker.c_str(),mode.c_str(),config.c_str(),dir.c_str(),nullptr);
+    std::cerr<<"ERROR: Cannot execute worker "<<worker<<": "<<strerror(errno)<<"\n";
+    return 1;
+}
 
-    struct stat st;
-    if (stat(fsdb_path.c_str(), &st) != 0) {
-        std::cerr << "Error: File not found: " << fsdb_path << "\n";
-        return 1;
+static bool preflight(const std::string& worker, const wave::Session& session,
+                      const std::string& mode="--check", std::string* output=nullptr) {
+    int fds[2];
+    if (pipe(fds)!=0) throw std::runtime_error("pipe failed");
+    pid_t child=fork();
+    if (child<0) { close(fds[0]); close(fds[1]); throw std::runtime_error("fork failed"); }
+    if (child==0) {
+        close(fds[0]); dup2(fds[1],STDERR_FILENO); dup2(fds[1],STDOUT_FILENO); close(fds[1]);
+        _exit(exec_worker(worker,session,mode,"-"));
     }
+    close(fds[1]); std::string log; char buffer[4096];
+    auto deadline=std::chrono::steady_clock::now()+std::chrono::seconds(15);
+    int status=0;
+    while (std::chrono::steady_clock::now()<deadline) {
+        pollfd fd{fds[0],POLLIN,0};
+        if (poll(&fd,1,100)>0) {
+            auto n=read(fds[0],buffer,sizeof(buffer));
+            if (n<=0) break;
+            log.append(buffer,n);
+        }
+    }
+    close(fds[0]);
+    if (std::chrono::steady_clock::now()>=deadline) {
+        kill(child,SIGKILL); waitpid(child,&status,0);
+        std::cerr<<"Error: Reader preflight timed out.\n"; return false;
+    }
+    while (waitpid(child,&status,0)<0 && errno==EINTR) {}
+    if (!WIFEXITED(status) || WEXITSTATUS(status)!=0) {
+        std::cerr<<"Error: Backend preflight failed.\n"<<log; return false;
+    }
+    if (output) *output=log;
+    return true;
+}
 
-    wave::RunDir run_dir(fsdb_path, run_dir_override);
-    auto send = [](const std::string& s, const std::string& r) {
-        return tw::client::send_request(s, r);
-    };
+static wave::Session select_session(const CliOptions& opts) {
+    wave::Session s;
+    s.backend=opts.backend.empty() ? "npi" : opts.backend;
+    s.file=wave::absolute_path(opts.fsdb_path);
+    s.file_identity=wave::file_stamp(s.file);
+    if (s.backend=="ffr") {
+        std::string selected=opts.verdi_home;
+        if (selected.empty() && getenv("VERDI_HOME")) selected=getenv("VERDI_HOME");
+        if (selected.empty()) throw std::runtime_error("FFR requires --verdi-home or VERDI_HOME");
+        s.sdk_home=wave::absolute_path(selected);
+        auto dir=s.sdk_home+"/share/FsdbReader/linux64/";
+        s.reader=wave::absolute_path(dir+"libnffr.so"); s.support=wave::absolute_path(dir+"libnsys.so");
+    } else {
+        auto worker=worker_path("npi");
+        if (access(worker.c_str(),X_OK)!=0) throw std::runtime_error("Missing backend worker: "+worker);
+        std::string output;
+        if (!preflight(worker,s,"--describe",&output)) throw std::runtime_error("Cannot inspect NPI worker");
+        auto actual=wave::Session::parse(output);
+        s.sdk_home=actual.sdk_home; s.reader=actual.reader; s.support=actual.support;
+    }
+    s.reader_hash=wave::sha256_file(s.reader); s.support_hash=wave::sha256_file(s.support);
+    return s;
+}
 
+static int cmd_open(const CliOptions& opts) {
+    if (opts.fsdb_path.empty()) throw std::runtime_error("Missing FSDB file path");
+    auto session=select_session(opts);
+    auto worker=worker_path(session.backend);
+    if (access(worker.c_str(),X_OK)!=0) throw std::runtime_error("Missing backend worker: "+worker);
+    wave::RunDir run_dir(session.file,opts.run_dir_override);
+    auto send=[](const std::string& s,const std::string& r) { return tw::client::send_request(s,r); };
     if (run_dir.is_server_alive()) {
-        std::string stored_fsdb = tw::RunDir::read_file_content(
-            run_dir.fsdb_path_file());
-        char resolved[PATH_MAX];
-        std::string abs_fsdb = fsdb_path;
-        if (realpath(fsdb_path.c_str(), resolved)) abs_fsdb = resolved;
-
-        if (stored_fsdb == abs_fsdb) {
-            if (json_mode)
-                std::cout << "{\"status\":\"ok\",\"message\":\"Server already running\","
-                          << "\"pid\":" << run_dir.read_pid() << "}" << std::endl;
-            else
-                std::cout << "Server already running (PID " << run_dir.read_pid()
-                          << ") for " << fsdb_path << "\n";
+        auto stored=tw::RunDir::read_file_content(run_dir.dir()+"/session.json");
+        wave::JsonParser response, data;
+        auto status=send(run_dir.socket_path(),wave::client::build_request(0,"status"));
+        bool verified=response.parse(status) && response.get_string("status")=="ok" &&
+            data.parse(response.get_string("data")) && data.get_int("pid",0)==run_dir.read_pid();
+        if (!verified) throw std::runtime_error("Live PID with unverified server status; check runtime directory: "+run_dir.dir());
+        bool live=data.get_string("backend","npi")==session.backend;
+        if (live && stored==session.json()) {
+            if (opts.json_mode) {
+                wave::JsonObject result; result.set("status","ok"); result.set("message","Server already running");
+                result.set("pid",int64_t(run_dir.read_pid())); std::cout<<result.dump()<<std::endl;
+            } else std::cout<<"Server already running (PID "<<run_dir.read_pid()<<") for "<<session.file<<"\n";
             return 0;
         }
-        if (!json_mode)
-            std::cout << "Switching waveform: closing " << stored_fsdb << "...\n";
-        tw::daemon::shutdown_server(
-            run_dir.base(), send,
-            wave::client::build_request(1, "shutdown"));
-        run_dir.cleanup();
-    } else {
-        run_dir.cleanup();
     }
-
-    run_dir.ensure_dir();
-    tw::npi_env::sync_verdi_home(json_mode);
-
+    // 验证候选库后才停止已有会话。
+    if (!preflight(worker,session)) return 1;
+    if (run_dir.is_server_alive()) {
+        tw::daemon::shutdown_server(run_dir.base(),send,wave::client::build_request(1,"shutdown"));
+    }
+    run_dir.cleanup();
+    if (!run_dir.ensure_dir()) throw std::runtime_error("Cannot create runtime directory: "+run_dir.dir());
     tw::daemon::LaunchConfig cfg;
-    cfg.log_tag     = "vwave";
-    cfg.timeout_sec = open_timeout_sec;
-    cfg.json_mode   = json_mode;
-
-    return tw::daemon::fork_and_wait(
-        run_dir.base(),
-        [&]() {
-            return wave::server::run_server(argc, argv, run_dir, run_dir.fsdb_path());
-        },
-        [&]() { return wave::client::build_request(0, "status"); },
-        send, cfg);
+    cfg.log_tag="vwave"; cfg.timeout_sec=opts.open_timeout_sec; cfg.json_mode=opts.json_mode;
+    return tw::daemon::fork_and_wait(run_dir.base(),
+        [&]() { return exec_worker(worker,session,"--serve",run_dir.dir()); },
+        [&]() { return wave::client::build_request(0,"status"); },send,cfg);
 }
 
 // ─── Command: close ──────────────────────────────────────────────────────────
@@ -243,6 +319,12 @@ static int cmd_close(const wave::RunDir& run_dir, bool json_mode) {
             std::cout << "No server running.\n";
         return 0;
     }
+
+    wave::JsonParser response, data;
+    auto status=wave::client::send_request(run_dir.socket_path(),wave::client::build_request(0,"status"));
+    if (!response.parse(status) || response.get_string("status")!="ok" ||
+        !data.parse(response.get_string("data")) || data.get_int("pid",0)!=run_dir.read_pid())
+        throw std::runtime_error("Live PID with unverified server status; check runtime directory: "+run_dir.dir());
 
     tw::daemon::shutdown_server(
         run_dir.base(),
@@ -436,6 +518,8 @@ static CliOptions parse_args(int argc, char** argv) {
         std::string arg = argv[i];
 
         if (arg == "--fsdb" && i+1 < argc)        { opts.fsdb_path = argv[++i];
+        } else if (arg == "--backend" && i+1 < argc) { opts.backend = argv[++i];
+        } else if (arg == "--verdi-home" && i+1 < argc) { opts.verdi_home = argv[++i];
         } else if (arg == "--run-dir" && i+1 < argc) { opts.run_dir_override = argv[++i];
         } else if (arg == "--timeout" && i+1 < argc) {
             opts.open_timeout_sec = std::atoi(argv[++i]);
@@ -468,11 +552,17 @@ static CliOptions parse_args(int argc, char** argv) {
         } else if (arg == "--dir" && i+1 < argc)  { opts.edge_dir = argv[++i];
         } else if (arg == "--path" && i+1 < argc) { scope_or_positional = argv[++i];
 
-        } else if (arg[0] != '-') {
+        } else if (!arg.empty() && arg[0] != '-') {
             if (opts.command.empty()) opts.command = arg;
             else if (scope_or_positional.empty()) scope_or_positional = arg;
-        }
+            else opts.error = "Unexpected argument: " + arg;
+        } else opts.error = "Unknown option or missing value: " + arg;
     }
+
+    if (!opts.backend.empty() && opts.backend != "npi" && opts.backend != "ffr")
+        opts.error = "--backend must be npi or ffr";
+    if (!opts.verdi_home.empty() && (opts.command != "open" || opts.backend != "ffr"))
+        opts.error = "--verdi-home is only supported with open --backend ffr";
 
     // Normalize
     if (opts.command == "get") opts.command = "get-value";
@@ -489,7 +579,10 @@ static CliOptions parse_args(int argc, char** argv) {
 }
 
 int main(int argc, char** argv) {
+    g_executable = argv[0];
+    try {
     CliOptions opts = parse_args(argc, argv);
+    if (!opts.error.empty()) throw std::runtime_error(opts.error);
 
     if (opts.command.empty()) {
         print_usage();
@@ -500,8 +593,7 @@ int main(int argc, char** argv) {
     if (opts.command == "open") {
         if (opts.fsdb_path.empty() && !opts.scope_path.empty())
             opts.fsdb_path = opts.scope_path;
-        return cmd_open(argc, argv, opts.fsdb_path, opts.run_dir_override,
-                        opts.json_mode, opts.open_timeout_sec);
+        return cmd_open(opts);
     }
 
     // ── RunDir for all other commands ──
@@ -509,8 +601,20 @@ int main(int argc, char** argv) {
     if (!resolve_run_dir(opts.fsdb_path, opts.run_dir_override, run_dir))
         return 1;
 
+    if (!opts.backend.empty() && run_dir.is_server_alive()) {
+        auto response = wave::client::send_request(run_dir.socket_path(),wave::client::build_request(0,"status"));
+        wave::JsonParser status, data;
+        if (!status.parse(response) || status.get_string("status")!="ok" || !data.parse(status.get_string("data")))
+            throw std::runtime_error("Cannot inspect active backend");
+        auto actual=data.get_string("backend","npi");
+        if (actual!=opts.backend) throw std::runtime_error("Active backend is "+actual+"; use open --backend "+opts.backend+" to switch");
+    }
     if (opts.command == "close")
         return cmd_close(run_dir, opts.json_mode);
 
     return cmd_query(run_dir, opts);
+    } catch (const std::exception& e) {
+        std::cerr << "Error: " << e.what() << "\n";
+        return 1;
+    }
 }
