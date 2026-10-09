@@ -1,0 +1,113 @@
+
+/opt/Synopsys/verdi/Y-2026.03-SP2/share/FsdbReader/linux64/libnffr.so:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+00000000007080c7 <ReadCloseHdr(int, int, unsigned char, fsdbCloseHdr*, unsigned char)>:
+  7080c7:	48 85 c9             	test   %rcx,%rcx
+  7080ca:	0f 84 85 01 00 00    	je     708255 <ReadCloseHdr(int, int, unsigned char, fsdbCloseHdr*, unsigned char)+0x18e>
+  7080d0:	41 57                	push   %r15
+  7080d2:	41 56                	push   %r14
+  7080d4:	41 55                	push   %r13
+  7080d6:	41 54                	push   %r12
+  7080d8:	55                   	push   %rbp
+  7080d9:	53                   	push   %rbx
+  7080da:	48 83 ec 08          	sub    $0x8,%rsp
+  7080de:	41 89 fc             	mov    %edi,%r12d
+  7080e1:	41 89 f6             	mov    %esi,%r14d
+  7080e4:	48 89 cb             	mov    %rcx,%rbx
+  7080e7:	44 89 c5             	mov    %r8d,%ebp
+  7080ea:	45 84 c0             	test   %r8b,%r8b
+  7080ed:	0f 84 bc 00 00 00    	je     7081af <ReadCloseHdr(int, int, unsigned char, fsdbCloseHdr*, unsigned char)+0xe8>
+  7080f3:	49 89 ef             	mov    %rbp,%r15
+  7080f6:	49 c1 e7 08          	shl    $0x8,%r15
+  7080fa:	41 81 e7 00 ff 00 00 	and    $0xff00,%r15d
+  708101:	ba 01 00 00 00       	mov    $0x1,%edx
+  708106:	be 00 00 00 00       	mov    $0x0,%esi
+  70810b:	e8 34 ba 1e 00       	callq  8f3b44 <wrap_lseek>
+  708110:	49 89 c5             	mov    %rax,%r13
+  708113:	49 39 c7             	cmp    %rax,%r15
+  708116:	0f 85 fb 00 00 00    	jne    708217 <ReadCloseHdr(int, int, unsigned char, fsdbCloseHdr*, unsigned char)+0x150>
+  70811c:	49 89 c7             	mov    %rax,%r15
+  70811f:	48 c7 03 00 00 00 00 	movq   $0x0,(%rbx)
+  708126:	48 c7 83 f8 03 00 00 	movq   $0x0,0x3f8(%rbx)
+  70812d:	00 00 00 00 
+  708131:	48 8d 7b 08          	lea    0x8(%rbx),%rdi
+  708135:	48 83 e7 f8          	and    $0xfffffffffffffff8,%rdi
+  708139:	48 89 d9             	mov    %rbx,%rcx
+  70813c:	48 29 f9             	sub    %rdi,%rcx
+  70813f:	81 c1 00 04 00 00    	add    $0x400,%ecx
+  708145:	c1 e9 03             	shr    $0x3,%ecx
+  708148:	89 c9                	mov    %ecx,%ecx
+  70814a:	b8 00 00 00 00       	mov    $0x0,%eax
+  70814f:	f3 48 ab             	rep stos %rax,%es:(%rdi)
+  708152:	48 89 ea             	mov    %rbp,%rdx
+  708155:	48 c1 e2 08          	shl    $0x8,%rdx
+  708159:	81 e2 00 ff 00 00    	and    $0xff00,%edx
+  70815f:	48 89 de             	mov    %rbx,%rsi
+  708162:	44 89 e7             	mov    %r12d,%edi
+  708165:	e8 54 ba 1e 00       	callq  8f3bbe <wrap_read>
+  70816a:	41 81 fe 04 03 02 01 	cmp    $0x1020304,%r14d
+  708171:	75 19                	jne    70818c <ReadCloseHdr(int, int, unsigned char, fsdbCloseHdr*, unsigned char)+0xc5>
+  708173:	4d 39 ef             	cmp    %r13,%r15
+  708176:	74 05                	je     70817d <ReadCloseHdr(int, int, unsigned char, fsdbCloseHdr*, unsigned char)+0xb6>
+  708178:	4d 85 ed             	test   %r13,%r13
+  70817b:	79 20                	jns    70819d <ReadCloseHdr(int, int, unsigned char, fsdbCloseHdr*, unsigned char)+0xd6>
+  70817d:	48 83 c4 08          	add    $0x8,%rsp
+  708181:	5b                   	pop    %rbx
+  708182:	5d                   	pop    %rbp
+  708183:	41 5c                	pop    %r12
+  708185:	41 5d                	pop    %r13
+  708187:	41 5e                	pop    %r14
+  708189:	41 5f                	pop    %r15
+  70818b:	c3                   	retq   
+  70818c:	40 0f b6 d5          	movzbl %bpl,%edx
+  708190:	48 89 de             	mov    %rbx,%rsi
+  708193:	44 89 f7             	mov    %r14d,%edi
+  708196:	e8 a6 fc ff ff       	callq  707e41 <ByteSwap_CloseHdr(int, fsdbCloseHdr*, unsigned char)>
+  70819b:	eb d6                	jmp    708173 <ReadCloseHdr(int, int, unsigned char, fsdbCloseHdr*, unsigned char)+0xac>
+  70819d:	ba 00 00 00 00       	mov    $0x0,%edx
+  7081a2:	4c 89 ee             	mov    %r13,%rsi
+  7081a5:	44 89 e7             	mov    %r12d,%edi
+  7081a8:	e8 97 b9 1e 00       	callq  8f3b44 <wrap_lseek>
+  7081ad:	eb ce                	jmp    70817d <ReadCloseHdr(int, int, unsigned char, fsdbCloseHdr*, unsigned char)+0xb6>
+  7081af:	ba 01 00 00 00       	mov    $0x1,%edx
+  7081b4:	be 00 00 00 00       	mov    $0x0,%esi
+  7081b9:	e8 86 b9 1e 00       	callq  8f3b44 <wrap_lseek>
+  7081be:	49 89 c5             	mov    %rax,%r13
+  7081c1:	48 3d c0 00 00 00    	cmp    $0xc0,%rax
+  7081c7:	75 6c                	jne    708235 <ReadCloseHdr(int, int, unsigned char, fsdbCloseHdr*, unsigned char)+0x16e>
+  7081c9:	48 c7 03 00 00 00 00 	movq   $0x0,(%rbx)
+  7081d0:	48 c7 83 f8 03 00 00 	movq   $0x0,0x3f8(%rbx)
+  7081d7:	00 00 00 00 
+  7081db:	48 8d 7b 08          	lea    0x8(%rbx),%rdi
+  7081df:	48 83 e7 f8          	and    $0xfffffffffffffff8,%rdi
+  7081e3:	48 89 d9             	mov    %rbx,%rcx
+  7081e6:	48 29 f9             	sub    %rdi,%rcx
+  7081e9:	81 c1 00 04 00 00    	add    $0x400,%ecx
+  7081ef:	c1 e9 03             	shr    $0x3,%ecx
+  7081f2:	89 c9                	mov    %ecx,%ecx
+  7081f4:	b8 00 00 00 00       	mov    $0x0,%eax
+  7081f9:	f3 48 ab             	rep stos %rax,%es:(%rdi)
+  7081fc:	ba 78 00 00 00       	mov    $0x78,%edx
+  708201:	48 89 de             	mov    %rbx,%rsi
+  708204:	44 89 e7             	mov    %r12d,%edi
+  708207:	e8 b2 b9 1e 00       	callq  8f3bbe <wrap_read>
+  70820c:	41 bf c0 00 00 00    	mov    $0xc0,%r15d
+  708212:	e9 53 ff ff ff       	jmpq   70816a <ReadCloseHdr(int, int, unsigned char, fsdbCloseHdr*, unsigned char)+0xa3>
+  708217:	ba 00 00 00 00       	mov    $0x0,%edx
+  70821c:	4c 89 fe             	mov    %r15,%rsi
+  70821f:	44 89 e7             	mov    %r12d,%edi
+  708222:	e8 1d b9 1e 00       	callq  8f3b44 <wrap_lseek>
+  708227:	48 85 c0             	test   %rax,%rax
+  70822a:	0f 89 ef fe ff ff    	jns    70811f <ReadCloseHdr(int, int, unsigned char, fsdbCloseHdr*, unsigned char)+0x58>
+  708230:	e9 48 ff ff ff       	jmpq   70817d <ReadCloseHdr(int, int, unsigned char, fsdbCloseHdr*, unsigned char)+0xb6>
+  708235:	ba 00 00 00 00       	mov    $0x0,%edx
+  70823a:	be c0 00 00 00       	mov    $0xc0,%esi
+  70823f:	44 89 e7             	mov    %r12d,%edi
+  708242:	e8 fd b8 1e 00       	callq  8f3b44 <wrap_lseek>
+  708247:	48 85 c0             	test   %rax,%rax
+  70824a:	0f 89 79 ff ff ff    	jns    7081c9 <ReadCloseHdr(int, int, unsigned char, fsdbCloseHdr*, unsigned char)+0x102>
+  708250:	e9 28 ff ff ff       	jmpq   70817d <ReadCloseHdr(int, int, unsigned char, fsdbCloseHdr*, unsigned char)+0xb6>
+  708255:	c3                   	retq   

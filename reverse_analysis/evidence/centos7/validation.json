@@ -1,0 +1,12 @@
+{
+  "runtime": "CentOS Linux 7.9.2009, glibc 2.17",
+  "network": "Docker --network none",
+  "license_env": "SNPSLMD_LICENSE_FILE=LM_LICENSE_FILE=1@127.0.0.1",
+  "vendor_mount": "FsdbReader/linux64 only; no complete Verdi installation",
+  "probe_build": "manylinux2014 / devtoolset-10, static libstdc++ and libgcc",
+  "baseline_equal": true,
+  "events": 132,
+  "2022_exit": 0,
+  "2026_exit": 1,
+  "2026_probe": "Same executable as 2022 run; loader compatibility test only"
+}

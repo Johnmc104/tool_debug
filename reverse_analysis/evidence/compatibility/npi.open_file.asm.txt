@@ -1,0 +1,205 @@
+
+/opt/Synopsys/verdi/Y-2026.03-SP2/share/NPI/lib/linux64/libNPI.so:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+000000000222aa16 <fda_file_mgr_t::open_file(char const*, char, char)>:
+ 222aa16:	55                   	push   %rbp
+ 222aa17:	48 89 e5             	mov    %rsp,%rbp
+ 222aa1a:	41 57                	push   %r15
+ 222aa1c:	41 56                	push   %r14
+ 222aa1e:	41 55                	push   %r13
+ 222aa20:	41 54                	push   %r12
+ 222aa22:	53                   	push   %rbx
+ 222aa23:	48 83 e4 f0          	and    $0xfffffffffffffff0,%rsp
+ 222aa27:	48 83 ec 20          	sub    $0x20,%rsp
+ 222aa2b:	48 89 f3             	mov    %rsi,%rbx
+ 222aa2e:	48 85 f6             	test   %rsi,%rsi
+ 222aa31:	0f 84 a8 02 00 00    	je     222acdf <fda_file_mgr_t::open_file(char const*, char, char)+0x2c9>
+ 222aa37:	49 89 fd             	mov    %rdi,%r13
+ 222aa3a:	41 89 d7             	mov    %edx,%r15d
+ 222aa3d:	41 89 ce             	mov    %ecx,%r14d
+ 222aa40:	ba 01 00 00 00       	mov    $0x1,%edx
+ 222aa45:	be 00 00 00 00       	mov    $0x0,%esi
+ 222aa4a:	48 89 df             	mov    %rbx,%rdi
+ 222aa4d:	e8 ae 07 3c 00       	callq  25eb200 <sysBeautyFileName>
+ 222aa52:	49 89 c4             	mov    %rax,%r12
+ 222aa55:	48 89 e7             	mov    %rsp,%rdi
+ 222aa58:	be 00 00 00 00       	mov    $0x0,%esi
+ 222aa5d:	e8 06 c5 04 02       	callq  4276f68 <vbt_string_t::vbt_string_t(_vmalloc_s*)>
+ 222aa62:	4d 85 e4             	test   %r12,%r12
+ 222aa65:	74 21                	je     222aa88 <fda_file_mgr_t::open_file(char const*, char, char)+0x72>
+ 222aa67:	4c 89 e7             	mov    %r12,%rdi
+ 222aa6a:	e8 41 55 ee 02       	callq  510ffb0 <strlen@plt>
+ 222aa6f:	48 83 e8 01          	sub    $0x1,%rax
+ 222aa73:	48 3d fd 1f 00 00    	cmp    $0x1ffd,%rax
+ 222aa79:	76 1a                	jbe    222aa95 <fda_file_mgr_t::open_file(char const*, char, char)+0x7f>
+ 222aa7b:	48 89 e7             	mov    %rsp,%rdi
+ 222aa7e:	48 89 de             	mov    %rbx,%rsi
+ 222aa81:	e8 7c d6 04 02       	callq  4278102 <vbt_string_t::operator=(char const*)>
+ 222aa86:	eb 18                	jmp    222aaa0 <fda_file_mgr_t::open_file(char const*, char, char)+0x8a>
+ 222aa88:	48 89 e7             	mov    %rsp,%rdi
+ 222aa8b:	48 89 de             	mov    %rbx,%rsi
+ 222aa8e:	e8 6f d6 04 02       	callq  4278102 <vbt_string_t::operator=(char const*)>
+ 222aa93:	eb 0b                	jmp    222aaa0 <fda_file_mgr_t::open_file(char const*, char, char)+0x8a>
+ 222aa95:	48 89 e7             	mov    %rsp,%rdi
+ 222aa98:	4c 89 e6             	mov    %r12,%rsi
+ 222aa9b:	e8 62 d6 04 02       	callq  4278102 <vbt_string_t::operator=(char const*)>
+ 222aaa0:	45 84 ff             	test   %r15b,%r15b
+ 222aaa3:	74 5b                	je     222ab00 <fda_file_mgr_t::open_file(char const*, char, char)+0xea>
+ 222aaa5:	48 89 e7             	mov    %rsp,%rdi
+ 222aaa8:	e8 45 cc 04 02       	callq  42776f2 <vbt_string_t::getString() const>
+ 222aaad:	48 89 c7             	mov    %rax,%rdi
+ 222aab0:	e8 46 c1 fe ff       	callq  2216bfb <fda_is_fsdb_or_zwd(char const*)>
+ 222aab5:	84 c0                	test   %al,%al
+ 222aab7:	74 0d                	je     222aac6 <fda_file_mgr_t::open_file(char const*, char, char)+0xb0>
+ 222aab9:	48 89 e7             	mov    %rsp,%rdi
+ 222aabc:	e8 31 cc 04 02       	callq  42776f2 <vbt_string_t::getString() const>
+ 222aac1:	e9 88 00 00 00       	jmpq   222ab4e <fda_file_mgr_t::open_file(char const*, char, char)+0x138>
+ 222aac6:	e8 4d 08 fe ff       	callq  220b318 <fda_log()>
+ 222aacb:	bb 00 00 00 00       	mov    $0x0,%ebx
+ 222aad0:	85 c0                	test   %eax,%eax
+ 222aad2:	0f 84 ff 01 00 00    	je     222acd7 <fda_file_mgr_t::open_file(char const*, char, char)+0x2c1>
+ 222aad8:	48 89 e7             	mov    %rsp,%rdi
+ 222aadb:	e8 12 cc 04 02       	callq  42776f2 <vbt_string_t::getString() const>
+ 222aae0:	48 89 c2             	mov    %rax,%rdx
+ 222aae3:	48 8d 35 46 26 fc fe 	lea    -0x103d9ba(%rip),%rsi        # 11ed130 <ul_jrand_seed+0x11cdcc4>
+ 222aaea:	48 8d 3d 7f 1b 14 ff 	lea    -0xebe481(%rip),%rdi        # 136c670 <ul_jrand_seed+0x134d204>
+ 222aaf1:	b8 00 00 00 00       	mov    $0x0,%eax
+ 222aaf6:	e8 e5 54 ee 02       	callq  510ffe0 <dbt_log(char const*, ...)@plt>
+ 222aafb:	e9 f1 01 00 00       	jmpq   222acf1 <fda_file_mgr_t::open_file(char const*, char, char)+0x2db>
+ 222ab00:	48 89 e7             	mov    %rsp,%rdi
+ 222ab03:	e8 ea cb 04 02       	callq  42776f2 <vbt_string_t::getString() const>
+ 222ab08:	48 89 c7             	mov    %rax,%rdi
+ 222ab0b:	e8 d8 c0 fe ff       	callq  2216be8 <fda_is_fsdb(char const*)>
+ 222ab10:	84 c0                	test   %al,%al
+ 222ab12:	75 a5                	jne    222aab9 <fda_file_mgr_t::open_file(char const*, char, char)+0xa3>
+ 222ab14:	e8 ff 07 fe ff       	callq  220b318 <fda_log()>
+ 222ab19:	bb 00 00 00 00       	mov    $0x0,%ebx
+ 222ab1e:	85 c0                	test   %eax,%eax
+ 222ab20:	0f 84 b1 01 00 00    	je     222acd7 <fda_file_mgr_t::open_file(char const*, char, char)+0x2c1>
+ 222ab26:	48 89 e7             	mov    %rsp,%rdi
+ 222ab29:	e8 c4 cb 04 02       	callq  42776f2 <vbt_string_t::getString() const>
+ 222ab2e:	48 89 c2             	mov    %rax,%rdx
+ 222ab31:	48 8d 35 f8 25 fc fe 	lea    -0x103da08(%rip),%rsi        # 11ed130 <ul_jrand_seed+0x11cdcc4>
+ 222ab38:	48 8d 3d d9 01 08 ff 	lea    -0xf7fe27(%rip),%rdi        # 12aad18 <ul_jrand_seed+0x128b8ac>
+ 222ab3f:	b8 00 00 00 00       	mov    $0x0,%eax
+ 222ab44:	e8 97 54 ee 02       	callq  510ffe0 <dbt_log(char const*, ...)@plt>
+ 222ab49:	e9 aa 01 00 00       	jmpq   222acf8 <fda_file_mgr_t::open_file(char const*, char, char)+0x2e2>
+ 222ab4e:	49 89 c4             	mov    %rax,%r12
+ 222ab51:	48 8b 05 a8 e5 65 03 	mov    0x365e5a8(%rip),%rax        # 5889100 <.got+0x24e0>
+ 222ab58:	48 83 38 00          	cmpq   $0x0,(%rax)
+ 222ab5c:	74 22                	je     222ab80 <fda_file_mgr_t::open_file(char const*, char, char)+0x16a>
+ 222ab5e:	48 8b 05 9b e5 65 03 	mov    0x365e59b(%rip),%rax        # 5889100 <.got+0x24e0>
+ 222ab65:	48 8b 00             	mov    (%rax),%rax
+ 222ab68:	48 8b 78 08          	mov    0x8(%rax),%rdi
+ 222ab6c:	48 85 ff             	test   %rdi,%rdi
+ 222ab6f:	74 5a                	je     222abcb <fda_file_mgr_t::open_file(char const*, char, char)+0x1b5>
+ 222ab71:	4d 85 e4             	test   %r12,%r12
+ 222ab74:	74 55                	je     222abcb <fda_file_mgr_t::open_file(char const*, char, char)+0x1b5>
+ 222ab76:	4c 89 e6             	mov    %r12,%rsi
+ 222ab79:	e8 04 50 05 02       	callq  427fb82 <vbt_str_table_t::find_or_insert(char const*)>
+ 222ab7e:	eb 41                	jmp    222abc1 <fda_file_mgr_t::open_file(char const*, char, char)+0x1ab>
+ 222ab80:	bf 18 00 00 00       	mov    $0x18,%edi
+ 222ab85:	e8 e6 66 6b 02       	callq  48e1270 <operator new(unsigned long)>
+ 222ab8a:	49 89 c7             	mov    %rax,%r15
+ 222ab8d:	48 89 c7             	mov    %rax,%rdi
+ 222ab90:	e8 6b 34 fe ff       	callq  220e000 <fda_file_mgr_t::fda_file_mgr_t()>
+ 222ab95:	48 8b 05 64 e5 65 03 	mov    0x365e564(%rip),%rax        # 5889100 <.got+0x24e0>
+ 222ab9c:	4c 89 38             	mov    %r15,(%rax)
+ 222ab9f:	eb bd                	jmp    222ab5e <fda_file_mgr_t::open_file(char const*, char, char)+0x148>
+ 222aba1:	48 89 c3             	mov    %rax,%rbx
+ 222aba4:	be 18 00 00 00       	mov    $0x18,%esi
+ 222aba9:	4c 89 ff             	mov    %r15,%rdi
+ 222abac:	e8 3f 1d 64 02       	callq  486c8f0 <operator delete(void*, unsigned long)>
+ 222abb1:	48 89 e7             	mov    %rsp,%rdi
+ 222abb4:	e8 8b 76 05 02       	callq  4282244 <vbt_string_t::~vbt_string_t()>
+ 222abb9:	48 89 df             	mov    %rbx,%rdi
+ 222abbc:	e8 ef 3c ec 02       	callq  50ee8b0 <_Unwind_Resume>
+ 222abc1:	49 89 c4             	mov    %rax,%r12
+ 222abc4:	e8 09 e9 fd ff       	callq  22094d2 <fda_debug()>
+ 222abc9:	eb 08                	jmp    222abd3 <fda_file_mgr_t::open_file(char const*, char, char)+0x1bd>
+ 222abcb:	41 bc 00 00 00 00    	mov    $0x0,%r12d
+ 222abd1:	eb f1                	jmp    222abc4 <fda_file_mgr_t::open_file(char const*, char, char)+0x1ae>
+ 222abd3:	85 c0                	test   %eax,%eax
+ 222abd5:	75 13                	jne    222abea <fda_file_mgr_t::open_file(char const*, char, char)+0x1d4>
+ 222abd7:	49 8b 5d 10          	mov    0x10(%r13),%rbx
+ 222abdb:	48 85 db             	test   %rbx,%rbx
+ 222abde:	74 42                	je     222ac22 <fda_file_mgr_t::open_file(char const*, char, char)+0x20c>
+ 222abe0:	e8 f0 12 fe ff       	callq  220bed5 <fda_share_same_fsdb()>
+ 222abe5:	e9 a8 00 00 00       	jmpq   222ac92 <fda_file_mgr_t::open_file(char const*, char, char)+0x27c>
+ 222abea:	48 89 da             	mov    %rbx,%rdx
+ 222abed:	48 8d 35 3c 25 fc fe 	lea    -0x103dac4(%rip),%rsi        # 11ed130 <ul_jrand_seed+0x11cdcc4>
+ 222abf4:	48 8d 3d 30 32 f8 fe 	lea    -0x107cdd0(%rip),%rdi        # 11ade2b <ul_jrand_seed+0x118e9bf>
+ 222abfb:	b8 00 00 00 00       	mov    $0x0,%eax
+ 222ac00:	e8 db 53 ee 02       	callq  510ffe0 <dbt_log(char const*, ...)@plt>
+ 222ac05:	4c 89 e2             	mov    %r12,%rdx
+ 222ac08:	48 8d 35 21 25 fc fe 	lea    -0x103dadf(%rip),%rsi        # 11ed130 <ul_jrand_seed+0x11cdcc4>
+ 222ac0f:	48 8d 3d a2 ea 09 ff 	lea    -0xf6155e(%rip),%rdi        # 12c96b8 <ul_jrand_seed+0x12aa24c>
+ 222ac16:	b8 00 00 00 00       	mov    $0x0,%eax
+ 222ac1b:	e8 c0 53 ee 02       	callq  510ffe0 <dbt_log(char const*, ...)@plt>
+ 222ac20:	eb b5                	jmp    222abd7 <fda_file_mgr_t::open_file(char const*, char, char)+0x1c1>
+ 222ac22:	e8 ab e8 fd ff       	callq  22094d2 <fda_debug()>
+ 222ac27:	85 c0                	test   %eax,%eax
+ 222ac29:	75 4d                	jne    222ac78 <fda_file_mgr_t::open_file(char const*, char, char)+0x262>
+ 222ac2b:	48 8b 05 1e c1 65 03 	mov    0x365c11e(%rip),%rax        # 5886d50 <.got+0x130>
+ 222ac32:	80 38 00             	cmpb   $0x0,(%rax)
+ 222ac35:	0f 85 9c 00 00 00    	jne    222acd7 <fda_file_mgr_t::open_file(char const*, char, char)+0x2c1>
+ 222ac3b:	48 8b 05 16 c1 65 03 	mov    0x365c116(%rip),%rax        # 5886d58 <.got+0x138>
+ 222ac42:	0f b6 00             	movzbl (%rax),%eax
+ 222ac45:	48 8b 15 14 c1 65 03 	mov    0x365c114(%rip),%rdx        # 5886d60 <.got+0x140>
+ 222ac4c:	0a 02                	or     (%rdx),%al
+ 222ac4e:	74 15                	je     222ac65 <fda_file_mgr_t::open_file(char const*, char, char)+0x24f>
+ 222ac50:	48 8b 05 11 c1 65 03 	mov    0x365c111(%rip),%rax        # 5886d68 <.got+0x148>
+ 222ac57:	0f b6 00             	movzbl (%rax),%eax
+ 222ac5a:	48 8b 15 0f c1 65 03 	mov    0x365c10f(%rip),%rdx        # 5886d70 <.got+0x150>
+ 222ac61:	0a 02                	or     (%rdx),%al
+ 222ac63:	74 72                	je     222acd7 <fda_file_mgr_t::open_file(char const*, char, char)+0x2c1>
+ 222ac65:	be a7 00 00 00       	mov    $0xa7,%esi
+ 222ac6a:	48 8d 3d c6 ad ff fe 	lea    -0x100523a(%rip),%rdi        # 1225a37 <ul_jrand_seed+0x12065cb>
+ 222ac71:	e8 87 f3 3b 00       	callq  25e9ffd <sysCnlAssert>
+ 222ac76:	eb 5f                	jmp    222acd7 <fda_file_mgr_t::open_file(char const*, char, char)+0x2c1>
+ 222ac78:	48 8d 35 b1 24 fc fe 	lea    -0x103db4f(%rip),%rsi        # 11ed130 <ul_jrand_seed+0x11cdcc4>
+ 222ac7f:	48 8d 3d 52 a0 0a ff 	lea    -0xf55fae(%rip),%rdi        # 12d4cd8 <ul_jrand_seed+0x12b586c>
+ 222ac86:	b8 00 00 00 00       	mov    $0x0,%eax
+ 222ac8b:	e8 50 53 ee 02       	callq  510ffe0 <dbt_log(char const*, ...)@plt>
+ 222ac90:	eb 99                	jmp    222ac2b <fda_file_mgr_t::open_file(char const*, char, char)+0x215>
+ 222ac92:	85 c0                	test   %eax,%eax
+ 222ac94:	74 2a                	je     222acc0 <fda_file_mgr_t::open_file(char const*, char, char)+0x2aa>
+ 222ac96:	49 8b 45 10          	mov    0x10(%r13),%rax
+ 222ac9a:	48 8b 38             	mov    (%rax),%rdi
+ 222ac9d:	4d 85 e4             	test   %r12,%r12
+ 222aca0:	74 1e                	je     222acc0 <fda_file_mgr_t::open_file(char const*, char, char)+0x2aa>
+ 222aca2:	48 85 ff             	test   %rdi,%rdi
+ 222aca5:	74 19                	je     222acc0 <fda_file_mgr_t::open_file(char const*, char, char)+0x2aa>
+ 222aca7:	4c 89 e6             	mov    %r12,%rsi
+ 222acaa:	e8 43 c8 02 00       	callq  22574f2 <dbt_skd_hash_t::find(void*)>
+ 222acaf:	48 89 c3             	mov    %rax,%rbx
+ 222acb2:	48 85 c0             	test   %rax,%rax
+ 222acb5:	74 09                	je     222acc0 <fda_file_mgr_t::open_file(char const*, char, char)+0x2aa>
+ 222acb7:	83 80 c0 00 00 00 01 	addl   $0x1,0xc0(%rax)
+ 222acbe:	eb 17                	jmp    222acd7 <fda_file_mgr_t::open_file(char const*, char, char)+0x2c1>
+ 222acc0:	41 0f be ce          	movsbl %r14b,%ecx
+ 222acc4:	ba 00 00 00 00       	mov    $0x0,%edx
+ 222acc9:	4c 89 e6             	mov    %r12,%rsi
+ 222accc:	4c 89 ef             	mov    %r13,%rdi
+ 222accf:	e8 ec f9 ff ff       	callq  222a6c0 <fda_file_mgr_t::open_file_with_ffr(char*, char, char)>
+ 222acd4:	48 89 c3             	mov    %rax,%rbx
+ 222acd7:	48 89 e7             	mov    %rsp,%rdi
+ 222acda:	e8 65 75 05 02       	callq  4282244 <vbt_string_t::~vbt_string_t()>
+ 222acdf:	48 89 d8             	mov    %rbx,%rax
+ 222ace2:	48 8d 65 d8          	lea    -0x28(%rbp),%rsp
+ 222ace6:	5b                   	pop    %rbx
+ 222ace7:	41 5c                	pop    %r12
+ 222ace9:	41 5d                	pop    %r13
+ 222aceb:	41 5e                	pop    %r14
+ 222aced:	41 5f                	pop    %r15
+ 222acef:	5d                   	pop    %rbp
+ 222acf0:	c3                   	retq   
+ 222acf1:	bb 00 00 00 00       	mov    $0x0,%ebx
+ 222acf6:	eb df                	jmp    222acd7 <fda_file_mgr_t::open_file(char const*, char, char)+0x2c1>
+ 222acf8:	bb 00 00 00 00       	mov    $0x0,%ebx
+ 222acfd:	eb d8                	jmp    222acd7 <fda_file_mgr_t::open_file(char const*, char, char)+0x2c1>
+ 222acff:	48 89 c3             	mov    %rax,%rbx
+ 222ad02:	e9 aa fe ff ff       	jmpq   222abb1 <fda_file_mgr_t::open_file(char const*, char, char)+0x19b>

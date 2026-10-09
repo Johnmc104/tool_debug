@@ -1,0 +1,67 @@
+
+/opt/Synopsys/verdi/Y-2026.03-SP2/share/FsdbReader/linux64/libnffr.so:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+000000000072166e <ffrDisk::ReadHeader()>:
+  72166e:	53                   	push   %rbx
+  72166f:	48 83 ec 10          	sub    $0x10,%rsp
+  721673:	48 89 fb             	mov    %rdi,%rbx
+  721676:	c7 44 24 0c ff ff ff 	movl   $0x7fffffff,0xc(%rsp)
+  72167d:	7f 
+  72167e:	48 8d 74 24 0c       	lea    0xc(%rsp),%rsi
+  721683:	e8 38 1d e3 00       	callq  15533c0 <ffrDisk::SyncControl_Lock(int&)@plt>
+  721688:	48 89 df             	mov    %rbx,%rdi
+  72168b:	e8 10 18 e3 00       	callq  1552ea0 <ffrDisk::ReopenFsdb()@plt>
+  721690:	48 8b 93 a0 00 00 00 	mov    0xa0(%rbx),%rdx
+  721697:	8b b3 9c 00 00 00    	mov    0x9c(%rbx),%esi
+  72169d:	8b ba 88 10 00 00    	mov    0x1088(%rdx),%edi
+  7216a3:	e8 6b 66 fe ff       	callq  707d13 <ReadFixedHdr(int, int, fsdbFixedHdr*)>
+  7216a8:	48 8b 83 a0 00 00 00 	mov    0xa0(%rbx),%rax
+  7216af:	48 8d 88 00 04 00 00 	lea    0x400(%rax),%rcx
+  7216b6:	0f b6 50 44          	movzbl 0x44(%rax),%edx
+  7216ba:	8b b3 9c 00 00 00    	mov    0x9c(%rbx),%esi
+  7216c0:	8b b8 88 10 00 00    	mov    0x1088(%rax),%edi
+  7216c6:	44 0f b6 40 3c       	movzbl 0x3c(%rax),%r8d
+  7216cb:	e8 f7 69 fe ff       	callq  7080c7 <ReadCloseHdr(int, int, unsigned char, fsdbCloseHdr*, unsigned char)>
+  7216d0:	48 8b 83 a0 00 00 00 	mov    0xa0(%rbx),%rax
+  7216d7:	48 8d 88 00 08 00 00 	lea    0x800(%rax),%rcx
+  7216de:	0f b6 50 44          	movzbl 0x44(%rax),%edx
+  7216e2:	8b b3 9c 00 00 00    	mov    0x9c(%rbx),%esi
+  7216e8:	8b b8 88 10 00 00    	mov    0x1088(%rax),%edi
+  7216ee:	44 0f b6 40 3c       	movzbl 0x3c(%rax),%r8d
+  7216f3:	e8 f7 71 fe ff       	callq  7088ef <ReadFlushHdr(int, int, unsigned char, fsdbFlushHdr*, unsigned char)>
+  7216f8:	48 8b 83 a0 00 00 00 	mov    0xa0(%rbx),%rax
+  7216ff:	44 0f be 48 38       	movsbl 0x38(%rax),%r9d
+  721704:	44 0f b6 40 3c       	movzbl 0x3c(%rax),%r8d
+  721709:	48 8d 88 00 0c 00 00 	lea    0xc00(%rax),%rcx
+  721710:	0f b6 50 44          	movzbl 0x44(%rax),%edx
+  721714:	8b b3 9c 00 00 00    	mov    0x9c(%rbx),%esi
+  72171a:	8b b8 88 10 00 00    	mov    0x1088(%rax),%edi
+  721720:	48 83 ec 08          	sub    $0x8,%rsp
+  721724:	6a 00                	pushq  $0x0
+  721726:	e8 02 6d fe ff       	callq  70842d <ReadExtendCloseHdr(int, int, unsigned char, fsdbExtendCloseHdr*, unsigned char, char, char)>
+  72172b:	48 8b b3 a0 00 00 00 	mov    0xa0(%rbx),%rsi
+  721732:	48 8d be 00 08 00 00 	lea    0x800(%rsi),%rdi
+  721739:	48 83 c4 10          	add    $0x10,%rsp
+  72173d:	48 81 c6 38 0c 00 00 	add    $0xc38,%rsi
+  721744:	48 89 fa             	mov    %rdi,%rdx
+  721747:	e8 dc 1c ff ff       	callq  713428 <HLTagAPlusBIsC(fsdbXTag*, fsdbXTag*, fsdbXTag*)>
+  72174c:	48 8b b3 a0 00 00 00 	mov    0xa0(%rbx),%rsi
+  721753:	48 8d be 08 08 00 00 	lea    0x808(%rsi),%rdi
+  72175a:	48 81 c6 38 0c 00 00 	add    $0xc38,%rsi
+  721761:	48 89 fa             	mov    %rdi,%rdx
+  721764:	e8 bf 1c ff ff       	callq  713428 <HLTagAPlusBIsC(fsdbXTag*, fsdbXTag*, fsdbXTag*)>
+  721769:	48 8b 83 a0 00 00 00 	mov    0xa0(%rbx),%rax
+  721770:	48 8b 90 00 08 00 00 	mov    0x800(%rax),%rdx
+  721777:	48 89 90 f8 13 00 00 	mov    %rdx,0x13f8(%rax)
+  72177e:	48 8b 83 a0 00 00 00 	mov    0xa0(%rbx),%rax
+  721785:	48 8b 90 08 08 00 00 	mov    0x808(%rax),%rdx
+  72178c:	48 89 90 00 14 00 00 	mov    %rdx,0x1400(%rax)
+  721793:	8b 74 24 0c          	mov    0xc(%rsp),%esi
+  721797:	48 89 df             	mov    %rbx,%rdi
+  72179a:	e8 31 1c e3 00       	callq  15533d0 <ffrDisk::SyncControl_Unlock(int)@plt>
+  72179f:	48 83 c4 10          	add    $0x10,%rsp
+  7217a3:	5b                   	pop    %rbx
+  7217a4:	c3                   	retq   

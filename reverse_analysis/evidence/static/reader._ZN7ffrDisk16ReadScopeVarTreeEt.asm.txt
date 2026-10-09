@@ -1,0 +1,59 @@
+
+/opt/Synopsys/verdi/Y-2026.03-SP2/share/FsdbReader/linux64/libnffr.so:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+0000000000a1af18 <ffrDisk::ReadScopeVarTree(unsigned short)>:
+  a1af18:	55                   	push   %rbp
+  a1af19:	53                   	push   %rbx
+  a1af1a:	48 83 ec 08          	sub    $0x8,%rsp
+  a1af1e:	48 89 fb             	mov    %rdi,%rbx
+  a1af21:	89 f5                	mov    %esi,%ebp
+  a1af23:	e8 68 7f b3 00       	callq  1552e90 <ffrDisk::IsSyncControlOkay()@plt>
+  a1af28:	3c 01                	cmp    $0x1,%al
+  a1af2a:	75 6e                	jne    a1af9a <ffrDisk::ReadScopeVarTree(unsigned short)+0x82>
+  a1af2c:	48 8b 83 a0 00 00 00 	mov    0xa0(%rbx),%rax
+  a1af33:	48 8b 15 3e bd c0 00 	mov    0xc0bd3e(%rip),%rdx        # 1626c78 <_DYNAMIC+0x1ad8>
+  a1af3a:	48 89 90 90 13 00 00 	mov    %rdx,0x1390(%rax)
+  a1af41:	48 c7 80 98 13 00 00 	movq   $0x0,0x1398(%rax)
+  a1af48:	00 00 00 00 
+  a1af4c:	0f b7 f5             	movzwl %bp,%esi
+  a1af4f:	48 89 df             	mov    %rbx,%rdi
+  a1af52:	e8 59 b6 b3 00       	callq  15565b0 <ffrDisk::ReadScopeTree(unsigned short)@plt>
+  a1af57:	48 8b 93 a0 00 00 00 	mov    0xa0(%rbx),%rdx
+  a1af5e:	48 8b 0d cb a8 c0 00 	mov    0xc0a8cb(%rip),%rcx        # 1625830 <_DYNAMIC+0x690>
+  a1af65:	48 89 8a 90 13 00 00 	mov    %rcx,0x1390(%rdx)
+  a1af6c:	48 c7 82 98 13 00 00 	movq   $0x0,0x1398(%rdx)
+  a1af73:	00 00 00 00 
+  a1af77:	48 8b 93 a0 00 00 00 	mov    0xa0(%rbx),%rdx
+  a1af7e:	80 ba 2a 20 00 00 00 	cmpb   $0x0,0x202a(%rdx)
+  a1af85:	74 07                	je     a1af8e <ffrDisk::ReadScopeVarTree(unsigned short)+0x76>
+  a1af87:	3d 85 00 00 00       	cmp    $0x85,%eax
+  a1af8c:	74 64                	je     a1aff2 <ffrDisk::ReadScopeVarTree(unsigned short)+0xda>
+  a1af8e:	b8 00 00 00 00       	mov    $0x0,%eax
+  a1af93:	48 83 c4 08          	add    $0x8,%rsp
+  a1af97:	5b                   	pop    %rbx
+  a1af98:	5d                   	pop    %rbp
+  a1af99:	c3                   	retq   
+  a1af9a:	48 8d 3d 3f ee 86 ff 	lea    -0x7911c1(%rip),%rdi        # 289de0 <davinciThreadIndex+0x2865c0>
+  a1afa1:	b8 00 00 00 00       	mov    $0x0,%eax
+  a1afa6:	e8 25 6f b3 00       	callq  1551ed0 <sysWarn@plt>
+  a1afab:	48 8b 05 de a5 c0 00 	mov    0xc0a5de(%rip),%rax        # 1625590 <sysvCnlMfg@Base>
+  a1afb2:	0f b6 00             	movzbl (%rax),%eax
+  a1afb5:	48 8b 15 dc a5 c0 00 	mov    0xc0a5dc(%rip),%rdx        # 1625598 <sysvInstDir@Base>
+  a1afbc:	0a 02                	or     (%rdx),%al
+  a1afbe:	74 1a                	je     a1afda <ffrDisk::ReadScopeVarTree(unsigned short)+0xc2>
+  a1afc0:	48 8b 05 d9 a5 c0 00 	mov    0xc0a5d9(%rip),%rax        # 16255a0 <sysvEnDassert@Base>
+  a1afc7:	0f b6 10             	movzbl (%rax),%edx
+  a1afca:	b8 ff ff ff ff       	mov    $0xffffffff,%eax
+  a1afcf:	48 8b 0d d2 a5 c0 00 	mov    0xc0a5d2(%rip),%rcx        # 16255a8 <sysvEnLogDassert@Base>
+  a1afd6:	0a 11                	or     (%rcx),%dl
+  a1afd8:	74 b9                	je     a1af93 <ffrDisk::ReadScopeVarTree(unsigned short)+0x7b>
+  a1afda:	be d9 31 00 00       	mov    $0x31d9,%esi
+  a1afdf:	48 8d 3d 29 dc 80 ff 	lea    -0x7f23d7(%rip),%rdi        # 228c0f <davinciThreadIndex+0x2253ef>
+  a1afe6:	e8 f5 6e b3 00       	callq  1551ee0 <sysCnlAssert@plt>
+  a1afeb:	b8 ff ff ff ff       	mov    $0xffffffff,%eax
+  a1aff0:	eb a1                	jmp    a1af93 <ffrDisk::ReadScopeVarTree(unsigned short)+0x7b>
+  a1aff2:	b8 85 00 00 00       	mov    $0x85,%eax
+  a1aff7:	eb 9a                	jmp    a1af93 <ffrDisk::ReadScopeVarTree(unsigned short)+0x7b>

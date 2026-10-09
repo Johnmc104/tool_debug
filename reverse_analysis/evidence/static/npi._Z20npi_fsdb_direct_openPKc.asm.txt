@@ -1,0 +1,13 @@
+
+/opt/Synopsys/verdi/Y-2026.03-SP2/share/NPI/lib/linux64/libNPI.so:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+000000000222b330 <npi_fsdb_direct_open(char const*)>:
+ 222b330:	48 83 ec 08          	sub    $0x8,%rsp
+ 222b334:	ba 00 00 00 00       	mov    $0x0,%edx
+ 222b339:	be 00 00 00 00       	mov    $0x0,%esi
+ 222b33e:	e8 c4 f9 ff ff       	callq  222ad07 <npi_fsdb_direct_open(char const*, char, bool)>
+ 222b343:	48 83 c4 08          	add    $0x8,%rsp
+ 222b347:	c3                   	retq   

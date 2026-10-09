@@ -1,0 +1,2485 @@
+{
+  "path": "/home/zhhe/work/python_auto/tool_wave/test_vwave/tb_top.fsdb",
+  "size": 23092,
+  "sha256": "20cfd9439699ef49e135b5bb50e4961dfaf796d322838fb71f888ad719a50a3d",
+  "head_32_hex": "000000001c3ed948040302010000000029105d690000000029105d69f3e52000",
+  "ascii_runs": [
+    {
+      "offset": 96,
+      "offset_hex": "0x60",
+      "text": "Tue Jan  6 21:37:45 2026"
+    },
+    {
+      "offset": 128,
+      "offset_hex": "0x80",
+      "text": "Chronologic Simulation VCS Release T-2022.06-SP2_Full64"
+    },
+    {
+      "offset": 3072,
+      "offset_hex": "0xc00",
+      "text": "Tue Jan  6 21:37:45 2026"
+    },
+    {
+      "offset": 3122,
+      "offset_hex": "0xc32",
+      "text": "x86_64"
+    },
+    {
+      "offset": 3142,
+      "offset_hex": "0xc46",
+      "text": "Linux"
+    },
+    {
+      "offset": 3154,
+      "offset_hex": "0xc52",
+      "text": "4.18.0-513.5.1.el8_9.x86_64 #1 SMP Fri Sep 29 05:"
+    },
+    {
+      "offset": 3206,
+      "offset_hex": "0xc86",
+      "text": "FSDB_ENV_SYNC_CONTROL=NULL, FSDB_ENV_DUMP_SEQ_NUM=NULL, FSDB_ENV_MAX_GLITCH_NUM=NULL, FSDB_ENV_WRITER_MEM_LIMIT=NULL, FSDB_ENV_NOVAS_LOCK=NULL, FSDB_ENV_LOCK_FILE_LOC=NULL"
+    },
+    {
+      "offset": 3406,
+      "offset_hex": "0xd4e",
+      "text": "ident_ffw_LINUXAMD64_deb6.1.new_6.1_4.3_Linux.0/64bit_/depot/qsc/QSCT/GCC/bin/gcc_11222022"
+    },
+    {
+      "offset": 4962,
+      "offset_hex": "0x1362",
+      "text": "Verdi_T-2022.06-SP2"
+    },
+    {
+      "offset": 4992,
+      "offset_hex": "0x1380",
+      "text": "FSDB Dumper for VCS, Release Verdi_T-2022.06-SP2, Linux x86_64/64bit, 11/22/2022"
+    },
+    {
+      "offset": 5376,
+      "offset_hex": "0x1500",
+      "text": "FSDB_CHECK_PID=NULL, FSDB_DEBUG=NULL, FSDB_DONOT_DUMP_LOCAL_VAR=NULL, FSDB_DONOT_DUMP_SVA_LOCAL_VAR=NULL, FSDB_DONOT_DUMP_SVA_SEQUENCE=NULL, FSDB_DONOT_WALK_EXPRESSION=NULL, FSDB_DONOT_WALK_SVA_EXPRESSION=NULL, FSDB_DO_NOT_WRITE=NULL, FSDB_DEBUG_LOG=NULL, FSDB_DUMP_LEVEL=NULL, FSDB_DUMP_OVA_EVENTS=NULL, FSDB_DUMP_SEQUENCE=NULL, FSDB_DUMP_VERBOSE=NULL, FSDB_DUMP_UNTERMINATED_ATTEMPT=NULL, FSDB_NO_ALL_MSG=NULL, FSDB_NO_ERROR=NULL, FSDB_NO_MDA_STRUCT=NULL, FSDB_NO_MSG=NULL, FSDB_NO_MSG_IN_FILE=NULL, FSDB_NO_BUS_COMPRESS=NULL, FSDB_NO_WARNING=NULL, FSDB_NO_UNFINISHED_ATTEMPT=NULL, FSDB_PARALLEL=NULL, FSDB_PSL_PROPERTY=NULL, FSDB_PURIFY_CONNECT_TIMES=NULL, FSDB_RD_PORT=NULL, FSDB_SHOW_MESSAGE=NULL, FSDB_SAME_NET=NULL, FSDB_SVA_LV_BOUNDARY=NULL, FSDB_SVA_DUP_LV_NUM=NULL, FSDB_UNEXPEND_VECTOR=NULL, FSDBSERVER_BUFFER_SIZE=NULL, RD_0_64_KSIZE=NULL, FSDB_SKIP_CELL_INSTANCE=NULL, USE_SIM_NET=NULL"
+    },
+    {
+      "offset": 6340,
+      "offset_hex": "0x18c4",
+      "text": "X_SPNS"
+    },
+    {
+      "offset": 6348,
+      "offset_hex": "0x18cc",
+      "text": "Z_SPNS"
+    },
+    {
+      "offset": 7307,
+      "offset_hex": "0x1c8b",
+      "text": "$attribute_root"
+    },
+    {
+      "offset": 7416,
+      "offset_hex": "0x1cf8",
+      "text": "$_fsdbgate_"
+    },
+    {
+      "offset": 7462,
+      "offset_hex": "0x1d26",
+      "text": "hidden"
+    },
+    {
+      "offset": 7547,
+      "offset_hex": "0x1d7b",
+      "text": "intf"
+    },
+    {
+      "offset": 7552,
+      "offset_hex": "0x1d80",
+      "text": "apb_if"
+    },
+    {
+      "offset": 7566,
+      "offset_hex": "0x1d8e",
+      "text": "wait_apb"
+    },
+    {
+      "offset": 7584,
+      "offset_hex": "0x1da0",
+      "text": "rstn_release"
+    },
+    {
+      "offset": 7607,
+      "offset_hex": "0x1db7",
+      "text": "drvm_ck'"
+    },
+    {
+      "offset": 7619,
+      "offset_hex": "0x1dc3",
+      "text": "monl"
+    },
+    {
+      "offset": 7677,
+      "offset_hex": "0x1dfd",
+      "text": ">APB_PSEL_STABLE"
+    },
+    {
+      "offset": 7714,
+      "offset_hex": "0x1e22",
+      "text": "_TIMING"
+    },
+    {
+      "offset": 7729,
+      "offset_hex": "0x1e31",
+      "text": "ADDR("
+    },
+    {
+      "offset": 7741,
+      "offset_hex": "0x1e3d",
+      "text": "PWRITE(u"
+    },
+    {
+      "offset": 7755,
+      "offset_hex": "0x1e4b",
+      "text": "DATA(u"
+    },
+    {
+      "offset": 7769,
+      "offset_hex": "0x1e59",
+      "text": "DEASSERT"
+    },
+    {
+      "offset": 7786,
+      "offset_hex": "0x1e6a",
+      "text": "NO_UNKNOWN_CTRL"
+    },
+    {
+      "offset": 7811,
+      "offset_hex": "0x1e83",
+      "text": "ALIGNED"
+    },
+    {
+      "offset": 7825,
+      "offset_hex": "0x1e91",
+      "text": "8unnamed$$_0Q"
+    },
+    {
+      "offset": 7860,
+      "offset_hex": "0x1eb4",
+      "text": ">DUT_VALIDm"
+    },
+    {
+      "offset": 7872,
+      "offset_hex": "0x1ec0",
+      "text": "Te':"
+    },
+    {
+      "offset": 7881,
+      "offset_hex": "0x1ec9",
+      "text": "IDLE_TRANS"
+    },
+    {
+      "offset": 7899,
+      "offset_hex": "0x1edb",
+      "text": "READ_TO_h"
+    },
+    {
+      "offset": 7925,
+      "offset_hex": "0x1ef5",
+      "text": "ADDER_CORRECu\">H"
+    },
+    {
+      "offset": 7945,
+      "offset_hex": "0x1f09",
+      "text": "REG_"
+    },
+    {
+      "offset": 7958,
+      "offset_hex": "0x1f16",
+      "text": ";_IN"
+    },
+    {
+      "offset": 7968,
+      "offset_hex": "0x1f20",
+      "text": ":RESE"
+    },
+    {
+      "offset": 8009,
+      "offset_hex": "0x1f49",
+      "text": "9]5E1a"
+    },
+    {
+      "offset": 8016,
+      "offset_hex": "0x1f50",
+      "text": "2m2F2`"
+    },
+    {
+      "offset": 8023,
+      "offset_hex": "0x1f57",
+      "text": "q2G2`"
+    },
+    {
+      "offset": 8060,
+      "offset_hex": "0x1f7c",
+      "text": "Qsc_main"
+    },
+    {
+      "offset": 8087,
+      "offset_hex": "0x1f97",
+      "text": "Quvmc_registry"
+    },
+    {
+      "offset": 8124,
+      "offset_hex": "0x1fbc",
+      "text": "uvm_custom_install_recording"
+    },
+    {
+      "offset": 8225,
+      "offset_hex": "0x2021",
+      "text": "verdi*"
+    },
+    {
+      "offset": 8341,
+      "offset_hex": "0x2095",
+      "text": "u#*x"
+    },
+    {
+      "offset": 8480,
+      "offset_hex": "0x2120",
+      "text": "Q%C( "
+    },
+    {
+      "offset": 8641,
+      "offset_hex": "0x21c1",
+      "text": "@q=?"
+    },
+    {
+      "offset": 9016,
+      "offset_hex": "0x2338",
+      "text": "_vcs_msglog"
+    },
+    {
+      "offset": 9036,
+      "offset_hex": "0x234c",
+      "text": "unit__3820934895"
+    },
+    {
+      "offset": 9378,
+      "offset_hex": "0x24a2",
+      "text": "apb_"
+    },
+    {
+      "offset": 9390,
+      "offset_hex": "0x24ae",
+      "text": "$_fsdbgate_"
+    },
+    {
+      "offset": 10079,
+      "offset_hex": "0x275f",
+      "text": "'v@6"
+    },
+    {
+      "offset": 10085,
+      "offset_hex": "0x2765",
+      "text": "XG+)"
+    },
+    {
+      "offset": 10108,
+      "offset_hex": "0x277c",
+      "text": "8\\8 V"
+    },
+    {
+      "offset": 10506,
+      "offset_hex": "0x290a",
+      "text": "7&fI"
+    },
+    {
+      "offset": 10542,
+      "offset_hex": "0x292e",
+      "text": "D\">o"
+    },
+    {
+      "offset": 10549,
+      "offset_hex": "0x2935",
+      "text": "PJ5."
+    },
+    {
+      "offset": 10561,
+      "offset_hex": "0x2941",
+      "text": ":UV1"
+    },
+    {
+      "offset": 10614,
+      "offset_hex": "0x2976",
+      "text": "kI;~"
+    },
+    {
+      "offset": 10700,
+      "offset_hex": "0x29cc",
+      "text": "CYBG):"
+    },
+    {
+      "offset": 10731,
+      "offset_hex": "0x29eb",
+      "text": "$tB\""
+    },
+    {
+      "offset": 10752,
+      "offset_hex": "0x2a00",
+      "text": "G]3jM"
+    },
+    {
+      "offset": 10839,
+      "offset_hex": "0x2a57",
+      "text": "{u5\\"
+    },
+    {
+      "offset": 10856,
+      "offset_hex": "0x2a68",
+      "text": "rVa2"
+    },
+    {
+      "offset": 11232,
+      "offset_hex": "0x2be0",
+      "text": "/home/zhhe/work/uvm_apb_adder/simc"
+    },
+    {
+      "offset": 11268,
+      "offset_hex": "0x2c04",
+      "text": "v.daidir"
+    },
+    {
+      "offset": 11289,
+      "offset_hex": "0x2c19",
+      "text": "+ntb_random_seed=0106213745"
+    },
+    {
+      "offset": 11317,
+      "offset_hex": "0x2c35",
+      "text": "+UVM_TESTNAME=case_sc_sw_test"
+    },
+    {
+      "offset": 11349,
+      "offset_hex": "0x2c55",
+      "text": "VERBOSITY=m"
+    },
+    {
+      "offset": 11362,
+      "offset_hex": "0x2c62",
+      "text": "MEDIUM"
+    },
+    {
+      "offset": 11373,
+      "offset_hex": "0x2c6d",
+      "text": "line+cond+tgl+fsm+bE"
+    },
+    {
+      "offset": 11395,
+      "offset_hex": "0x2c83",
+      "text": "ch+assertc"
+    },
+    {
+      "offset": 11407,
+      "offset_hex": "0x2c8f",
+      "text": "_name"
+    },
+    {
+      "offset": 11417,
+      "offset_hex": "0x2c99",
+      "text": "fsdb+gate=off"
+    },
+    {
+      "offset": 11433,
+      "offset_hex": "0x2ca9",
+      "text": "functions"
+    },
+    {
+      "offset": 11446,
+      "offset_hex": "0x2cb6",
+      "text": "Debug"
+    },
+    {
+      "offset": 11458,
+      "offset_hex": "0x2cc2",
+      "text": ".log"
+    },
+    {
+      "offset": 11463,
+      "offset_hex": "0x2cc7",
+      "text": "no-match"
+    },
+    {
+      "offset": 11472,
+      "offset_hex": "0x2cd0",
+      "text": "incomplete"
+    },
+    {
+      "offset": 11742,
+      "offset_hex": "0x2dde",
+      "text": "./simv + +ntb_random_seed=0106213745 +UVM_TESTNAME=case_sc_sw_test +UVM_VERBOSITY=UVM_MEDIUM -cm line+cond+tgl+fsm+branch+assert -cm_name case_sc_sw_test +fsdb+gate=off +fsdb+functions uvm_Debug -l sim.log"
+    },
+    {
+      "offset": 12137,
+      "offset_hex": "0x2f69",
+      "text": "intf"
+    },
+    {
+      "offset": 12157,
+      "offset_hex": "0x2f7d",
+      "text": "rstn"
+    },
+    {
+      "offset": 12162,
+      "offset_hex": "0x2f82",
+      "text": "apb_clk_peroid"
+    },
+    {
+      "offset": 12198,
+      "offset_hex": "0x2fa6",
+      "text": "wait_apb"
+    },
+    {
+      "offset": 12212,
+      "offset_hex": "0x2fb4",
+      "text": "_release"
+    },
+    {
+      "offset": 12221,
+      "offset_hex": "0x2fbd",
+      "text": "drvm_ck"
+    },
+    {
+      "offset": 12229,
+      "offset_hex": "0x2fc5",
+      "text": "monx"
+    },
+    {
+      "offset": 12268,
+      "offset_hex": "0x2fec",
+      "text": "psel"
+    },
+    {
+      "offset": 12273,
+      "offset_hex": "0x2ff1",
+      "text": "penable"
+    },
+    {
+      "offset": 12281,
+      "offset_hex": "0x2ff9",
+      "text": "pwrite"
+    },
+    {
+      "offset": 12288,
+      "offset_hex": "0x3000",
+      "text": "paddr"
+    },
+    {
+      "offset": 12294,
+      "offset_hex": "0x3006",
+      "text": "pwdata"
+    },
+    {
+      "offset": 12306,
+      "offset_hex": "0x3012",
+      "text": "mismatch_count"
+    },
+    {
+      "offset": 12325,
+      "offset_hex": "0x3025",
+      "text": "has_checks"
+    },
+    {
+      "offset": 12339,
+      "offset_hex": "0x3033",
+      "text": "overage"
+    },
+    {
+      "offset": 12436,
+      "offset_hex": "0x3094",
+      "text": "IDLE"
+    },
+    {
+      "offset": 12441,
+      "offset_hex": "0x3099",
+      "text": "READ"
+    },
+    {
+      "offset": 12446,
+      "offset_hex": "0x309e",
+      "text": "WRITEd"
+    },
+    {
+      "offset": 12516,
+      "offset_hex": "0x30e4",
+      "text": "reg_0x00"
+    },
+    {
+      "offset": 12539,
+      "offset_hex": "0x30fb",
+      "text": "current_stal;"
+    },
+    {
+      "offset": 12561,
+      "offset_hex": "0x3111",
+      "text": "adder"
+    },
+    {
+      "offset": 12567,
+      "offset_hex": "0x3117",
+      "text": "can_do"
+    },
+    {
+      "offset": 12574,
+      "offset_hex": "0x311e",
+      "text": "next_state"
+    },
+    {
+      "offset": 12609,
+      "offset_hex": "0x3141",
+      "text": "uvm_custom_install_recording"
+    },
+    {
+      "offset": 12638,
+      "offset_hex": "0x315e",
+      "text": "set(4"
+    },
+    {
+      "offset": 12646,
+      "offset_hex": "0x3166",
+      "text": "_detail_file"
+    },
+    {
+      "offset": 12659,
+      "offset_hex": "0x3173",
+      "text": "vcs_m_|"
+    },
+    {
+      "offset": 12668,
+      "offset_hex": "0x317c",
+      "text": "attribut"
+    },
+    {
+      "offset": 12682,
+      "offset_hex": "0x318a",
+      "text": "_by_nam"
+    },
+    {
+      "offset": 12692,
+      "offset_hex": "0x3194",
+      "text": "create_stream"
+    },
+    {
+      "offset": 12708,
+      "offset_hex": "0x31a4",
+      "text": "check_handle_kind"
+    },
+    {
+      "offset": 12728,
+      "offset_hex": "0x31b8",
+      "text": "begin_tr"
+    },
+    {
+      "offset": 12744,
+      "offset_hex": "0x31c8",
+      "text": "link"
+    },
+    {
+      "offset": 12751,
+      "offset_hex": "0x31cf",
+      "text": "freen"
+    },
+    {
+      "offset": 12762,
+      "offset_hex": "0x31da",
+      "text": "d$$_0"
+    },
+    {
+      "offset": 12780,
+      "offset_hex": "0x31ec",
+      "text": "sanity"
+    },
+    {
+      "offset": 12790,
+      "offset_hex": "0x31f6",
+      "text": "envx"
+    },
+    {
+      "offset": 12814,
+      "offset_hex": "0x320e",
+      "text": "exist"
+    },
+    {
+      "offset": 12866,
+      "offset_hex": "0x3242",
+      "text": "value"
+    },
+    {
+      "offset": 12917,
+      "offset_hex": "0x3275",
+      "text": "radix"
+    },
+    {
+      "offset": 12923,
+      "offset_hex": "0x327b",
+      "text": "numbits"
+    },
+    {
+      "offset": 12931,
+      "offset_hex": "0x3283",
+      "text": "mask"
+    },
+    {
+      "offset": 12956,
+      "offset_hex": "0x329c",
+      "text": "(h;,"
+    },
+    {
+      "offset": 12967,
+      "offset_hex": "0x32a7",
+      "text": "scope"
+    },
+    {
+      "offset": 12975,
+      "offset_hex": "0x32af",
+      "text": "_with"
+    },
+    {
+      "offset": 13006,
+      "offset_hex": "0x32ce",
+      "text": "htype"
+    },
+    {
+      "offset": 13019,
+      "offset_hex": "0x32db",
+      "text": "okw*"
+    },
+    {
+      "offset": 13055,
+      "offset_hex": "0x32ff",
+      "text": "label"
+    },
+    {
+      "offset": 13061,
+      "offset_hex": "0x3305",
+      "text": "desc"
+    },
+    {
+      "offset": 13068,
+      "offset_hex": "0x330c",
+      "text": "imew"
+    },
+    {
+      "offset": 13109,
+      "offset_hex": "0x3335",
+      "text": "relationr"
+    },
+    {
+      "offset": 13152,
+      "offset_hex": "0x3360",
+      "text": "verdi( "
+    },
+    {
+      "offset": 13162,
+      "offset_hex": "0x336a",
+      "text": "open_debug"
+    },
+    {
+      "offset": 13177,
+      "offset_hex": "0x3379",
+      "text": "dhier_message_'P"
+    },
+    {
+      "offset": 13195,
+      "offset_hex": "0x338b",
+      "text": "^xI6|"
+    },
+    {
+      "offset": 13206,
+      "offset_hex": "0x3396",
+      "text": "pli_"
+    },
+    {
+      "offset": 13213,
+      "offset_hex": "0x339d",
+      "text": "\"eve"
+    },
+    {
+      "offset": 13220,
+      "offset_hex": "0x33a4",
+      "text": "trans_add_vif"
+    },
+    {
+      "offset": 13239,
+      "offset_hex": "0x33b7",
+      "text": "dump_rsrc_obj"
+    },
+    {
+      "offset": 13282,
+      "offset_hex": "0x33e2",
+      "text": "logic"
+    },
+    {
+      "offset": 13293,
+      "offset_hex": "0x33ed",
+      "text": "map.H"
+    },
+    {
+      "offset": 13300,
+      "offset_hex": "0x33f4",
+      "text": "field.S"
+    },
+    {
+      "offset": 13311,
+      "offset_hex": "0x33ff",
+      "text": "(xv1X"
+    },
+    {
+      "offset": 13320,
+      "offset_hex": "0x3408",
+      "text": "mem.H"
+    },
+    {
+      "offset": 13331,
+      "offset_hex": "0x3413",
+      "text": "get_new_test"
+    },
+    {
+      "offset": 13347,
+      "offset_hex": "0x3423",
+      "text": "_port_plusargs"
+    },
+    {
+      "offset": 13364,
+      "offset_hex": "0x3434",
+      "text": "tlm2-_|E"
+    },
+    {
+      "offset": 13379,
+      "offset_hex": "0x3443",
+      "text": "enabled"
+    },
+    {
+      "offset": 13392,
+      "offset_hex": "0x3450",
+      "text": "class"
+    },
+    {
+      "offset": 13434,
+      "offset_hex": "0x347a",
+      "text": "driL#"
+    },
+    {
+      "offset": 13444,
+      "offset_hex": "0x3484",
+      "text": "to_sequencer*"
+    },
+    {
+      "offset": 13464,
+      "offset_hex": "0x3498",
+      "text": "inseri"
+    },
+    {
+      "offset": 13478,
+      "offset_hex": "0x34a6",
+      "text": "find_re(@"
+    },
+    {
+      "offset": 13490,
+      "offset_hex": "0x34b2",
+      "text": "retrieve_mem_map_infoXb"
+    },
+    {
+      "offset": 13523,
+      "offset_hex": "0x34d3",
+      "text": "has_blk_hdl_path"
+    },
+    {
+      "offset": 13556,
+      "offset_hex": "0x34f4",
+      "text": "archy_comple("
+    },
+    {
+      "offset": 13618,
+      "offset_hex": "0x3532",
+      "text": "us|("
+    },
+    {
+      "offset": 13623,
+      "offset_hex": "0x3537",
+      "text": "erbos\\h"
+    },
+    {
+      "offset": 13645,
+      "offset_hex": "0x354d",
+      "text": "hook"
+    },
+    {
+      "offset": 13652,
+      "offset_hex": "0x3554",
+      "text": "sion_flag"
+    },
+    {
+      "offset": 13670,
+      "offset_hex": "0x3566",
+      "text": "unter"
+    },
+    {
+      "offset": 13713,
+      "offset_hex": "0x3591",
+      "text": "uvmH"
+    },
+    {
+      "offset": 13725,
+      "offset_hex": "0x359d",
+      "text": "rand_T"
+    },
+    {
+      "offset": 13743,
+      "offset_hex": "0x35af",
+      "text": "u^plD\"T!"
+    },
+    {
+      "offset": 13814,
+      "offset_hex": "0x35f6",
+      "text": "valN\""
+    },
+    {
+      "offset": 13844,
+      "offset_hex": "0x3614",
+      "text": "$P\"(e"
+    },
+    {
+      "offset": 13854,
+      "offset_hex": "0x361e",
+      "text": "st&0\"x"
+    },
+    {
+      "offset": 13917,
+      "offset_hex": "0x365d",
+      "text": "a]sl"
+    },
+    {
+      "offset": 13938,
+      "offset_hex": "0x3672",
+      "text": "Id)`"
+    },
+    {
+      "offset": 13966,
+      "offset_hex": "0x368e",
+      "text": "#D$2"
+    },
+    {
+      "offset": 14019,
+      "offset_hex": "0x36c3",
+      "text": "desi)"
+    },
+    {
+      "offset": 14027,
+      "offset_hex": "0x36cb",
+      "text": "Id&l EQ"
+    },
+    {
+      "offset": 14044,
+      "offset_hex": "0x36dc",
+      "text": "&strtp"
+    },
+    {
+      "offset": 14061,
+      "offset_hex": "0x36ed",
+      "text": "LAU ;$"
+    },
+    {
+      "offset": 14073,
+      "offset_hex": "0x36f9",
+      "text": "'l\"x"
+    },
+    {
+      "offset": 14086,
+      "offset_hex": "0x3706",
+      "text": "!#M)"
+    },
+    {
+      "offset": 14103,
+      "offset_hex": "0x3717",
+      "text": "T!$d))"
+    },
+    {
+      "offset": 14192,
+      "offset_hex": "0x3770",
+      "text": "4\"q&)0"
+    },
+    {
+      "offset": 14219,
+      "offset_hex": "0x378b",
+      "text": "&L!(P"
+    },
+    {
+      "offset": 14279,
+      "offset_hex": "0x37c7",
+      "text": "maxi>_#8("
+    },
+    {
+      "offset": 14289,
+      "offset_hex": "0x37d1",
+      "text": "limit"
+    },
+    {
+      "offset": 14335,
+      "offset_hex": "0x37ff",
+      "text": ":4+I"
+    },
+    {
+      "offset": 14408,
+      "offset_hex": "0x3848",
+      "text": "#X/$"
+    },
+    {
+      "offset": 14442,
+      "offset_hex": "0x386a",
+      "text": "%<6p"
+    },
+    {
+      "offset": 14479,
+      "offset_hex": "0x388f",
+      "text": ")E|;"
+    },
+    {
+      "offset": 14526,
+      "offset_hex": "0x38be",
+      "text": "(D(`"
+    },
+    {
+      "offset": 14627,
+      "offset_hex": "0x3923",
+      "text": "-QXG*p"
+    },
+    {
+      "offset": 14634,
+      "offset_hex": "0x392a",
+      "text": "\"4,'T.XT"
+    },
+    {
+      "offset": 14672,
+      "offset_hex": "0x3950",
+      "text": "\"T.4"
+    },
+    {
+      "offset": 14715,
+      "offset_hex": "0x397b",
+      "text": "5P+H"
+    },
+    {
+      "offset": 14734,
+      "offset_hex": "0x398e",
+      "text": ".b\"l x"
+    },
+    {
+      "offset": 14742,
+      "offset_hex": "0x3996",
+      "text": "verb$"
+    },
+    {
+      "offset": 14780,
+      "offset_hex": "0x39bc",
+      "text": "Falx"
+    },
+    {
+      "offset": 14802,
+      "offset_hex": "0x39d2",
+      "text": "UVM_NONE"
+    },
+    {
+      "offset": 14819,
+      "offset_hex": "0x39e3",
+      "text": "MEDIUM"
+    },
+    {
+      "offset": 14828,
+      "offset_hex": "0x39ec",
+      "text": "HIGH"
+    },
+    {
+      "offset": 14835,
+      "offset_hex": "0x39f3",
+      "text": "FULL"
+    },
+    {
+      "offset": 14842,
+      "offset_hex": "0x39fa",
+      "text": "DEBUG"
+    },
+    {
+      "offset": 14904,
+      "offset_hex": "0x3a38",
+      "text": "change_x"
+    },
+    {
+      "offset": 14914,
+      "offset_hex": "0x3a42",
+      "text": "global_\""
+    },
+    {
+      "offset": 14933,
+      "offset_hex": "0x3a55",
+      "text": "fresh#"
+    },
+    {
+      "offset": 14948,
+      "offset_hex": "0x3a64",
+      "text": "force_t\""
+    },
+    {
+      "offset": 14957,
+      "offset_hex": "0x3a6d",
+      "text": "Hrun(l"
+    },
+    {
+      "offset": 14965,
+      "offset_hex": "0x3a75",
+      "text": "wait_for_nba_reg\""
+    },
+    {
+      "offset": 14990,
+      "offset_hex": "0x3a8e",
+      "text": "nce_#0+"
+    },
+    {
+      "offset": 14999,
+      "offset_hex": "0x3a97",
+      "text": "\"HN#"
+    },
+    {
+      "offset": 15008,
+      "offset_hex": "0x3aa0",
+      "text": "=$`("
+    },
+    {
+      "offset": 15015,
+      "offset_hex": "0x3aa7",
+      "text": "tegral-X"
+    },
+    {
+      "offset": 15028,
+      "offset_hex": "0x3ab4",
+      "text": "array["
+    },
+    {
+      "offset": 15035,
+      "offset_hex": "0x3abb",
+      "text": "dexW"
+    },
+    {
+      "offset": 15049,
+      "offset_hex": "0x3ac9",
+      "text": "_queue_join"
+    },
+    {
+      "offset": 15064,
+      "offset_hex": "0x3ad8",
+      "text": "to_`"
+    },
+    {
+      "offset": 15078,
+      "offset_hex": "0x3ae6",
+      "text": "ly`U$"
+    },
+    {
+      "offset": 15090,
+      "offset_hex": "0x3af2",
+      "text": "concat2"
+    },
+    {
+      "offset": 15102,
+      "offset_hex": "0x3afe",
+      "text": "dpi_l"
+    },
+    {
+      "offset": 15109,
+      "offset_hex": "0x3b05",
+      "text": "next_D"
+    },
+    {
+      "offset": 15121,
+      "offset_hex": "0x3b11",
+      "text": "tool"
+    },
+    {
+      "offset": 15135,
+      "offset_hex": "0x3b1f",
+      "text": "v\"8;"
+    },
+    {
+      "offset": 15142,
+      "offset_hex": "0x3b26",
+      "text": "revip"
+    },
+    {
+      "offset": 15148,
+      "offset_hex": "0x3b2c",
+      "text": "dU`dp"
+    },
+    {
+      "offset": 15163,
+      "offset_hex": "0x3b3b",
+      "text": "oneway_hash"
+    },
+    {
+      "offset": 15185,
+      "offset_hex": "0x3b51",
+      "text": "bject$"
+    },
+    {
+      "offset": 15198,
+      "offset_hex": "0x3b5e",
+      "text": "leaf)"
+    },
+    {
+      "offset": 15208,
+      "offset_hex": "0x3b68",
+      "text": "or-|"
+    },
+    {
+      "offset": 15231,
+      "offset_hex": "0x3b7f",
+      "text": "wildcard("
+    },
+    {
+      "offset": 15242,
+      "offset_hex": "0x3b8a",
+      "text": "traL?"
+    },
+    {
+      "offset": 15248,
+      "offset_hex": "0x3b90",
+      "text": "dht_used\"_[sep6x"
+    },
+    {
+      "offset": 15269,
+      "offset_hex": "0x3ba5",
+      "text": "no_\\"
+    },
+    {
+      "offset": 15275,
+      "offset_hex": "0x3bab",
+      "text": "licit"
+    },
+    {
+      "offset": 15302,
+      "offset_hex": "0x3bc6",
+      "text": "%b%r_&"
+    },
+    {
+      "offset": 15313,
+      "offset_hex": "0x3bd1",
+      "text": "stop_r\""
+    },
+    {
+      "offset": 15321,
+      "offset_hex": "0x3bd9",
+      "text": "Gst#$;"
+    },
+    {
+      "offset": 15329,
+      "offset_hex": "0x3be1",
+      "text": "j\\ou\\["
+    },
+    {
+      "offset": 15341,
+      "offset_hex": "0x3bed",
+      "text": "|0z)re#"
+    },
+    {
+      "offset": 15371,
+      "offset_hex": "0x3c0b",
+      "text": "_dpi*"
+    },
+    {
+      "offset": 15388,
+      "offset_hex": "0x3c1c",
+      "text": "arn'"
+    },
+    {
+      "offset": 15397,
+      "offset_hex": "0x3c25",
+      "text": "error*"
+    },
+    {
+      "offset": 15406,
+      "offset_hex": "0x3c2e",
+      "text": "fatal"
+    },
+    {
+      "offset": 15414,
+      "offset_hex": "0x3c36",
+      "text": "process_"
+    },
+    {
+      "offset": 15438,
+      "offset_hex": "0x3c4e",
+      "text": "p\"TFx"
+    },
+    {
+      "offset": 15455,
+      "offset_hex": "0x3c5f",
+      "text": "config"
+    },
+    {
+      "offset": 15476,
+      "offset_hex": "0x3c74",
+      "text": "is_matc"
+    },
+    {
+      "offset": 15486,
+      "offset_hex": "0x3c7e",
+      "text": "splithRd"
+    },
+    {
+      "offset": 15501,
+      "offset_hex": "0x3c8d",
+      "text": "aware:"
+    },
+    {
+      "offset": 15514,
+      "offset_hex": "0x3c9a",
+      "text": "di#de"
+    },
+    {
+      "offset": 15525,
+      "offset_hex": "0x3ca5",
+      "text": "_level_"
+    },
+    {
+      "offset": 15538,
+      "offset_hex": "0x3cb2",
+      "text": "_before_simu%"
+    },
+    {
+      "offset": 15645,
+      "offset_hex": "0x3d1d",
+      "text": "opq6shV"
+    },
+    {
+      "offset": 15653,
+      "offset_hex": "0x3d25",
+      "text": "ting_offset"
+    },
+    {
+      "offset": 15675,
+      "offset_hex": "0x3d3b",
+      "text": "UNBOUNDED_CONNECTIONS"
+    },
+    {
+      "offset": 15697,
+      "offset_hex": "0x3d51",
+      "text": "s_conne"
+    },
+    {
+      "offset": 15708,
+      "offset_hex": "0x3d5c",
+      "text": "L_id,T"
+    },
+    {
+      "offset": 15720,
+      "offset_hex": "0x3d68",
+      "text": "Gart"
+    },
+    {
+      "offset": 15727,
+      "offset_hex": "0x3d6f",
+      "text": "declar#"
+    },
+    {
+      "offset": 15744,
+      "offset_hex": "0x3d80",
+      "text": "_key'h"
+    },
+    {
+      "offset": 15758,
+      "offset_hex": "0x3d8e",
+      "text": "phase'4"
+    },
+    {
+      "offset": 15778,
+      "offset_hex": "0x3da2",
+      "text": "`N'X"
+    },
+    {
+      "offset": 15784,
+      "offset_hex": "0x3da8",
+      "text": "_cal\""
+    },
+    {
+      "offset": 15792,
+      "offset_hex": "0x3db0",
+      "text": "s_spaces"
+    },
+    {
+      "offset": 15803,
+      "offset_hex": "0x3dbb",
+      "text": "HDL_MAX_WIDTH"
+    },
+    {
+      "offset": 15819,
+      "offset_hex": "0x3dcb",
+      "text": "mgc_copyrigh"
+    },
+    {
+      "offset": 15832,
+      "offset_hex": "0x3dd8",
+      "text": "!cdn-G"
+    },
+    {
+      "offset": 15839,
+      "offset_hex": "0x3ddf",
+      "text": "snpx"
+    },
+    {
+      "offset": 15863,
+      "offset_hex": "0x3df7",
+      "text": "STREAMBITS"
+    },
+    {
+      "offset": 15876,
+      "offset_hex": "0x3e04",
+      "text": "RADIX"
+    },
+    {
+      "offset": 15884,
+      "offset_hex": "0x3e0c",
+      "text": "MACRO_NUMFLAG"
+    },
+    {
+      "offset": 15900,
+      "offset_hex": "0x3e1c",
+      "text": "DEFAULT"
+    },
+    {
+      "offset": 15910,
+      "offset_hex": "0x3e26",
+      "text": "ALL_ON"
+    },
+    {
+      "offset": 15928,
+      "offset_hex": "0x3e38",
+      "text": "COPY"
+    },
+    {
+      "offset": 15934,
+      "offset_hex": "0x3e3e",
+      "text": "NO'("
+    },
+    {
+      "offset": 15940,
+      "offset_hex": "0x3e44",
+      "text": "COMPAR$"
+    },
+    {
+      "offset": 15955,
+      "offset_hex": "0x3e53",
+      "text": "PRIN"
+    },
+    {
+      "offset": 15961,
+      "offset_hex": "0x3e59",
+      "text": "NO(,"
+    },
+    {
+      "offset": 15967,
+      "offset_hex": "0x3e5f",
+      "text": "RECORD"
+    },
+    {
+      "offset": 15979,
+      "offset_hex": "0x3e6b",
+      "text": "PACK"
+    },
+    {
+      "offset": 15989,
+      "offset_hex": "0x3e75",
+      "text": "PHYSICA$"
+    },
+    {
+      "offset": 16000,
+      "offset_hex": "0x3e80",
+      "text": "ABSTRAC"
+    },
+    {
+      "offset": 16010,
+      "offset_hex": "0x3e8a",
+      "text": "READONL"
+    },
+    {
+      "offset": 16019,
+      "offset_hex": "0x3e93",
+      "text": "DEF("
+    },
+    {
+      "offset": 16037,
+      "offset_hex": "0x3ea5",
+      "text": "UN'l"
+    },
+    {
+      "offset": 16043,
+      "offset_hex": "0x3eab",
+      "text": "CHECK_FIELD"
+    },
+    {
+      "offset": 16057,
+      "offset_hex": "0x3eb9",
+      "text": "END_DATA_"
+    },
+    {
+      "offset": 16071,
+      "offset_hex": "0x3ec7",
+      "text": "START_FUNC"
+    },
+    {
+      "offset": 16093,
+      "offset_hex": "0x3edd",
+      "text": "SETOBJ"
+    },
+    {
+      "offset": 16102,
+      "offset_hex": "0x3ee6",
+      "text": "ETSTR"
+    },
+    {
+      "offset": 16115,
+      "offset_hex": "0x3ef3",
+      "text": "TR_CRC_POLYNOMI"
+    },
+    {
+      "offset": 16133,
+      "offset_hex": "0x3f05",
+      "text": "STDOU"
+    },
+    {
+      "offset": 16141,
+      "offset_hex": "0x3f0d",
+      "text": "LINE"
+    },
+    {
+      "offset": 16150,
+      "offset_hex": "0x3f16",
+      "text": "NUM_h"
+    },
+    {
+      "offset": 16158,
+      "offset_hex": "0x3f1e",
+      "text": "Mt3S"
+    },
+    {
+      "offset": 16169,
+      "offset_hex": "0x3f29",
+      "text": "LARGE_"
+    },
+    {
+      "offset": 16202,
+      "offset_hex": "0x3f4a",
+      "text": "t#H4p"
+    },
+    {
+      "offset": 16217,
+      "offset_hex": "0x3f59",
+      "text": "!)(%"
+    },
+    {
+      "offset": 16278,
+      "offset_hex": "0x3f96",
+      "text": "#$#`"
+    },
+    {
+      "offset": 16302,
+      "offset_hex": "0x3fae",
+      "text": "d~-p"
+    },
+    {
+      "offset": 16320,
+      "offset_hex": "0x3fc0",
+      "text": "z(BI"
+    },
+    {
+      "offset": 16325,
+      "offset_hex": "0x3fc5",
+      "text": "ZDEC"
+    },
+    {
+      "offset": 16332,
+      "offset_hex": "0x3fcc",
+      "text": "UNSIGNE"
+    },
+    {
+      "offset": 16342,
+      "offset_hex": "0x3fd6",
+      "text": "UNFORMAT2"
+    },
+    {
+      "offset": 16373,
+      "offset_hex": "0x3ff5",
+      "text": "]EN%l.HQ"
+    },
+    {
+      "offset": 16496,
+      "offset_hex": "0x4070",
+      "text": "xQ$$|6"
+    },
+    {
+      "offset": 16507,
+      "offset_hex": "0x407b",
+      "text": "size"
+    },
+    {
+      "offset": 16536,
+      "offset_hex": "0x4098",
+      "text": "b+T:"
+    },
+    {
+      "offset": 16545,
+      "offset_hex": "0x40a1",
+      "text": "cF)@?I"
+    },
+    {
+      "offset": 16563,
+      "offset_hex": "0x40b3",
+      "text": "cP?-"
+    },
+    {
+      "offset": 16599,
+      "offset_hex": "0x40d7",
+      "text": "/_in&d5%Ve"
+    },
+    {
+      "offset": 16613,
+      "offset_hex": "0x40e5",
+      "text": "Sd)2"
+    },
+    {
+      "offset": 16628,
+      "offset_hex": "0x40f4",
+      "text": "0\"!Hh@"
+    },
+    {
+      "offset": 16653,
+      "offset_hex": "0x410d",
+      "text": "Avmd/\""
+    },
+    {
+      "offset": 16667,
+      "offset_hex": "0x411b",
+      "text": "#@dt"
+    },
+    {
+      "offset": 16672,
+      "offset_hex": "0x4120",
+      "text": "$|)\""
+    },
+    {
+      "offset": 16677,
+      "offset_hex": "0x4125",
+      "text": "*`@\""
+    },
+    {
+      "offset": 16703,
+      "offset_hex": "0x413f",
+      "text": "?vm#"
+    },
+    {
+      "offset": 16712,
+      "offset_hex": "0x4148",
+      "text": "strc"
+    },
+    {
+      "offset": 16720,
+      "offset_hex": "0x4150",
+      "text": "%8f+H!)3A0"
+    },
+    {
+      "offset": 16747,
+      "offset_hex": "0x416b",
+      "text": "first"
+    },
+    {
+      "offset": 16754,
+      "offset_hex": "0x4172",
+      "text": "a@mX"
+    },
+    {
+      "offset": 16768,
+      "offset_hex": "0x4180",
+      "text": "Lvm#"
+    },
+    {
+      "offset": 16796,
+      "offset_hex": "0x419c",
+      "text": "Ep+h"
+    },
+    {
+      "offset": 16823,
+      "offset_hex": "0x41b7",
+      "text": "ini#"
+    },
+    {
+      "offset": 16841,
+      "offset_hex": "0x41c9",
+      "text": "x,0d"
+    },
+    {
+      "offset": 16846,
+      "offset_hex": "0x41ce",
+      "text": "YCs2"
+    },
+    {
+      "offset": 16852,
+      "offset_hex": "0x41d4",
+      "text": "&4;3"
+    },
+    {
+      "offset": 16903,
+      "offset_hex": "0x4207",
+      "text": "v\"YC"
+    },
+    {
+      "offset": 16930,
+      "offset_hex": "0x4222",
+      "text": "PvYcWw-vm_*"
+    },
+    {
+      "offset": 16951,
+      "offset_hex": "0x4237",
+      "text": "seed"
+    },
+    {
+      "offset": 16960,
+      "offset_hex": "0x4240",
+      "text": "current_byte"
+    },
+    {
+      "offset": 16977,
+      "offset_hex": "0x4251",
+      "text": "5x<!"
+    },
+    {
+      "offset": 16992,
+      "offset_hex": "0x4260",
+      "text": "n1D?"
+    },
+    {
+      "offset": 17016,
+      "offset_hex": "0x4278",
+      "text": "newSd"
+    },
+    {
+      "offset": 17029,
+      "offset_hex": "0x4285",
+      "text": "6)P@\\D"
+    },
+    {
+      "offset": 17065,
+      "offset_hex": "0x42a9",
+      "text": "ful%"
+    },
+    {
+      "offset": 17070,
+      "offset_hex": "0x42ae",
+      "text": "C#4G"
+    },
+    {
+      "offset": 17075,
+      "offset_hex": "0x42b3",
+      "text": "_sep\""
+    },
+    {
+      "offset": 17086,
+      "offset_hex": "0x42be",
+      "text": "bracket%$8\"z bm\"R8es{o}"
+    },
+    {
+      "offset": 17113,
+      "offset_hex": "0x42d9",
+      "text": "/LB5"
+    },
+    {
+      "offset": 17147,
+      "offset_hex": "0x42fb",
+      "text": "xj/U"
+    },
+    {
+      "offset": 17154,
+      "offset_hex": "0x4302",
+      "text": "S'xD}"
+    },
+    {
+      "offset": 17217,
+      "offset_hex": "0x4341",
+      "text": "result}"
+    },
+    {
+      "offset": 17243,
+      "offset_hex": "0x435b",
+      "text": "((6$"
+    },
+    {
+      "offset": 17266,
+      "offset_hex": "0x4372",
+      "text": "$Pl\""
+    },
+    {
+      "offset": 17278,
+      "offset_hex": "0x437e",
+      "text": "2 H&"
+    },
+    {
+      "offset": 17334,
+      "offset_hex": "0x43b6",
+      "text": "&PL "
+    },
+    {
+      "offset": 17388,
+      "offset_hex": "0x43ec",
+      "text": "Pli-"
+    },
+    {
+      "offset": 17403,
+      "offset_hex": "0x43fb",
+      "text": "$x '"
+    },
+    {
+      "offset": 17412,
+      "offset_hex": "0x4404",
+      "text": "'tQY"
+    },
+    {
+      "offset": 17420,
+      "offset_hex": "0x440c",
+      "text": "%(F#"
+    },
+    {
+      "offset": 17454,
+      "offset_hex": "0x442e",
+      "text": "overrid\"|"
+    },
+    {
+      "offset": 17515,
+      "offset_hex": "0x446b",
+      "text": "INFO#"
+    },
+    {
+      "offset": 17523,
+      "offset_hex": "0x4473",
+      "text": "WARN&"
+    },
+    {
+      "offset": 17531,
+      "offset_hex": "0x447b",
+      "text": "ERRO$"
+    },
+    {
+      "offset": 17539,
+      "offset_hex": "0x4483",
+      "text": "FATAL\""
+    },
+    {
+      "offset": 17571,
+      "offset_hex": "0x44a3",
+      "text": "\"t!-"
+    },
+    {
+      "offset": 17632,
+      "offset_hex": "0x44e0",
+      "text": "0#x#"
+    },
+    {
+      "offset": 17637,
+      "offset_hex": "0x44e5",
+      "text": "line"
+    },
+    {
+      "offset": 17642,
+      "offset_hex": "0x44ea",
+      "text": "cont\""
+    },
+    {
+      "offset": 17663,
+      "offset_hex": "0x44ff",
+      "text": "0\\Ve"
+    },
+    {
+      "offset": 17703,
+      "offset_hex": "0x4527",
+      "text": "Q )5"
+    },
+    {
+      "offset": 17741,
+      "offset_hex": "0x454d",
+      "text": "$4\\ @"
+    },
+    {
+      "offset": 17758,
+      "offset_hex": "0x455e",
+      "text": "%PE$"
+    },
+    {
+      "offset": 17775,
+      "offset_hex": "0x456f",
+      "text": "%X!1"
+    },
+    {
+      "offset": 17786,
+      "offset_hex": "0x457a",
+      "text": "sevu~"
+    },
+    {
+      "offset": 17820,
+      "offset_hex": "0x459c",
+      "text": "c(Q_"
+    },
+    {
+      "offset": 17829,
+      "offset_hex": "0x45a5",
+      "text": "<#()"
+    },
+    {
+      "offset": 17853,
+      "offset_hex": "0x45bd",
+      "text": "+kVnst"
+    },
+    {
+      "offset": 17865,
+      "offset_hex": "0x45c9",
+      "text": "clon#!"
+    },
+    {
+      "offset": 17879,
+      "offset_hex": "0x45d7",
+      "text": "A@Q<"
+    },
+    {
+      "offset": 17888,
+      "offset_hex": "0x45e0",
+      "text": "i&dax"
+    },
+    {
+      "offset": 17897,
+      "offset_hex": "0x45e9",
+      "text": "$L*'d"
+    },
+    {
+      "offset": 17904,
+      "offset_hex": "0x45f0",
+      "text": "expr#t8#"
+    },
+    {
+      "offset": 17915,
+      "offset_hex": "0x45fb",
+      "text": "l l%*"
+    },
+    {
+      "offset": 18028,
+      "offset_hex": "0x466c",
+      "text": "e#H="
+    },
+    {
+      "offset": 18036,
+      "offset_hex": "0x4674",
+      "text": "s_bv"
+    },
+    {
+      "offset": 18047,
+      "offset_hex": "0x467f",
+      "text": "FAILURE"
+    },
+    {
+      "offset": 18055,
+      "offset_hex": "0x4687",
+      "text": "NOTE"
+    },
+    {
+      "offset": 18064,
+      "offset_hex": "0x4690",
+      "text": "REPORTd"
+    },
+    {
+      "offset": 18077,
+      "offset_hex": "0x469d",
+      "text": "TIMx"
+    },
+    {
+      "offset": 18083,
+      "offset_hex": "0x46a3",
+      "text": "XHANDL"
+    },
+    {
+      "offset": 18098,
+      "offset_hex": "0x46b2",
+      "text": "PROTOCOL"
+    },
+    {
+      "offset": 18107,
+      "offset_hex": "0x46bb",
+      "text": "COMMAND"
+    },
+    {
+      "offset": 18115,
+      "offset_hex": "0x46c3",
+      "text": "CYCLEl"
+    },
+    {
+      "offset": 18141,
+      "offset_hex": "0x46dd",
+      "text": " $\\ &"
+    },
+    {
+      "offset": 18147,
+      "offset_hex": "0x46e3",
+      "text": " N\"hW"
+    },
+    {
+      "offset": 18166,
+      "offset_hex": "0x46f6",
+      "text": "VERBOSE"
+    },
+    {
+      "offset": 18174,
+      "offset_hex": "0x46fe",
+      "text": "HIDDEN"
+    },
+    {
+      "offset": 18203,
+      "offset_hex": "0x471b",
+      "text": "FINISHX"
+    },
+    {
+      "offset": 18216,
+      "offset_hex": "0x4728",
+      "text": "SUCC"
+    },
+    {
+      "offset": 18233,
+      "offset_hex": "0x4739",
+      "text": "CHILD"
+    },
+    {
+      "offset": 18239,
+      "offset_hex": "0x473f",
+      "text": "XTEND"
+    },
+    {
+      "offset": 18245,
+      "offset_hex": "0x4745",
+      "text": "USER:d"
+    },
+    {
+      "offset": 18271,
+      "offset_hex": "0x475f",
+      "text": "msglog"
+    },
+    {
+      "offset": 18290,
+      "offset_hex": "0x4772",
+      "text": "_MSG_T"
+    },
+    {
+      "offset": 18309,
+      "offset_hex": "0x4785",
+      "text": "unit__3820934895#Td$9ei\""
+    },
+    {
+      "offset": 18334,
+      "offset_hex": "0x479e",
+      "text": "}g#,z%`"
+    },
+    {
+      "offset": 18370,
+      "offset_hex": "0x47c2",
+      "text": "+uvmc_\"$"
+    },
+    {
+      "offset": 18386,
+      "offset_hex": "0x47d2",
+      "text": "Uc_'"
+    },
+    {
+      "offset": 18403,
+      "offset_hex": "0x47e3",
+      "text": "c_drop\""
+    },
+    {
+      "offset": 18418,
+      "offset_hex": "0x47f2",
+      "text": "C2SV_block\"DU"
+    },
+    {
+      "offset": 18432,
+      "offset_hex": "0x4800",
+      "text": "rsp_dh"
+    },
+    {
+      "offset": 18442,
+      "offset_hex": "0x480a",
+      "text": "eq)X"
+    },
+    {
+      "offset": 18455,
+      "offset_hex": "0x4817",
+      "text": "try_'3"
+    },
+    {
+      "offset": 18462,
+      "offset_hex": "0x481e",
+      "text": "can(2"
+    },
+    {
+      "offset": 18484,
+      "offset_hex": "0x4834",
+      "text": "eek)"
+    },
+    {
+      "offset": 18499,
+      "offset_hex": "0x4843",
+      "text": "write"
+    },
+    {
+      "offset": 18506,
+      "offset_hex": "0x484a",
+      "text": "ans\""
+    },
+    {
+      "offset": 18522,
+      "offset_hex": "0x485a",
+      "text": "nb(G"
+    },
+    {
+      "offset": 18569,
+      "offset_hex": "0x4889",
+      "text": "UVMC%"
+    },
+    {
+      "offset": 18625,
+      "offset_hex": "0x48c1",
+      "text": "print_x_banner#"
+    },
+    {
+      "offset": 18650,
+      "offset_hex": "0x48da",
+      "text": "6&dV"
+    },
+    {
+      "offset": 18657,
+      "offset_hex": "0x48e1",
+      "text": "raise("
+    },
+    {
+      "offset": 18682,
+      "offset_hex": "0x48fa",
+      "text": "topoH3"
+    },
+    {
+      "offset": 18696,
+      "offset_hex": "0x4908",
+      "text": "factor"
+    },
+    {
+      "offset": 18711,
+      "offset_hex": "0x4917",
+      "text": "_%%;e"
+    },
+    {
+      "offset": 18721,
+      "offset_hex": "0x4921",
+      "text": "#`S,x"
+    },
+    {
+      "offset": 18745,
+      "offset_hex": "0x4939",
+      "text": "\"DW$"
+    },
+    {
+      "offset": 18758,
+      "offset_hex": "0x4946",
+      "text": "Xdis\""
+    },
+    {
+      "offset": 18766,
+      "offset_hex": "0x494e",
+      "text": "_ILLCRT"
+    },
+    {
+      "offset": 18787,
+      "offset_hex": "0x4963",
+      "text": "wady\""
+    },
+    {
+      "offset": 18793,
+      "offset_hex": "0x4969",
+      "text": "6c_/"
+    },
+    {
+      "offset": 18903,
+      "offset_hex": "0x49d7",
+      "text": "delay\"%'"
+    },
+    {
+      "offset": 19095,
+      "offset_hex": "0x4a97",
+      "text": "It&(t"
+    },
+    {
+      "offset": 19308,
+      "offset_hex": "0x4b6c",
+      "text": "Nxt\""
+    },
+    {
+      "offset": 19314,
+      "offset_hex": "0x4b72",
+      "text": "0<A%4B"
+    },
+    {
+      "offset": 19341,
+      "offset_hex": "0x4b8d",
+      "text": "%$C$TAh"
+    },
+    {
+      "offset": 19375,
+      "offset_hex": "0x4baf",
+      "text": "# F "
+    },
+    {
+      "offset": 19481,
+      "offset_hex": "0x4c19",
+      "text": "\"|Y."
+    },
+    {
+      "offset": 19510,
+      "offset_hex": "0x4c36",
+      "text": "major"
+    },
+    {
+      "offset": 19516,
+      "offset_hex": "0x4c3c",
+      "text": "minor"
+    },
+    {
+      "offset": 19522,
+      "offset_hex": "0x4c42",
+      "text": "fixq"
+    },
+    {
+      "offset": 19558,
+      "offset_hex": "0x4c66",
+      "text": "','+"
+    },
+    {
+      "offset": 19598,
+      "offset_hex": "0x4c8e",
+      "text": "-\\(A"
+    },
+    {
+      "offset": 19636,
+      "offset_hex": "0x4cb4",
+      "text": "apb#"
+    },
+    {
+      "offset": 19650,
+      "offset_hex": "0x4cc2",
+      "text": "_READ_VALUE"
+    },
+    {
+      "offset": 19674,
+      "offset_hex": "0x4cda",
+      "text": "GMAPHEAD"
+    },
+    {
+      "offset": 19733,
+      "offset_hex": "0x4d15",
+      "text": "GMAPTAIL$"
+    },
+    {
+      "offset": 19769,
+      "offset_hex": "0x4d39",
+      "text": "GMAPDATA"
+    },
+    {
+      "offset": 19808,
+      "offset_hex": "0x4d60",
+      "text": "FSDB Writer : bc1(530)H"
+    },
+    {
+      "offset": 19833,
+      "offset_hex": "0x4d79",
+      "text": "n(2015J"
+    },
+    {
+      "offset": 19842,
+      "offset_hex": "0x4d82",
+      "text": "mtf/stf(0/0)"
+    },
+    {
+      "offset": 19859,
+      "offset_hex": "0x4d93",
+      "text": "elapsed time["
+    },
+    {
+      "offset": 19874,
+      "offset_hex": "0x4da2",
+      "text": "flush(0.231452) io wait"
+    },
+    {
+      "offset": 19903,
+      "offset_hex": "0x4dbf",
+      "text": ") theadpool,"
+    },
+    {
+      "offset": 19926,
+      "offset_hex": "0x4dd6",
+      "text": "MT CompressionP"
+    },
+    {
+      "offset": 19953,
+      "offset_hex": "0x4df1",
+      "text": "Profile Info (not including ffw_close)"
+    },
+    {
+      "offset": 19992,
+      "offset_hex": "0x4e18",
+      "text": "Binary path: simv"
+    },
+    {
+      "offset": 20010,
+      "offset_hex": "0x4e2a",
+      "text": "Total->"
+    },
+    {
+      "offset": 20019,
+      "offset_hex": "0x4e33",
+      "text": "0.630467"
+    },
+    {
+      "offset": 20028,
+      "offset_hex": "0x4e3c",
+      "text": "NumbF"
+    },
+    {
+      "offset": 20035,
+      "offset_hex": "0x4e43",
+      "text": "of vc object"
+    },
+    {
+      "offset": 20072,
+      "offset_hex": "0x4e68",
+      "text": "finishQ"
+    },
+    {
+      "offset": 20089,
+      "offset_hex": "0x4e79",
+      "text": "EnvL"
+    },
+    {
+      "offset": 20099,
+      "offset_hex": "0x4e83",
+      "text": "always_disable_async_vc_buffer(0), ,c"
+    },
+    {
+      "offset": 20142,
+      "offset_hex": "0x4eae",
+      "text": "_task_"
+    },
+    {
+      "offset": 20155,
+      "offset_hex": "0x4ebb",
+      "text": "(0), "
+    },
+    {
+      "offset": 21244,
+      "offset_hex": "0x52fc",
+      "text": "s  L"
+    },
+    {
+      "offset": 21339,
+      "offset_hex": "0x535b",
+      "text": "$ \"Z %M"
+    },
+    {
+      "offset": 21511,
+      "offset_hex": "0x5407",
+      "text": "<W3 #"
+    },
+    {
+      "offset": 21532,
+      "offset_hex": "0x541c",
+      "text": "? \"g0@ \"L"
+    },
+    {
+      "offset": 21612,
+      "offset_hex": "0x546c",
+      "text": "J \"f0KL"
+    },
+    {
+      "offset": 21624,
+      "offset_hex": "0x5478",
+      "text": "L \"f0MM"
+    },
+    {
+      "offset": 21711,
+      "offset_hex": "0x54cf",
+      "text": "XP< "
+    },
+    {
+      "offset": 21735,
+      "offset_hex": "0x54e7",
+      "text": "[ \"N"
+    },
+    {
+      "offset": 21740,
+      "offset_hex": "0x54ec",
+      "text": "\\Kc "
+    },
+    {
+      "offset": 21822,
+      "offset_hex": "0x553e",
+      "text": "g \"N"
+    },
+    {
+      "offset": 21827,
+      "offset_hex": "0x5543",
+      "text": "h \"N"
+    },
+    {
+      "offset": 21839,
+      "offset_hex": "0x554f",
+      "text": "j \"N"
+    },
+    {
+      "offset": 21893,
+      "offset_hex": "0x5585",
+      "text": "r \"N"
+    },
+    {
+      "offset": 21914,
+      "offset_hex": "0x559a",
+      "text": "u \"O"
+    },
+    {
+      "offset": 21940,
+      "offset_hex": "0x55b4",
+      "text": "y \"DQzM"
+    },
+    {
+      "offset": 22890,
+      "offset_hex": "0x596a",
+      "text": "@ %-"
+    }
+  ],
+  "block_entropy": [
+    {
+      "offset": 0,
+      "length": 1024,
+      "bits_per_byte": 1.1824
+    },
+    {
+      "offset": 1024,
+      "length": 1024,
+      "bits_per_byte": 0.3065
+    },
+    {
+      "offset": 2048,
+      "length": 1024,
+      "bits_per_byte": 0.484
+    },
+    {
+      "offset": 3072,
+      "length": 1024,
+      "bits_per_byte": 2.7885
+    },
+    {
+      "offset": 4096,
+      "length": 1024,
+      "bits_per_byte": 0.9237
+    },
+    {
+      "offset": 5120,
+      "length": 1024,
+      "bits_per_byte": 4.067
+    },
+    {
+      "offset": 6144,
+      "length": 1024,
+      "bits_per_byte": 1.508
+    },
+    {
+      "offset": 7168,
+      "length": 1024,
+      "bits_per_byte": 5.4988
+    },
+    {
+      "offset": 8192,
+      "length": 1024,
+      "bits_per_byte": 6.6318
+    },
+    {
+      "offset": 9216,
+      "length": 1024,
+      "bits_per_byte": 6.3688
+    },
+    {
+      "offset": 10240,
+      "length": 1024,
+      "bits_per_byte": 6.2325
+    },
+    {
+      "offset": 11264,
+      "length": 1024,
+      "bits_per_byte": 5.3873
+    },
+    {
+      "offset": 12288,
+      "length": 1024,
+      "bits_per_byte": 6.1225
+    },
+    {
+      "offset": 13312,
+      "length": 1024,
+      "bits_per_byte": 6.8336
+    },
+    {
+      "offset": 14336,
+      "length": 1024,
+      "bits_per_byte": 6.8715
+    },
+    {
+      "offset": 15360,
+      "length": 1024,
+      "bits_per_byte": 6.7048
+    },
+    {
+      "offset": 16384,
+      "length": 1024,
+      "bits_per_byte": 6.9192
+    },
+    {
+      "offset": 17408,
+      "length": 1024,
+      "bits_per_byte": 6.9676
+    },
+    {
+      "offset": 18432,
+      "length": 1024,
+      "bits_per_byte": 6.9516
+    },
+    {
+      "offset": 19456,
+      "length": 1024,
+      "bits_per_byte": 6.2454
+    },
+    {
+      "offset": 20480,
+      "length": 1024,
+      "bits_per_byte": 5.6661
+    },
+    {
+      "offset": 21504,
+      "length": 1024,
+      "bits_per_byte": 4.803
+    },
+    {
+      "offset": 22528,
+      "length": 564,
+      "bits_per_byte": 3.9338
+    }
+  ]
+}

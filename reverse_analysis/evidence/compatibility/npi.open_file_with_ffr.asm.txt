@@ -1,0 +1,215 @@
+
+/opt/Synopsys/verdi/Y-2026.03-SP2/share/NPI/lib/linux64/libNPI.so:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+000000000222a6c0 <fda_file_mgr_t::open_file_with_ffr(char*, char, char)>:
+ 222a6c0:	41 57                	push   %r15
+ 222a6c2:	41 56                	push   %r14
+ 222a6c4:	41 55                	push   %r13
+ 222a6c6:	41 54                	push   %r12
+ 222a6c8:	55                   	push   %rbp
+ 222a6c9:	53                   	push   %rbx
+ 222a6ca:	48 83 ec 08          	sub    $0x8,%rsp
+ 222a6ce:	49 89 fd             	mov    %rdi,%r13
+ 222a6d1:	49 89 f4             	mov    %rsi,%r12
+ 222a6d4:	89 d5                	mov    %edx,%ebp
+ 222a6d6:	41 89 ce             	mov    %ecx,%r14d
+ 222a6d9:	e8 f7 17 fe ff       	callq  220bed5 <fda_share_same_fsdb()>
+ 222a6de:	85 c0                	test   %eax,%eax
+ 222a6e0:	74 12                	je     222a6f4 <fda_file_mgr_t::open_file_with_ffr(char*, char, char)+0x34>
+ 222a6e2:	e8 e9 2b fe ff       	callq  220d2d0 <fda_env_server_mode()>
+ 222a6e7:	85 c0                	test   %eax,%eax
+ 222a6e9:	74 5e                	je     222a749 <fda_file_mgr_t::open_file_with_ffr(char*, char, char)+0x89>
+ 222a6eb:	40 84 ed             	test   %bpl,%bpl
+ 222a6ee:	0f 84 31 01 00 00    	je     222a825 <fda_file_mgr_t::open_file_with_ffr(char*, char, char)+0x165>
+ 222a6f4:	48 8b 05 7d c9 65 03 	mov    0x365c97d(%rip),%rax        # 5887078 <.got+0x458>
+ 222a6fb:	48 83 38 00          	cmpq   $0x0,(%rax)
+ 222a6ff:	0f 84 e4 00 00 00    	je     222a7e9 <fda_file_mgr_t::open_file_with_ffr(char*, char, char)+0x129>
+ 222a705:	48 8b 05 6c c9 65 03 	mov    0x365c96c(%rip),%rax        # 5887078 <.got+0x458>
+ 222a70c:	48 8b 00             	mov    (%rax),%rax
+ 222a70f:	0f b6 40 26          	movzbl 0x26(%rax),%eax
+ 222a713:	83 e0 20             	and    $0x20,%eax
+ 222a716:	48 8b 15 e3 eb 65 03 	mov    0x365ebe3(%rip),%rdx        # 5889300 <.got+0x26e0>
+ 222a71d:	0a 02                	or     (%rdx),%al
+ 222a71f:	0f 85 4d 01 00 00    	jne    222a872 <fda_file_mgr_t::open_file_with_ffr(char*, char, char)+0x1b2>
+ 222a725:	e8 07 81 06 00       	callq  2292831 <dsys_env_npi_read()>
+ 222a72a:	85 c0                	test   %eax,%eax
+ 222a72c:	0f 85 b4 01 00 00    	jne    222a8e6 <fda_file_mgr_t::open_file_with_ffr(char*, char, char)+0x226>
+ 222a732:	48 8b 35 cf eb 65 03 	mov    0x365ebcf(%rip),%rsi        # 5889308 <.got+0x26e8>
+ 222a739:	4c 89 e7             	mov    %r12,%rdi
+ 222a73c:	e8 41 b2 b4 01       	callq  3d75982 <ffrObject::ffrOpenNonSharedObjChkLic(char*, char (*)(fsdbLicType))>
+ 222a741:	48 89 c3             	mov    %rax,%rbx
+ 222a744:	e9 3b 01 00 00       	jmpq   222a884 <fda_file_mgr_t::open_file_with_ffr(char*, char, char)+0x1c4>
+ 222a749:	48 8b 05 28 c9 65 03 	mov    0x365c928(%rip),%rax        # 5887078 <.got+0x458>
+ 222a750:	48 83 38 00          	cmpq   $0x0,(%rax)
+ 222a754:	74 5a                	je     222a7b0 <fda_file_mgr_t::open_file_with_ffr(char*, char, char)+0xf0>
+ 222a756:	48 8b 05 1b c9 65 03 	mov    0x365c91b(%rip),%rax        # 5887078 <.got+0x458>
+ 222a75d:	48 8b 00             	mov    (%rax),%rax
+ 222a760:	0f b6 40 20          	movzbl 0x20(%rax),%eax
+ 222a764:	83 e0 08             	and    $0x8,%eax
+ 222a767:	40 08 e8             	or     %bpl,%al
+ 222a76a:	75 99                	jne    222a705 <fda_file_mgr_t::open_file_with_ffr(char*, char, char)+0x45>
+ 222a76c:	48 8b 05 05 c9 65 03 	mov    0x365c905(%rip),%rax        # 5887078 <.got+0x458>
+ 222a773:	48 8b 00             	mov    (%rax),%rax
+ 222a776:	0f b6 40 26          	movzbl 0x26(%rax),%eax
+ 222a77a:	83 e0 20             	and    $0x20,%eax
+ 222a77d:	48 8b 15 7c eb 65 03 	mov    0x365eb7c(%rip),%rdx        # 5889300 <.got+0x26e0>
+ 222a784:	0a 02                	or     (%rdx),%al
+ 222a786:	0f 85 8a 01 00 00    	jne    222a916 <fda_file_mgr_t::open_file_with_ffr(char*, char, char)+0x256>
+ 222a78c:	e8 a0 80 06 00       	callq  2292831 <dsys_env_npi_read()>
+ 222a791:	85 c0                	test   %eax,%eax
+ 222a793:	0f 85 b8 01 00 00    	jne    222a951 <fda_file_mgr_t::open_file_with_ffr(char*, char, char)+0x291>
+ 222a799:	48 8b 35 68 eb 65 03 	mov    0x365eb68(%rip),%rsi        # 5889308 <.got+0x26e8>
+ 222a7a0:	4c 89 e7             	mov    %r12,%rdi
+ 222a7a3:	e8 b0 b1 b4 01       	callq  3d75958 <ffrObject::ffrOpen3ChkLic(char*, char (*)(fsdbLicType))>
+ 222a7a8:	48 89 c3             	mov    %rax,%rbx
+ 222a7ab:	e9 78 01 00 00       	jmpq   222a928 <fda_file_mgr_t::open_file_with_ffr(char*, char, char)+0x268>
+ 222a7b0:	bf f0 00 00 00       	mov    $0xf0,%edi
+ 222a7b5:	e8 b6 6a 6b 02       	callq  48e1270 <operator new(unsigned long)>
+ 222a7ba:	48 89 c3             	mov    %rax,%rbx
+ 222a7bd:	48 89 c7             	mov    %rax,%rdi
+ 222a7c0:	e8 db 72 06 00       	callq  2291aa0 <dsys_cntr_t::dsys_cntr_t()>
+ 222a7c5:	48 8b 05 ac c8 65 03 	mov    0x365c8ac(%rip),%rax        # 5887078 <.got+0x458>
+ 222a7cc:	48 89 18             	mov    %rbx,(%rax)
+ 222a7cf:	eb 85                	jmp    222a756 <fda_file_mgr_t::open_file_with_ffr(char*, char, char)+0x96>
+ 222a7d1:	48 89 c5             	mov    %rax,%rbp
+ 222a7d4:	be f0 00 00 00       	mov    $0xf0,%esi
+ 222a7d9:	48 89 df             	mov    %rbx,%rdi
+ 222a7dc:	e8 0f 21 64 02       	callq  486c8f0 <operator delete(void*, unsigned long)>
+ 222a7e1:	48 89 ef             	mov    %rbp,%rdi
+ 222a7e4:	e8 c7 40 ec 02       	callq  50ee8b0 <_Unwind_Resume>
+ 222a7e9:	bf f0 00 00 00       	mov    $0xf0,%edi
+ 222a7ee:	e8 7d 6a 6b 02       	callq  48e1270 <operator new(unsigned long)>
+ 222a7f3:	48 89 c3             	mov    %rax,%rbx
+ 222a7f6:	48 89 c7             	mov    %rax,%rdi
+ 222a7f9:	e8 a2 72 06 00       	callq  2291aa0 <dsys_cntr_t::dsys_cntr_t()>
+ 222a7fe:	48 8b 05 73 c8 65 03 	mov    0x365c873(%rip),%rax        # 5887078 <.got+0x458>
+ 222a805:	48 89 18             	mov    %rbx,(%rax)
+ 222a808:	e9 f8 fe ff ff       	jmpq   222a705 <fda_file_mgr_t::open_file_with_ffr(char*, char, char)+0x45>
+ 222a80d:	48 89 c5             	mov    %rax,%rbp
+ 222a810:	be f0 00 00 00       	mov    $0xf0,%esi
+ 222a815:	48 89 df             	mov    %rbx,%rdi
+ 222a818:	e8 d3 20 64 02       	callq  486c8f0 <operator delete(void*, unsigned long)>
+ 222a81d:	48 89 ef             	mov    %rbp,%rdi
+ 222a820:	e8 8b 40 ec 02       	callq  50ee8b0 <_Unwind_Resume>
+ 222a825:	48 8b 05 4c c8 65 03 	mov    0x365c84c(%rip),%rax        # 5887078 <.got+0x458>
+ 222a82c:	48 83 38 00          	cmpq   $0x0,(%rax)
+ 222a830:	0f 85 36 ff ff ff    	jne    222a76c <fda_file_mgr_t::open_file_with_ffr(char*, char, char)+0xac>
+ 222a836:	bf f0 00 00 00       	mov    $0xf0,%edi
+ 222a83b:	e8 30 6a 6b 02       	callq  48e1270 <operator new(unsigned long)>
+ 222a840:	48 89 c3             	mov    %rax,%rbx
+ 222a843:	48 89 c7             	mov    %rax,%rdi
+ 222a846:	e8 55 72 06 00       	callq  2291aa0 <dsys_cntr_t::dsys_cntr_t()>
+ 222a84b:	48 8b 05 26 c8 65 03 	mov    0x365c826(%rip),%rax        # 5887078 <.got+0x458>
+ 222a852:	48 89 18             	mov    %rbx,(%rax)
+ 222a855:	e9 12 ff ff ff       	jmpq   222a76c <fda_file_mgr_t::open_file_with_ffr(char*, char, char)+0xac>
+ 222a85a:	48 89 c5             	mov    %rax,%rbp
+ 222a85d:	be f0 00 00 00       	mov    $0xf0,%esi
+ 222a862:	48 89 df             	mov    %rbx,%rdi
+ 222a865:	e8 86 20 64 02       	callq  486c8f0 <operator delete(void*, unsigned long)>
+ 222a86a:	48 89 ef             	mov    %rbp,%rdi
+ 222a86d:	e8 3e 40 ec 02       	callq  50ee8b0 <_Unwind_Resume>
+ 222a872:	48 8d 35 43 f2 fc ff 	lea    -0x30dbd(%rip),%rsi        # 21f9abc <fda_not_check_out_fsdb_license(fsdbLicType)>
+ 222a879:	4c 89 e7             	mov    %r12,%rdi
+ 222a87c:	e8 01 b1 b4 01       	callq  3d75982 <ffrObject::ffrOpenNonSharedObjChkLic(char*, char (*)(fsdbLicType))>
+ 222a881:	48 89 c3             	mov    %rax,%rbx
+ 222a884:	e8 49 ec fd ff       	callq  22094d2 <fda_debug()>
+ 222a889:	85 c0                	test   %eax,%eax
+ 222a88b:	75 6d                	jne    222a8fa <fda_file_mgr_t::open_file_with_ffr(char*, char, char)+0x23a>
+ 222a88d:	48 85 db             	test   %rbx,%rbx
+ 222a890:	0f 84 cf 00 00 00    	je     222a965 <fda_file_mgr_t::open_file_with_ffr(char*, char, char)+0x2a5>
+ 222a896:	48 8b 05 db c7 65 03 	mov    0x365c7db(%rip),%rax        # 5887078 <.got+0x458>
+ 222a89d:	48 83 38 00          	cmpq   $0x0,(%rax)
+ 222a8a1:	0f 84 eb 00 00 00    	je     222a992 <fda_file_mgr_t::open_file_with_ffr(char*, char, char)+0x2d2>
+ 222a8a7:	48 8b 05 ca c7 65 03 	mov    0x365c7ca(%rip),%rax        # 5887078 <.got+0x458>
+ 222a8ae:	48 8b 00             	mov    (%rax),%rax
+ 222a8b1:	f6 40 22 40          	testb  $0x40,0x22(%rax)
+ 222a8b5:	0f 85 13 01 00 00    	jne    222a9ce <fda_file_mgr_t::open_file_with_ffr(char*, char, char)+0x30e>
+ 222a8bb:	40 0f be cd          	movsbl %bpl,%ecx
+ 222a8bf:	45 0f be c6          	movsbl %r14b,%r8d
+ 222a8c3:	4c 89 e2             	mov    %r12,%rdx
+ 222a8c6:	48 89 de             	mov    %rbx,%rsi
+ 222a8c9:	4c 89 ef             	mov    %r13,%rdi
+ 222a8cc:	e8 f3 f7 ff ff       	callq  222a0c4 <fda_file_mgr_t::open_file_with_ffr(ffrObject*, char const*, char, char)>
+ 222a8d1:	48 89 c3             	mov    %rax,%rbx
+ 222a8d4:	48 89 d8             	mov    %rbx,%rax
+ 222a8d7:	48 83 c4 08          	add    $0x8,%rsp
+ 222a8db:	5b                   	pop    %rbx
+ 222a8dc:	5d                   	pop    %rbp
+ 222a8dd:	41 5c                	pop    %r12
+ 222a8df:	41 5d                	pop    %r13
+ 222a8e1:	41 5e                	pop    %r14
+ 222a8e3:	41 5f                	pop    %r15
+ 222a8e5:	c3                   	retq   
+ 222a8e6:	48 8d 35 c2 29 fd ff 	lea    -0x2d63e(%rip),%rsi        # 21fd2af <fda_check_out_license_for_3rd_party(fsdbLicType)>
+ 222a8ed:	4c 89 e7             	mov    %r12,%rdi
+ 222a8f0:	e8 8d b0 b4 01       	callq  3d75982 <ffrObject::ffrOpenNonSharedObjChkLic(char*, char (*)(fsdbLicType))>
+ 222a8f5:	48 89 c3             	mov    %rax,%rbx
+ 222a8f8:	eb 8a                	jmp    222a884 <fda_file_mgr_t::open_file_with_ffr(char*, char, char)+0x1c4>
+ 222a8fa:	48 89 da             	mov    %rbx,%rdx
+ 222a8fd:	4c 89 e6             	mov    %r12,%rsi
+ 222a900:	48 8d 3d e1 1f 0d ff 	lea    -0xf2e01f(%rip),%rdi        # 12fc8e8 <ul_jrand_seed+0x12dd47c>
+ 222a907:	b8 00 00 00 00       	mov    $0x0,%eax
+ 222a90c:	e8 af 57 ee 02       	callq  51100c0 <printf@plt>
+ 222a911:	e9 77 ff ff ff       	jmpq   222a88d <fda_file_mgr_t::open_file_with_ffr(char*, char, char)+0x1cd>
+ 222a916:	48 8d 35 9f f1 fc ff 	lea    -0x30e61(%rip),%rsi        # 21f9abc <fda_not_check_out_fsdb_license(fsdbLicType)>
+ 222a91d:	4c 89 e7             	mov    %r12,%rdi
+ 222a920:	e8 33 b0 b4 01       	callq  3d75958 <ffrObject::ffrOpen3ChkLic(char*, char (*)(fsdbLicType))>
+ 222a925:	48 89 c3             	mov    %rax,%rbx
+ 222a928:	e8 a5 eb fd ff       	callq  22094d2 <fda_debug()>
+ 222a92d:	85 c0                	test   %eax,%eax
+ 222a92f:	0f 84 58 ff ff ff    	je     222a88d <fda_file_mgr_t::open_file_with_ffr(char*, char, char)+0x1cd>
+ 222a935:	48 89 da             	mov    %rbx,%rdx
+ 222a938:	4c 89 e6             	mov    %r12,%rsi
+ 222a93b:	48 8d 3d 8c 21 00 ff 	lea    -0xffde74(%rip),%rdi        # 122cace <ul_jrand_seed+0x120d662>
+ 222a942:	b8 00 00 00 00       	mov    $0x0,%eax
+ 222a947:	e8 74 57 ee 02       	callq  51100c0 <printf@plt>
+ 222a94c:	e9 3c ff ff ff       	jmpq   222a88d <fda_file_mgr_t::open_file_with_ffr(char*, char, char)+0x1cd>
+ 222a951:	48 8d 35 57 29 fd ff 	lea    -0x2d6a9(%rip),%rsi        # 21fd2af <fda_check_out_license_for_3rd_party(fsdbLicType)>
+ 222a958:	4c 89 e7             	mov    %r12,%rdi
+ 222a95b:	e8 f8 af b4 01       	callq  3d75958 <ffrObject::ffrOpen3ChkLic(char*, char (*)(fsdbLicType))>
+ 222a960:	48 89 c3             	mov    %rax,%rbx
+ 222a963:	eb c3                	jmp    222a928 <fda_file_mgr_t::open_file_with_ffr(char*, char, char)+0x268>
+ 222a965:	e8 68 eb fd ff       	callq  22094d2 <fda_debug()>
+ 222a96a:	85 c0                	test   %eax,%eax
+ 222a96c:	0f 84 62 ff ff ff    	je     222a8d4 <fda_file_mgr_t::open_file_with_ffr(char*, char, char)+0x214>
+ 222a972:	4c 89 e2             	mov    %r12,%rdx
+ 222a975:	48 8d 35 b4 27 fc fe 	lea    -0x103d84c(%rip),%rsi        # 11ed130 <ul_jrand_seed+0x11cdcc4>
+ 222a97c:	48 8d 3d 8d c2 14 ff 	lea    -0xeb3d73(%rip),%rdi        # 1376c10 <ul_jrand_seed+0x13577a4>
+ 222a983:	b8 00 00 00 00       	mov    $0x0,%eax
+ 222a988:	e8 53 56 ee 02       	callq  510ffe0 <dbt_log(char const*, ...)@plt>
+ 222a98d:	e9 42 ff ff ff       	jmpq   222a8d4 <fda_file_mgr_t::open_file_with_ffr(char*, char, char)+0x214>
+ 222a992:	bf f0 00 00 00       	mov    $0xf0,%edi
+ 222a997:	e8 d4 68 6b 02       	callq  48e1270 <operator new(unsigned long)>
+ 222a99c:	49 89 c7             	mov    %rax,%r15
+ 222a99f:	48 89 c7             	mov    %rax,%rdi
+ 222a9a2:	e8 f9 70 06 00       	callq  2291aa0 <dsys_cntr_t::dsys_cntr_t()>
+ 222a9a7:	48 8b 05 ca c6 65 03 	mov    0x365c6ca(%rip),%rax        # 5887078 <.got+0x458>
+ 222a9ae:	4c 89 38             	mov    %r15,(%rax)
+ 222a9b1:	e9 f1 fe ff ff       	jmpq   222a8a7 <fda_file_mgr_t::open_file_with_ffr(char*, char, char)+0x1e7>
+ 222a9b6:	48 89 c3             	mov    %rax,%rbx
+ 222a9b9:	be f0 00 00 00       	mov    $0xf0,%esi
+ 222a9be:	4c 89 ff             	mov    %r15,%rdi
+ 222a9c1:	e8 2a 1f 64 02       	callq  486c8f0 <operator delete(void*, unsigned long)>
+ 222a9c6:	48 89 df             	mov    %rbx,%rdi
+ 222a9c9:	e8 e2 3e ec 02       	callq  50ee8b0 <_Unwind_Resume>
+ 222a9ce:	48 8b 03             	mov    (%rbx),%rax
+ 222a9d1:	48 89 df             	mov    %rbx,%rdi
+ 222a9d4:	ff 90 c8 02 00 00    	callq  *0x2c8(%rax)
+ 222a9da:	83 f8 04             	cmp    $0x4,%eax
+ 222a9dd:	0f 85 d8 fe ff ff    	jne    222a8bb <fda_file_mgr_t::open_file_with_ffr(char*, char, char)+0x1fb>
+ 222a9e3:	4c 89 e7             	mov    %r12,%rdi
+ 222a9e6:	e8 93 42 b4 01       	callq  3d6ec7e <ffrObject::ffrIsZWDFile(char*)>
+ 222a9eb:	84 c0                	test   %al,%al
+ 222a9ed:	0f 85 c8 fe ff ff    	jne    222a8bb <fda_file_mgr_t::open_file_with_ffr(char*, char, char)+0x1fb>
+ 222a9f3:	4c 89 ef             	mov    %r13,%rdi
+ 222a9f6:	e8 5d 4d fd ff       	callq  21ff758 <fda_file_mgr_t::check_out_sl_wave_lic()>
+ 222a9fb:	84 c0                	test   %al,%al
+ 222a9fd:	0f 85 b8 fe ff ff    	jne    222a8bb <fda_file_mgr_t::open_file_with_ffr(char*, char, char)+0x1fb>
+ 222aa03:	48 8b 03             	mov    (%rbx),%rax
+ 222aa06:	48 89 df             	mov    %rbx,%rdi
+ 222aa09:	ff 50 10             	callq  *0x10(%rax)
+ 222aa0c:	bb 00 00 00 00       	mov    $0x0,%ebx
+ 222aa11:	e9 be fe ff ff       	jmpq   222a8d4 <fda_file_mgr_t::open_file_with_ffr(char*, char, char)+0x214>

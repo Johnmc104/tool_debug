@@ -1,0 +1,16 @@
+
+/opt/Synopsys/verdi/Y-2026.03-SP2/share/NPI/lib/linux64/libNPI.so:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+0000000003d75730 <ffrObject::ffrOpen3(char*)>:
+ 3d75730:	48 83 ec 08          	sub    $0x8,%rsp
+ 3d75734:	41 b9 00 00 00 00    	mov    $0x0,%r9d
+ 3d7573a:	41 b8 00 00 00 00    	mov    $0x0,%r8d
+ 3d75740:	b9 00 00 00 00       	mov    $0x0,%ecx
+ 3d75745:	ba 00 00 00 00       	mov    $0x0,%edx
+ 3d7574a:	be 00 00 00 00       	mov    $0x0,%esi
+ 3d7574f:	e8 f6 fe ff ff       	callq  3d7564a <ffrObject::ffrOpen2(char*, char (*)(fsdbTreeCBType, void*, void*), void*, ffrOpenOption, ffrCmprsFileArg*, char)>
+ 3d75754:	48 83 c4 08          	add    $0x8,%rsp
+ 3d75758:	c3                   	retq   

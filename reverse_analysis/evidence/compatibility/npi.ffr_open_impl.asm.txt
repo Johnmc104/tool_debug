@@ -1,0 +1,379 @@
+
+/opt/Synopsys/verdi/Y-2026.03-SP2/share/NPI/lib/linux64/libNPI.so:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+0000000003d7b400 <ffrObject::ffrOpen_impl(char*, char (*)(fsdbTreeCBType, void*, void*), void*, ffrOpenOption, ffrCmprsFileArg*, IJoinedFile*)>:
+ 3d7b400:	4c 8d 54 24 08       	lea    0x8(%rsp),%r10
+ 3d7b405:	48 83 e4 f0          	and    $0xfffffffffffffff0,%rsp
+ 3d7b409:	41 ff 72 f8          	pushq  -0x8(%r10)
+ 3d7b40d:	55                   	push   %rbp
+ 3d7b40e:	48 89 e5             	mov    %rsp,%rbp
+ 3d7b411:	41 57                	push   %r15
+ 3d7b413:	41 56                	push   %r14
+ 3d7b415:	41 55                	push   %r13
+ 3d7b417:	41 54                	push   %r12
+ 3d7b419:	41 52                	push   %r10
+ 3d7b41b:	53                   	push   %rbx
+ 3d7b41c:	48 81 ec d0 00 00 00 	sub    $0xd0,%rsp
+ 3d7b423:	48 89 fb             	mov    %rdi,%rbx
+ 3d7b426:	48 85 ff             	test   %rdi,%rdi
+ 3d7b429:	0f 84 45 05 00 00    	je     3d7b974 <ffrObject::ffrOpen_impl(char*, char (*)(fsdbTreeCBType, void*, void*), void*, ffrOpenOption, ffrCmprsFileArg*, IJoinedFile*)+0x574>
+ 3d7b42f:	49 89 f5             	mov    %rsi,%r13
+ 3d7b432:	49 89 d6             	mov    %rdx,%r14
+ 3d7b435:	41 89 cf             	mov    %ecx,%r15d
+ 3d7b438:	4d 89 c4             	mov    %r8,%r12
+ 3d7b43b:	e8 60 ed fe ff       	callq  3d6a1a0 <ffrObject::IsCompressedFsdb(char*)>
+ 3d7b440:	3c 01                	cmp    $0x1,%al
+ 3d7b442:	0f 84 5e 02 00 00    	je     3d7b6a6 <ffrObject::ffrOpen_impl(char*, char (*)(fsdbTreeCBType, void*, void*), void*, ffrOpenOption, ffrCmprsFileArg*, IJoinedFile*)+0x2a6>
+ 3d7b448:	48 89 df             	mov    %rbx,%rdi
+ 3d7b44b:	e8 3c 1f f4 ff       	callq  3cbd38c <ffrDisk::IsVrtlFile(char*)>
+ 3d7b450:	3c 01                	cmp    $0x1,%al
+ 3d7b452:	0f 84 c6 02 00 00    	je     3d7b71e <ffrObject::ffrOpen_impl(char*, char (*)(fsdbTreeCBType, void*, void*), void*, ffrOpenOption, ffrCmprsFileArg*, IJoinedFile*)+0x31e>
+ 3d7b458:	48 8d 55 c8          	lea    -0x38(%rbp),%rdx
+ 3d7b45c:	48 8d 75 cc          	lea    -0x34(%rbp),%rsi
+ 3d7b460:	41 b8 00 00 00 00    	mov    $0x0,%r8d
+ 3d7b466:	b9 00 00 00 00       	mov    $0x0,%ecx
+ 3d7b46b:	48 89 df             	mov    %rbx,%rdi
+ 3d7b46e:	e8 83 f0 fe ff       	callq  3d6a4f6 <ffrObject::myvCheckFSDB(char*, int&, unsigned int&, IJoinedFile*, ffrVersionMsgArg*)>
+ 3d7b473:	85 c0                	test   %eax,%eax
+ 3d7b475:	0f 85 01 05 00 00    	jne    3d7b97c <ffrObject::ffrOpen_impl(char*, char (*)(fsdbTreeCBType, void*, void*), void*, ffrOpenOption, ffrCmprsFileArg*, IJoinedFile*)+0x57c>
+ 3d7b47b:	8b 45 cc             	mov    -0x34(%rbp),%eax
+ 3d7b47e:	3d c1 99 e0 fd       	cmp    $0xfde099c1,%eax
+ 3d7b483:	0f 84 06 03 00 00    	je     3d7b78f <ffrObject::ffrOpen_impl(char*, char (*)(fsdbTreeCBType, void*, void*), void*, ffrOpenOption, ffrCmprsFileArg*, IJoinedFile*)+0x38f>
+ 3d7b489:	3d fc 3d d9 48       	cmp    $0x48d93dfc,%eax
+ 3d7b48e:	0f 84 b0 03 00 00    	je     3d7b844 <ffrObject::ffrOpen_impl(char*, char (*)(fsdbTreeCBType, void*, void*), void*, ffrOpenOption, ffrCmprsFileArg*, IJoinedFile*)+0x444>
+ 3d7b494:	3d 1c 3e d9 48       	cmp    $0x48d93e1c,%eax
+ 3d7b499:	0f 85 74 04 00 00    	jne    3d7b913 <ffrObject::ffrOpen_impl(char*, char (*)(fsdbTreeCBType, void*, void*), void*, ffrOpenOption, ffrCmprsFileArg*, IJoinedFile*)+0x513>
+ 3d7b49f:	b9 00 00 00 00       	mov    $0x0,%ecx
+ 3d7b4a4:	ba 00 00 00 00       	mov    $0x0,%edx
+ 3d7b4a9:	be 00 00 00 00       	mov    $0x0,%esi
+ 3d7b4ae:	48 89 df             	mov    %rbx,%rdi
+ 3d7b4b1:	e8 f6 f8 fe ff       	callq  3d6adac <ffrObject::OpenFSDB20(char const*, char, IJoinedFile*, ffrOpen2ImplArg*)>
+ 3d7b4b6:	49 89 c4             	mov    %rax,%r12
+ 3d7b4b9:	48 85 c0             	test   %rax,%rax
+ 3d7b4bc:	0f 84 99 02 00 00    	je     3d7b75b <ffrObject::ffrOpen_impl(char*, char (*)(fsdbTreeCBType, void*, void*), void*, ffrOpenOption, ffrCmprsFileArg*, IJoinedFile*)+0x35b>
+ 3d7b4c2:	4c 8d 78 08          	lea    0x8(%rax),%r15
+ 3d7b4c6:	4c 89 ff             	mov    %r15,%rdi
+ 3d7b4c9:	e8 5e 7b 06 00       	callq  3de302c <ffrDisk::FileHasVPDGate()>
+ 3d7b4ce:	3c 01                	cmp    $0x1,%al
+ 3d7b4d0:	0f 84 0a 04 00 00    	je     3d7b8e0 <ffrObject::ffrOpen_impl(char*, char (*)(fsdbTreeCBType, void*, void*), void*, ffrOpenOption, ffrCmprsFileArg*, IJoinedFile*)+0x4e0>
+ 3d7b4d6:	4c 89 f2             	mov    %r14,%rdx
+ 3d7b4d9:	4c 89 ee             	mov    %r13,%rsi
+ 3d7b4dc:	4c 89 ff             	mov    %r15,%rdi
+ 3d7b4df:	e8 1a 5f 17 00       	callq  3ef13fe <ffrDisk::SetTreeCBFunc(char (*)(fsdbTreeCBType, void*, void*), void*)>
+ 3d7b4e4:	4d 85 ed             	test   %r13,%r13
+ 3d7b4e7:	74 0d                	je     3d7b4f6 <ffrObject::ffrOpen_impl(char*, char (*)(fsdbTreeCBType, void*, void*), void*, ffrOpenOption, ffrCmprsFileArg*, IJoinedFile*)+0xf6>
+ 3d7b4e9:	be 00 00 00 00       	mov    $0x0,%esi
+ 3d7b4ee:	4c 89 ff             	mov    %r15,%rdi
+ 3d7b4f1:	e8 24 ec 1a 00       	callq  3f2a11a <ffrDisk::ReadScopeVarTree(unsigned short)>
+ 3d7b4f6:	49 8b 04 24          	mov    (%r12),%rax
+ 3d7b4fa:	4c 89 e7             	mov    %r12,%rdi
+ 3d7b4fd:	ff 50 38             	callq  *0x38(%rax)
+ 3d7b500:	83 e8 08             	sub    $0x8,%eax
+ 3d7b503:	83 f8 02             	cmp    $0x2,%eax
+ 3d7b506:	0f 86 fa 03 00 00    	jbe    3d7b906 <ffrObject::ffrOpen_impl(char*, char (*)(fsdbTreeCBType, void*, void*), void*, ffrOpenOption, ffrCmprsFileArg*, IJoinedFile*)+0x506>
+ 3d7b50c:	8b 45 cc             	mov    -0x34(%rbp),%eax
+ 3d7b50f:	2d fc 3d d9 48       	sub    $0x48d93dfc,%eax
+ 3d7b514:	a9 df ff ff ff       	test   $0xffffffdf,%eax
+ 3d7b519:	0f 85 3c 02 00 00    	jne    3d7b75b <ffrObject::ffrOpen_impl(char*, char (*)(fsdbTreeCBType, void*, void*), void*, ffrOpenOption, ffrCmprsFileArg*, IJoinedFile*)+0x35b>
+ 3d7b51f:	48 8d b5 10 ff ff ff 	lea    -0xf0(%rbp),%rsi
+ 3d7b526:	b9 17 00 00 00       	mov    $0x17,%ecx
+ 3d7b52b:	b8 00 00 00 00       	mov    $0x0,%eax
+ 3d7b530:	48 89 f7             	mov    %rsi,%rdi
+ 3d7b533:	f3 48 ab             	rep stos %rax,%es:(%rdi)
+ 3d7b536:	49 8b 04 24          	mov    (%r12),%rax
+ 3d7b53a:	4c 89 e7             	mov    %r12,%rdi
+ 3d7b53d:	ff 90 90 24 00 00    	callq  *0x2490(%rax)
+ 3d7b543:	48 8b 05 f6 4a b2 01 	mov    0x1b24af6(%rip),%rax        # 58a0040 <.got+0x19420>
+ 3d7b54a:	48 8b 00             	mov    (%rax),%rax
+ 3d7b54d:	48 85 c0             	test   %rax,%rax
+ 3d7b550:	74 14                	je     3d7b566 <ffrObject::ffrOpen_impl(char*, char (*)(fsdbTreeCBType, void*, void*), void*, ffrOpenOption, ffrCmprsFileArg*, IJoinedFile*)+0x166>
+ 3d7b552:	49 8d 94 24 e0 00 00 	lea    0xe0(%r12),%rdx
+ 3d7b559:	00 
+ 3d7b55a:	48 8d b5 10 ff ff ff 	lea    -0xf0(%rbp),%rsi
+ 3d7b561:	48 89 df             	mov    %rbx,%rdi
+ 3d7b564:	ff d0                	callq  *%rax
+ 3d7b566:	48 8b 05 d3 4a b2 01 	mov    0x1b24ad3(%rip),%rax        # 58a0040 <.got+0x19420>
+ 3d7b56d:	48 8b 40 10          	mov    0x10(%rax),%rax
+ 3d7b571:	48 85 c0             	test   %rax,%rax
+ 3d7b574:	74 0a                	je     3d7b580 <ffrObject::ffrOpen_impl(char*, char (*)(fsdbTreeCBType, void*, void*), void*, ffrOpenOption, ffrCmprsFileArg*, IJoinedFile*)+0x180>
+ 3d7b576:	49 8b bc 24 e0 00 00 	mov    0xe0(%r12),%rdi
+ 3d7b57d:	00 
+ 3d7b57e:	ff d0                	callq  *%rax
+ 3d7b580:	48 c7 85 08 ff ff ff 	movq   $0x0,-0xf8(%rbp)
+ 3d7b587:	00 00 00 00 
+ 3d7b58b:	48 8b 05 ae 4a b2 01 	mov    0x1b24aae(%rip),%rax        # 58a0040 <.got+0x19420>
+ 3d7b592:	48 8b 40 30          	mov    0x30(%rax),%rax
+ 3d7b596:	48 85 c0             	test   %rax,%rax
+ 3d7b599:	74 11                	je     3d7b5ac <ffrObject::ffrOpen_impl(char*, char (*)(fsdbTreeCBType, void*, void*), void*, ffrOpenOption, ffrCmprsFileArg*, IJoinedFile*)+0x1ac>
+ 3d7b59b:	48 8d b5 08 ff ff ff 	lea    -0xf8(%rbp),%rsi
+ 3d7b5a2:	49 8b bc 24 e0 00 00 	mov    0xe0(%r12),%rdi
+ 3d7b5a9:	00 
+ 3d7b5aa:	ff d0                	callq  *%rax
+ 3d7b5ac:	49 8b 04 24          	mov    (%r12),%rax
+ 3d7b5b0:	4c 89 e7             	mov    %r12,%rdi
+ 3d7b5b3:	ff 90 70 08 00 00    	callq  *0x870(%rax)
+ 3d7b5b9:	48 89 c3             	mov    %rax,%rbx
+ 3d7b5bc:	4c 8b ad 08 ff ff ff 	mov    -0xf8(%rbp),%r13
+ 3d7b5c3:	4d 85 ed             	test   %r13,%r13
+ 3d7b5c6:	0f 84 8f 01 00 00    	je     3d7b75b <ffrObject::ffrOpen_impl(char*, char (*)(fsdbTreeCBType, void*, void*), void*, ffrOpenOption, ffrCmprsFileArg*, IJoinedFile*)+0x35b>
+ 3d7b5cc:	49 8b 45 00          	mov    0x0(%r13),%rax
+ 3d7b5d0:	48 89 83 00 08 00 00 	mov    %rax,0x800(%rbx)
+ 3d7b5d7:	49 8b 45 08          	mov    0x8(%r13),%rax
+ 3d7b5db:	48 89 83 08 08 00 00 	mov    %rax,0x808(%rbx)
+ 3d7b5e2:	4d 8b 75 10          	mov    0x10(%r13),%r14
+ 3d7b5e6:	4d 85 f6             	test   %r14,%r14
+ 3d7b5e9:	74 25                	je     3d7b610 <ffrObject::ffrOpen_impl(char*, char (*)(fsdbTreeCBType, void*, void*), void*, ffrOpenOption, ffrCmprsFileArg*, IJoinedFile*)+0x210>
+ 3d7b5eb:	4c 89 f7             	mov    %r14,%rdi
+ 3d7b5ee:	e8 bd 49 39 01       	callq  510ffb0 <strlen@plt>
+ 3d7b5f3:	48 8d 50 01          	lea    0x1(%rax),%rdx
+ 3d7b5f7:	48 83 fa 03          	cmp    $0x3,%rdx
+ 3d7b5fb:	0f 87 da 03 00 00    	ja     3d7b9db <ffrObject::ffrOpen_impl(char*, char (*)(fsdbTreeCBType, void*, void*), void*, ffrOpenOption, ffrCmprsFileArg*, IJoinedFile*)+0x5db>
+ 3d7b601:	8d 50 01             	lea    0x1(%rax),%edx
+ 3d7b604:	48 8d 7b 48          	lea    0x48(%rbx),%rdi
+ 3d7b608:	4c 89 f6             	mov    %r14,%rsi
+ 3d7b60b:	e8 10 4a 39 01       	callq  5110020 <strncpy@plt>
+ 3d7b610:	4d 8b 75 18          	mov    0x18(%r13),%r14
+ 3d7b614:	4d 85 f6             	test   %r14,%r14
+ 3d7b617:	74 25                	je     3d7b63e <ffrObject::ffrOpen_impl(char*, char (*)(fsdbTreeCBType, void*, void*), void*, ffrOpenOption, ffrCmprsFileArg*, IJoinedFile*)+0x23e>
+ 3d7b619:	4c 89 f7             	mov    %r14,%rdi
+ 3d7b61c:	e8 8f 49 39 01       	callq  510ffb0 <strlen@plt>
+ 3d7b621:	48 8d 50 01          	lea    0x1(%rax),%rdx
+ 3d7b625:	48 83 fa 13          	cmp    $0x13,%rdx
+ 3d7b629:	0f 87 92 03 00 00    	ja     3d7b9c1 <ffrObject::ffrOpen_impl(char*, char (*)(fsdbTreeCBType, void*, void*), void*, ffrOpenOption, ffrCmprsFileArg*, IJoinedFile*)+0x5c1>
+ 3d7b62f:	8d 50 01             	lea    0x1(%rax),%edx
+ 3d7b632:	48 8d 7b 4c          	lea    0x4c(%rbx),%rdi
+ 3d7b636:	4c 89 f6             	mov    %r14,%rsi
+ 3d7b639:	e8 e2 49 39 01       	callq  5110020 <strncpy@plt>
+ 3d7b63e:	4d 8b 75 20          	mov    0x20(%r13),%r14
+ 3d7b642:	4d 85 f6             	test   %r14,%r14
+ 3d7b645:	74 25                	je     3d7b66c <ffrObject::ffrOpen_impl(char*, char (*)(fsdbTreeCBType, void*, void*), void*, ffrOpenOption, ffrCmprsFileArg*, IJoinedFile*)+0x26c>
+ 3d7b647:	4c 89 f7             	mov    %r14,%rdi
+ 3d7b64a:	e8 61 49 39 01       	callq  510ffb0 <strlen@plt>
+ 3d7b64f:	48 8d 50 01          	lea    0x1(%rax),%rdx
+ 3d7b653:	48 83 fa 1f          	cmp    $0x1f,%rdx
+ 3d7b657:	0f 87 4a 03 00 00    	ja     3d7b9a7 <ffrObject::ffrOpen_impl(char*, char (*)(fsdbTreeCBType, void*, void*), void*, ffrOpenOption, ffrCmprsFileArg*, IJoinedFile*)+0x5a7>
+ 3d7b65d:	8d 50 01             	lea    0x1(%rax),%edx
+ 3d7b660:	48 8d 7b 60          	lea    0x60(%rbx),%rdi
+ 3d7b664:	4c 89 f6             	mov    %r14,%rsi
+ 3d7b667:	e8 b4 49 39 01       	callq  5110020 <strncpy@plt>
+ 3d7b66c:	4d 8b 6d 28          	mov    0x28(%r13),%r13
+ 3d7b670:	4d 85 ed             	test   %r13,%r13
+ 3d7b673:	0f 84 e2 00 00 00    	je     3d7b75b <ffrObject::ffrOpen_impl(char*, char (*)(fsdbTreeCBType, void*, void*), void*, ffrOpenOption, ffrCmprsFileArg*, IJoinedFile*)+0x35b>
+ 3d7b679:	4c 89 ef             	mov    %r13,%rdi
+ 3d7b67c:	e8 2f 49 39 01       	callq  510ffb0 <strlen@plt>
+ 3d7b681:	48 8d 50 01          	lea    0x1(%rax),%rdx
+ 3d7b685:	48 83 fa 3f          	cmp    $0x3f,%rdx
+ 3d7b689:	0f 87 f8 02 00 00    	ja     3d7b987 <ffrObject::ffrOpen_impl(char*, char (*)(fsdbTreeCBType, void*, void*), void*, ffrOpenOption, ffrCmprsFileArg*, IJoinedFile*)+0x587>
+ 3d7b68f:	8d 50 01             	lea    0x1(%rax),%edx
+ 3d7b692:	48 8d bb 80 00 00 00 	lea    0x80(%rbx),%rdi
+ 3d7b699:	4c 89 ee             	mov    %r13,%rsi
+ 3d7b69c:	e8 7f 49 39 01       	callq  5110020 <strncpy@plt>
+ 3d7b6a1:	e9 b5 00 00 00       	jmpq   3d7b75b <ffrObject::ffrOpen_impl(char*, char (*)(fsdbTreeCBType, void*, void*), void*, ffrOpenOption, ffrCmprsFileArg*, IJoinedFile*)+0x35b>
+ 3d7b6a6:	48 8d 95 10 ff ff ff 	lea    -0xf0(%rbp),%rdx
+ 3d7b6ad:	4c 89 e6             	mov    %r12,%rsi
+ 3d7b6b0:	48 89 df             	mov    %rbx,%rdi
+ 3d7b6b3:	e8 08 79 fe ff       	callq  3d62fc0 <ffrObject::ffrOpenCmprsFile(char*, ffrCmprsFileArg*, char**)>
+ 3d7b6b8:	85 c0                	test   %eax,%eax
+ 3d7b6ba:	74 3c                	je     3d7b6f8 <ffrObject::ffrOpen_impl(char*, char (*)(fsdbTreeCBType, void*, void*), void*, ffrOpenOption, ffrCmprsFileArg*, IJoinedFile*)+0x2f8>
+ 3d7b6bc:	4d 85 e4             	test   %r12,%r12
+ 3d7b6bf:	74 1b                	je     3d7b6dc <ffrObject::ffrOpen_impl(char*, char (*)(fsdbTreeCBType, void*, void*), void*, ffrOpenOption, ffrCmprsFileArg*, IJoinedFile*)+0x2dc>
+ 3d7b6c1:	49 8b 74 24 28       	mov    0x28(%r12),%rsi
+ 3d7b6c6:	48 85 f6             	test   %rsi,%rsi
+ 3d7b6c9:	74 11                	je     3d7b6dc <ffrObject::ffrOpen_impl(char*, char (*)(fsdbTreeCBType, void*, void*), void*, ffrOpenOption, ffrCmprsFileArg*, IJoinedFile*)+0x2dc>
+ 3d7b6cb:	48 8d 3d d1 4f 45 fd 	lea    -0x2bab02f(%rip),%rdi        # 11d06a3 <ul_jrand_seed+0x11b1237>
+ 3d7b6d2:	b8 00 00 00 00       	mov    $0x0,%eax
+ 3d7b6d7:	e8 2e 23 88 fe       	callq  25fda0a <sysWarn>
+ 3d7b6dc:	48 89 de             	mov    %rbx,%rsi
+ 3d7b6df:	48 8d 3d ba 59 51 fd 	lea    -0x2aea646(%rip),%rdi        # 12910a0 <ul_jrand_seed+0x1271c34>
+ 3d7b6e6:	b8 00 00 00 00       	mov    $0x0,%eax
+ 3d7b6eb:	e8 1a 23 88 fe       	callq  25fda0a <sysWarn>
+ 3d7b6f0:	41 bc 00 00 00 00    	mov    $0x0,%r12d
+ 3d7b6f6:	eb 63                	jmp    3d7b75b <ffrObject::ffrOpen_impl(char*, char (*)(fsdbTreeCBType, void*, void*), void*, ffrOpenOption, ffrCmprsFileArg*, IJoinedFile*)+0x35b>
+ 3d7b6f8:	41 b9 00 00 00 00    	mov    $0x0,%r9d
+ 3d7b6fe:	41 b8 00 00 00 00    	mov    $0x0,%r8d
+ 3d7b704:	44 89 f9             	mov    %r15d,%ecx
+ 3d7b707:	4c 89 f2             	mov    %r14,%rdx
+ 3d7b70a:	4c 89 ee             	mov    %r13,%rsi
+ 3d7b70d:	48 8b bd 10 ff ff ff 	mov    -0xf0(%rbp),%rdi
+ 3d7b714:	e8 31 9f ff ff       	callq  3d7564a <ffrObject::ffrOpen2(char*, char (*)(fsdbTreeCBType, void*, void*), void*, ffrOpenOption, ffrCmprsFileArg*, char)>
+ 3d7b719:	49 89 c4             	mov    %rax,%r12
+ 3d7b71c:	eb 3d                	jmp    3d7b75b <ffrObject::ffrOpen_impl(char*, char (*)(fsdbTreeCBType, void*, void*), void*, ffrOpenOption, ffrCmprsFileArg*, IJoinedFile*)+0x35b>
+ 3d7b71e:	be 00 00 00 00       	mov    $0x0,%esi
+ 3d7b723:	48 89 df             	mov    %rbx,%rdi
+ 3d7b726:	e8 3d 55 f4 ff       	callq  3cc0c68 <ffrDisk::IsZWDFile(char*, fsdbVrtlFileType*)>
+ 3d7b72b:	3c 01                	cmp    $0x1,%al
+ 3d7b72d:	74 44                	je     3d7b773 <ffrObject::ffrOpen_impl(char*, char (*)(fsdbTreeCBType, void*, void*), void*, ffrOpenOption, ffrCmprsFileArg*, IJoinedFile*)+0x373>
+ 3d7b72f:	6a 00                	pushq  $0x0
+ 3d7b731:	6a 00                	pushq  $0x0
+ 3d7b733:	6a 00                	pushq  $0x0
+ 3d7b735:	6a 00                	pushq  $0x0
+ 3d7b737:	41 b9 00 00 00 00    	mov    $0x0,%r9d
+ 3d7b73d:	41 b8 01 00 00 00    	mov    $0x1,%r8d
+ 3d7b743:	44 89 f9             	mov    %r15d,%ecx
+ 3d7b746:	4c 89 f2             	mov    %r14,%rdx
+ 3d7b749:	4c 89 ee             	mov    %r13,%rsi
+ 3d7b74c:	48 89 df             	mov    %rbx,%rdi
+ 3d7b74f:	e8 de fb ff ff       	callq  3d7b332 <ffrObject::ffrVirtualOpen(char*, char (*)(fsdbTreeCBType, void*, void*), void*, ffrOpenOption, char, char, char, char (*)(fsdbLicType), char, char)>
+ 3d7b754:	49 89 c4             	mov    %rax,%r12
+ 3d7b757:	48 83 c4 20          	add    $0x20,%rsp
+ 3d7b75b:	4c 89 e0             	mov    %r12,%rax
+ 3d7b75e:	48 8d 65 d0          	lea    -0x30(%rbp),%rsp
+ 3d7b762:	5b                   	pop    %rbx
+ 3d7b763:	41 5a                	pop    %r10
+ 3d7b765:	41 5c                	pop    %r12
+ 3d7b767:	41 5d                	pop    %r13
+ 3d7b769:	41 5e                	pop    %r14
+ 3d7b76b:	41 5f                	pop    %r15
+ 3d7b76d:	5d                   	pop    %rbp
+ 3d7b76e:	49 8d 62 f8          	lea    -0x8(%r10),%rsp
+ 3d7b772:	c3                   	retq   
+ 3d7b773:	48 89 de             	mov    %rbx,%rsi
+ 3d7b776:	48 8d 3d 43 41 53 fd 	lea    -0x2acbebd(%rip),%rdi        # 12af8c0 <ul_jrand_seed+0x1290454>
+ 3d7b77d:	b8 00 00 00 00       	mov    $0x0,%eax
+ 3d7b782:	e8 83 22 88 fe       	callq  25fda0a <sysWarn>
+ 3d7b787:	41 bc 00 00 00 00    	mov    $0x0,%r12d
+ 3d7b78d:	eb cc                	jmp    3d7b75b <ffrObject::ffrOpen_impl(char*, char (*)(fsdbTreeCBType, void*, void*), void*, ffrOpenOption, ffrCmprsFileArg*, IJoinedFile*)+0x35b>
+ 3d7b78f:	be 00 00 00 00       	mov    $0x0,%esi
+ 3d7b794:	48 89 df             	mov    %rbx,%rdi
+ 3d7b797:	e8 5a 81 fe ff       	callq  3d638f6 <ffrObject::OpenFSDB(char*, char)>
+ 3d7b79c:	49 89 c4             	mov    %rax,%r12
+ 3d7b79f:	48 85 c0             	test   %rax,%rax
+ 3d7b7a2:	74 b7                	je     3d7b75b <ffrObject::ffrOpen_impl(char*, char (*)(fsdbTreeCBType, void*, void*), void*, ffrOpenOption, ffrCmprsFileArg*, IJoinedFile*)+0x35b>
+ 3d7b7a4:	48 8b 90 a8 00 00 00 	mov    0xa8(%rax),%rdx
+ 3d7b7ab:	41 c1 e7 04          	shl    $0x4,%r15d
+ 3d7b7af:	0f b6 42 78          	movzbl 0x78(%rdx),%eax
+ 3d7b7b3:	83 e0 0f             	and    $0xf,%eax
+ 3d7b7b6:	44 09 f8             	or     %r15d,%eax
+ 3d7b7b9:	88 42 78             	mov    %al,0x78(%rdx)
+ 3d7b7bc:	4d 8d 7c 24 08       	lea    0x8(%r12),%r15
+ 3d7b7c1:	4c 89 f2             	mov    %r14,%rdx
+ 3d7b7c4:	4c 89 ee             	mov    %r13,%rsi
+ 3d7b7c7:	4c 89 ff             	mov    %r15,%rdi
+ 3d7b7ca:	e8 87 28 14 00       	callq  3ebe056 <ffrLegacyDisk::SetTreeCBFunc(char (*)(fsdbTreeCBType, void*, void*), void*)>
+ 3d7b7cf:	c7 85 10 ff ff ff ff 	movl   $0x7fffffff,-0xf0(%rbp)
+ 3d7b7d6:	ff ff 7f 
+ 3d7b7d9:	48 8d b5 10 ff ff ff 	lea    -0xf0(%rbp),%rsi
+ 3d7b7e0:	4c 89 ff             	mov    %r15,%rdi
+ 3d7b7e3:	e8 28 cc f2 ff       	callq  3ca8410 <ffrLegacyDisk::LockForSync(int&)>
+ 3d7b7e8:	49 8b 04 24          	mov    (%r12),%rax
+ 3d7b7ec:	4c 89 e7             	mov    %r12,%rdi
+ 3d7b7ef:	ff 90 98 19 00 00    	callq  *0x1998(%rax)
+ 3d7b7f5:	89 c3                	mov    %eax,%ebx
+ 3d7b7f7:	8b b5 10 ff ff ff    	mov    -0xf0(%rbp),%esi
+ 3d7b7fd:	4c 89 ff             	mov    %r15,%rdi
+ 3d7b800:	e8 21 cd f2 ff       	callq  3ca8526 <ffrLegacyDisk::UnlockForSync(int)>
+ 3d7b805:	85 db                	test   %ebx,%ebx
+ 3d7b807:	0f 84 4e ff ff ff    	je     3d7b75b <ffrObject::ffrOpen_impl(char*, char (*)(fsdbTreeCBType, void*, void*), void*, ffrOpenOption, ffrCmprsFileArg*, IJoinedFile*)+0x35b>
+ 3d7b80d:	83 fb 57             	cmp    $0x57,%ebx
+ 3d7b810:	0f 84 45 ff ff ff    	je     3d7b75b <ffrObject::ffrOpen_impl(char*, char (*)(fsdbTreeCBType, void*, void*), void*, ffrOpenOption, ffrCmprsFileArg*, IJoinedFile*)+0x35b>
+ 3d7b816:	48 8b 1d 2b 5a b2 01 	mov    0x1b25a2b(%rip),%rbx        # 58a1248 <.got+0x1a628>
+ 3d7b81d:	48 8b 3b             	mov    (%rbx),%rdi
+ 3d7b820:	48 8b 07             	mov    (%rdi),%rax
+ 3d7b823:	ff 90 00 1e 00 00    	callq  *0x1e00(%rax)
+ 3d7b829:	48 8b 00             	mov    (%rax),%rax
+ 3d7b82c:	48 89 03             	mov    %rax,(%rbx)
+ 3d7b82f:	49 8b 04 24          	mov    (%r12),%rax
+ 3d7b833:	4c 89 e7             	mov    %r12,%rdi
+ 3d7b836:	ff 50 08             	callq  *0x8(%rax)
+ 3d7b839:	41 bc 00 00 00 00    	mov    $0x0,%r12d
+ 3d7b83f:	e9 17 ff ff ff       	jmpq   3d7b75b <ffrObject::ffrOpen_impl(char*, char (*)(fsdbTreeCBType, void*, void*), void*, ffrOpenOption, ffrCmprsFileArg*, IJoinedFile*)+0x35b>
+ 3d7b844:	b9 00 00 00 00       	mov    $0x0,%ecx
+ 3d7b849:	ba 00 00 00 00       	mov    $0x0,%edx
+ 3d7b84e:	be 00 00 00 00       	mov    $0x0,%esi
+ 3d7b853:	48 89 df             	mov    %rbx,%rdi
+ 3d7b856:	e8 51 f5 fe ff       	callq  3d6adac <ffrObject::OpenFSDB20(char const*, char, IJoinedFile*, ffrOpen2ImplArg*)>
+ 3d7b85b:	49 89 c4             	mov    %rax,%r12
+ 3d7b85e:	48 85 c0             	test   %rax,%rax
+ 3d7b861:	0f 84 f4 fe ff ff    	je     3d7b75b <ffrObject::ffrOpen_impl(char*, char (*)(fsdbTreeCBType, void*, void*), void*, ffrOpenOption, ffrCmprsFileArg*, IJoinedFile*)+0x35b>
+ 3d7b867:	4c 8d 78 08          	lea    0x8(%rax),%r15
+ 3d7b86b:	4c 89 ff             	mov    %r15,%rdi
+ 3d7b86e:	e8 b9 77 06 00       	callq  3de302c <ffrDisk::FileHasVPDGate()>
+ 3d7b873:	3c 01                	cmp    $0x1,%al
+ 3d7b875:	74 43                	je     3d7b8ba <ffrObject::ffrOpen_impl(char*, char (*)(fsdbTreeCBType, void*, void*), void*, ffrOpenOption, ffrCmprsFileArg*, IJoinedFile*)+0x4ba>
+ 3d7b877:	4c 89 f2             	mov    %r14,%rdx
+ 3d7b87a:	4c 89 ee             	mov    %r13,%rsi
+ 3d7b87d:	4c 89 ff             	mov    %r15,%rdi
+ 3d7b880:	e8 79 5b 17 00       	callq  3ef13fe <ffrDisk::SetTreeCBFunc(char (*)(fsdbTreeCBType, void*, void*), void*)>
+ 3d7b885:	4d 85 ed             	test   %r13,%r13
+ 3d7b888:	74 0d                	je     3d7b897 <ffrObject::ffrOpen_impl(char*, char (*)(fsdbTreeCBType, void*, void*), void*, ffrOpenOption, ffrCmprsFileArg*, IJoinedFile*)+0x497>
+ 3d7b88a:	be 00 00 00 00       	mov    $0x0,%esi
+ 3d7b88f:	4c 89 ff             	mov    %r15,%rdi
+ 3d7b892:	e8 83 e8 1a 00       	callq  3f2a11a <ffrDisk::ReadScopeVarTree(unsigned short)>
+ 3d7b897:	49 8b 04 24          	mov    (%r12),%rax
+ 3d7b89b:	4c 89 e7             	mov    %r12,%rdi
+ 3d7b89e:	ff 50 38             	callq  *0x38(%rax)
+ 3d7b8a1:	83 e8 08             	sub    $0x8,%eax
+ 3d7b8a4:	83 f8 02             	cmp    $0x2,%eax
+ 3d7b8a7:	0f 87 5f fc ff ff    	ja     3d7b50c <ffrObject::ffrOpen_impl(char*, char (*)(fsdbTreeCBType, void*, void*), void*, ffrOpenOption, ffrCmprsFileArg*, IJoinedFile*)+0x10c>
+ 3d7b8ad:	4c 89 e7             	mov    %r12,%rdi
+ 3d7b8b0:	e8 ef 7c f5 ff       	callq  3cd35a4 <evalInit(ffrObject*)>
+ 3d7b8b5:	e9 52 fc ff ff       	jmpq   3d7b50c <ffrObject::ffrOpen_impl(char*, char (*)(fsdbTreeCBType, void*, void*), void*, ffrOpenOption, ffrCmprsFileArg*, IJoinedFile*)+0x10c>
+ 3d7b8ba:	49 8b 04 24          	mov    (%r12),%rax
+ 3d7b8be:	4c 89 e7             	mov    %r12,%rdi
+ 3d7b8c1:	ff 50 08             	callq  *0x8(%rax)
+ 3d7b8c4:	48 8d 3d c5 b6 57 fd 	lea    -0x2a8493b(%rip),%rdi        # 12f6f90 <ul_jrand_seed+0x12d7b24>
+ 3d7b8cb:	b8 00 00 00 00       	mov    $0x0,%eax
+ 3d7b8d0:	e8 35 21 88 fe       	callq  25fda0a <sysWarn>
+ 3d7b8d5:	41 bc 00 00 00 00    	mov    $0x0,%r12d
+ 3d7b8db:	e9 7b fe ff ff       	jmpq   3d7b75b <ffrObject::ffrOpen_impl(char*, char (*)(fsdbTreeCBType, void*, void*), void*, ffrOpenOption, ffrCmprsFileArg*, IJoinedFile*)+0x35b>
+ 3d7b8e0:	49 8b 04 24          	mov    (%r12),%rax
+ 3d7b8e4:	4c 89 e7             	mov    %r12,%rdi
+ 3d7b8e7:	ff 50 08             	callq  *0x8(%rax)
+ 3d7b8ea:	48 8d 3d 9f b6 57 fd 	lea    -0x2a84961(%rip),%rdi        # 12f6f90 <ul_jrand_seed+0x12d7b24>
+ 3d7b8f1:	b8 00 00 00 00       	mov    $0x0,%eax
+ 3d7b8f6:	e8 0f 21 88 fe       	callq  25fda0a <sysWarn>
+ 3d7b8fb:	41 bc 00 00 00 00    	mov    $0x0,%r12d
+ 3d7b901:	e9 55 fe ff ff       	jmpq   3d7b75b <ffrObject::ffrOpen_impl(char*, char (*)(fsdbTreeCBType, void*, void*), void*, ffrOpenOption, ffrCmprsFileArg*, IJoinedFile*)+0x35b>
+ 3d7b906:	4c 89 e7             	mov    %r12,%rdi
+ 3d7b909:	e8 96 7c f5 ff       	callq  3cd35a4 <evalInit(ffrObject*)>
+ 3d7b90e:	e9 f9 fb ff ff       	jmpq   3d7b50c <ffrObject::ffrOpen_impl(char*, char (*)(fsdbTreeCBType, void*, void*), void*, ffrOpenOption, ffrCmprsFileArg*, IJoinedFile*)+0x10c>
+ 3d7b913:	48 8d 3d 96 62 4f fd 	lea    -0x2b09d6a(%rip),%rdi        # 1271bb0 <ul_jrand_seed+0x1252744>
+ 3d7b91a:	b8 00 00 00 00       	mov    $0x0,%eax
+ 3d7b91f:	e8 e6 20 88 fe       	callq  25fda0a <sysWarn>
+ 3d7b924:	48 8b 05 2d b4 b0 01 	mov    0x1b0b42d(%rip),%rax        # 5886d58 <.got+0x138>
+ 3d7b92b:	0f b6 00             	movzbl (%rax),%eax
+ 3d7b92e:	48 8b 15 2b b4 b0 01 	mov    0x1b0b42b(%rip),%rdx        # 5886d60 <.got+0x140>
+ 3d7b935:	0a 02                	or     (%rdx),%al
+ 3d7b937:	74 1f                	je     3d7b958 <ffrObject::ffrOpen_impl(char*, char (*)(fsdbTreeCBType, void*, void*), void*, ffrOpenOption, ffrCmprsFileArg*, IJoinedFile*)+0x558>
+ 3d7b939:	48 8b 05 28 b4 b0 01 	mov    0x1b0b428(%rip),%rax        # 5886d68 <.got+0x148>
+ 3d7b940:	0f b6 00             	movzbl (%rax),%eax
+ 3d7b943:	41 bc 00 00 00 00    	mov    $0x0,%r12d
+ 3d7b949:	48 8b 15 20 b4 b0 01 	mov    0x1b0b420(%rip),%rdx        # 5886d70 <.got+0x150>
+ 3d7b950:	0a 02                	or     (%rdx),%al
+ 3d7b952:	0f 84 03 fe ff ff    	je     3d7b75b <ffrObject::ffrOpen_impl(char*, char (*)(fsdbTreeCBType, void*, void*), void*, ffrOpenOption, ffrCmprsFileArg*, IJoinedFile*)+0x35b>
+ 3d7b958:	be 4d 0e 00 00       	mov    $0xe4d,%esi
+ 3d7b95d:	48 8d 3d e7 2e 41 fd 	lea    -0x2bed119(%rip),%rdi        # 118e84b <ul_jrand_seed+0x116f3df>
+ 3d7b964:	e8 94 e6 86 fe       	callq  25e9ffd <sysCnlAssert>
+ 3d7b969:	41 bc 00 00 00 00    	mov    $0x0,%r12d
+ 3d7b96f:	e9 e7 fd ff ff       	jmpq   3d7b75b <ffrObject::ffrOpen_impl(char*, char (*)(fsdbTreeCBType, void*, void*), void*, ffrOpenOption, ffrCmprsFileArg*, IJoinedFile*)+0x35b>
+ 3d7b974:	49 89 fc             	mov    %rdi,%r12
+ 3d7b977:	e9 df fd ff ff       	jmpq   3d7b75b <ffrObject::ffrOpen_impl(char*, char (*)(fsdbTreeCBType, void*, void*), void*, ffrOpenOption, ffrCmprsFileArg*, IJoinedFile*)+0x35b>
+ 3d7b97c:	41 bc 00 00 00 00    	mov    $0x0,%r12d
+ 3d7b982:	e9 d4 fd ff ff       	jmpq   3d7b75b <ffrObject::ffrOpen_impl(char*, char (*)(fsdbTreeCBType, void*, void*), void*, ffrOpenOption, ffrCmprsFileArg*, IJoinedFile*)+0x35b>
+ 3d7b987:	48 8d bb 80 00 00 00 	lea    0x80(%rbx),%rdi
+ 3d7b98e:	ba 3f 00 00 00       	mov    $0x3f,%edx
+ 3d7b993:	4c 89 ee             	mov    %r13,%rsi
+ 3d7b996:	e8 85 46 39 01       	callq  5110020 <strncpy@plt>
+ 3d7b99b:	c6 83 bf 00 00 00 00 	movb   $0x0,0xbf(%rbx)
+ 3d7b9a2:	e9 b4 fd ff ff       	jmpq   3d7b75b <ffrObject::ffrOpen_impl(char*, char (*)(fsdbTreeCBType, void*, void*), void*, ffrOpenOption, ffrCmprsFileArg*, IJoinedFile*)+0x35b>
+ 3d7b9a7:	48 8d 7b 60          	lea    0x60(%rbx),%rdi
+ 3d7b9ab:	ba 1f 00 00 00       	mov    $0x1f,%edx
+ 3d7b9b0:	4c 89 f6             	mov    %r14,%rsi
+ 3d7b9b3:	e8 68 46 39 01       	callq  5110020 <strncpy@plt>
+ 3d7b9b8:	c6 43 7f 00          	movb   $0x0,0x7f(%rbx)
+ 3d7b9bc:	e9 ab fc ff ff       	jmpq   3d7b66c <ffrObject::ffrOpen_impl(char*, char (*)(fsdbTreeCBType, void*, void*), void*, ffrOpenOption, ffrCmprsFileArg*, IJoinedFile*)+0x26c>
+ 3d7b9c1:	48 8d 7b 4c          	lea    0x4c(%rbx),%rdi
+ 3d7b9c5:	ba 13 00 00 00       	mov    $0x13,%edx
+ 3d7b9ca:	4c 89 f6             	mov    %r14,%rsi
+ 3d7b9cd:	e8 4e 46 39 01       	callq  5110020 <strncpy@plt>
+ 3d7b9d2:	c6 43 5f 00          	movb   $0x0,0x5f(%rbx)
+ 3d7b9d6:	e9 63 fc ff ff       	jmpq   3d7b63e <ffrObject::ffrOpen_impl(char*, char (*)(fsdbTreeCBType, void*, void*), void*, ffrOpenOption, ffrCmprsFileArg*, IJoinedFile*)+0x23e>
+ 3d7b9db:	48 8d 7b 48          	lea    0x48(%rbx),%rdi
+ 3d7b9df:	ba 03 00 00 00       	mov    $0x3,%edx
+ 3d7b9e4:	4c 89 f6             	mov    %r14,%rsi
+ 3d7b9e7:	e8 34 46 39 01       	callq  5110020 <strncpy@plt>
+ 3d7b9ec:	c6 43 4b 00          	movb   $0x0,0x4b(%rbx)
+ 3d7b9f0:	e9 1b fc ff ff       	jmpq   3d7b610 <ffrObject::ffrOpen_impl(char*, char (*)(fsdbTreeCBType, void*, void*), void*, ffrOpenOption, ffrCmprsFileArg*, IJoinedFile*)+0x210>

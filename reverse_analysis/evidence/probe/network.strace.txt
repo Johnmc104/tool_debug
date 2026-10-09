@@ -1,0 +1,6 @@
+2926745 +++ exited with 0 +++
+2926744 +++ exited with 0 +++
+2926743 +++ exited with 0 +++
+2926742 +++ exited with 0 +++
+2926741 --- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=2926742, si_uid=1000, si_status=0, si_utime=0, si_stime=0} ---
+2926741 +++ exited with 0 +++

@@ -1,0 +1,1032 @@
+ELF Header:
+  Magic:   7f 45 4c 46 02 01 01 00 00 00 00 00 00 00 00 00 
+  Class:                             ELF64
+  Data:                              2's complement, little endian
+  Version:                           1 (current)
+  OS/ABI:                            UNIX - System V
+  ABI Version:                       0
+  Type:                              DYN (Shared object file)
+  Machine:                           Advanced Micro Devices X86-64
+  Version:                           0x1
+  Entry point address:               0x0
+  Start of program headers:          64 (bytes into file)
+  Start of section headers:          46129544 (bytes into file)
+  Flags:                             0x0
+  Size of this header:               64 (bytes)
+  Size of program headers:           56 (bytes)
+  Number of program headers:         11
+  Size of section headers:           64 (bytes)
+  Number of section headers:         53
+  Section header string table index: 51
+
+Dynamic section at offset 0x16231a0 contains 30 entries:
+  Tag        Type                         Name/Value
+ 0x0000000000000001 (NEEDED)             Shared library: [libpthread.so.0]
+ 0x0000000000000001 (NEEDED)             Shared library: [libm.so.6]
+ 0x0000000000000001 (NEEDED)             Shared library: [libc.so.6]
+ 0x0000000000000001 (NEEDED)             Shared library: [ld-linux-x86-64.so.2]
+ 0x000000000000001e (FLAGS)              TEXTREL
+ 0x0000000000000007 (RELA)               0x2e040
+ 0x0000000000000008 (RELASZ)             1850256 (bytes)
+ 0x0000000000000009 (RELAENT)            24 (bytes)
+ 0x000000006ffffff9 (RELACOUNT)          76593
+ 0x0000000000000017 (JMPREL)             0x1f1bd0
+ 0x0000000000000002 (PLTRELSZ)           46224 (bytes)
+ 0x0000000000000003 (PLTGOT)             0x169e588
+ 0x0000000000000014 (PLTREL)             RELA
+ 0x0000000000000006 (SYMTAB)             0x2c0
+ 0x000000000000000b (SYMENT)             24 (bytes)
+ 0x0000000000000005 (STRTAB)             0x180e4
+ 0x000000000000000a (STRSZ)              89946 (bytes)
+ 0x0000000000000016 (TEXTREL)            0x0
+ 0x000000006ffffef5 (GNU_HASH)           0x10120
+ 0x0000000000000004 (HASH)               0x13304
+ 0x0000000000000019 (INIT_ARRAY)         0x155a070
+ 0x000000000000001b (INIT_ARRAYSZ)       736 (bytes)
+ 0x000000000000001a (FINI_ARRAY)         0x155a058
+ 0x000000000000001c (FINI_ARRAYSZ)       24 (bytes)
+ 0x000000000000000c (INIT)               0x14d6354
+ 0x000000000000000d (FINI)               0x14d6374
+ 0x000000006ffffff0 (VERSYM)             0xec48
+ 0x000000006ffffffe (VERNEED)            0xffc0
+ 0x000000006fffffff (VERNEEDNUM)         4
+ 0x0000000000000000 (NULL)               0x0
+
+Displaying notes found in: .note.gnu.build-id
+  Owner                Data size 	Description
+  GNU                  0x00000008	NT_GNU_BUILD_ID (unique build ID bitstring)
+    Build ID: b28b9c65f463a993
+
+Displaying notes found in: .gnu.build.attributes
+  Owner                Data size 	Description
+  GA$<version>3a1      0x00000010	OPEN
+    Applies to region from 0x662800 to 0x662800
+  GA$<version>3a1      0x00000010	OPEN
+    Applies to region from 0x14d6354 to 0x14d636a (.annobin_lstat64.c_end)
+  GA$<version>3a1      0x00000010	OPEN
+    Applies to region from 0x14d6374 to 0x14d637c
+  GA$<version>3p1113   0x00000010	OPEN
+    Applies to region from 0x14d62b0 to 0x14d62c2 (.annobin_atexit.c)
+  GA$<tool>running gcc 0x00000000	OPEN
+    Applies to region from 0x14d62b0 to 0x14d62c2
+  GA$<tool>annobin gcc 0x00000000	OPEN
+    Applies to region from 0x14d62b0 to 0x14d62c2
+  GA$<tool>plugin name 0x00000000	OPEN
+    Applies to region from 0x14d62b0 to 0x14d62c2
+  GA*GOW:0x000000002052a 0x00000000	OPEN
+    Applies to region from 0x14d62b0 to 0x14d62c2
+  GA*<stack prot>stron 0x00000000	OPEN
+    Applies to region from 0x14d62b0 to 0x14d62c2
+  GA+stack_clash:true  0x00000000	OPEN
+    Applies to region from 0x14d62b0 to 0x14d62c2
+  GA*cf_protection:0x008 0x00000000	OPEN
+    Applies to region from 0x14d62b0 to 0x14d62c2
+  GA*FORTIFY:0x000000002 0x00000000	OPEN
+    Applies to region from 0x14d62b0 to 0x14d62c2
+  GA+GLIBCXX_ASSERTION: 0x00000000	OPEN
+    Applies to region from 0x14d62b0 to 0x14d62c2
+  GA*<PIC>PIC          0x00000000	OPEN
+    Applies to region from 0x14d62b0 to 0x14d62c2
+  GA!<short enum>false 0x00000000	OPEN
+    Applies to region from 0x14d62b0 to 0x14d62c2
+  GA+omit_frame_pointe: 0x00000000	OPEN
+    Applies to region from 0x14d62b0 to 0x14d62c2
+  GA*<ABI>0x000000000012 0x00000000	OPEN
+    Applies to region from 0x14d62b0 to 0x14d62c2
+  GA!stack_realign:fal 0x00000000	OPEN
+    Applies to region from 0x14d62b0 to 0x14d62c2
+  GA*FORTIFY:0x000000002 0x00000010	func
+    Applies to region from 0x14d62b0 to 0x14d62c2 (atexit)
+  GA+GLIBCXX_ASSERTION: 0x00000010	func
+    Applies to region from 0x14d62b0 to 0x14d62c2 (atexit)
+  GA$<version>3p1113   0x00000010	OPEN
+    Applies to region from 0x14d62d0 to 0x14d62e0 (.annobin_pthread_atfork.c)
+  GA$<tool>running gcc 0x00000000	OPEN
+    Applies to region from 0x14d62d0 to 0x14d62e0
+  GA$<tool>annobin gcc 0x00000000	OPEN
+    Applies to region from 0x14d62d0 to 0x14d62e0
+  GA$<tool>plugin name 0x00000000	OPEN
+    Applies to region from 0x14d62d0 to 0x14d62e0
+  GA*GOW:0x000000002052a 0x00000000	OPEN
+    Applies to region from 0x14d62d0 to 0x14d62e0
+  GA*<stack prot>stron 0x00000000	OPEN
+    Applies to region from 0x14d62d0 to 0x14d62e0
+  GA+stack_clash:true  0x00000000	OPEN
+    Applies to region from 0x14d62d0 to 0x14d62e0
+  GA*cf_protection:0x008 0x00000000	OPEN
+    Applies to region from 0x14d62d0 to 0x14d62e0
+  GA*FORTIFY:0x000000002 0x00000000	OPEN
+    Applies to region from 0x14d62d0 to 0x14d62e0
+  GA+GLIBCXX_ASSERTION: 0x00000000	OPEN
+    Applies to region from 0x14d62d0 to 0x14d62e0
+  GA*<PIC>PIC          0x00000000	OPEN
+    Applies to region from 0x14d62d0 to 0x14d62e0
+  GA!<short enum>false 0x00000000	OPEN
+    Applies to region from 0x14d62d0 to 0x14d62e0
+  GA+omit_frame_pointe: 0x00000000	OPEN
+    Applies to region from 0x14d62d0 to 0x14d62e0
+  GA*<ABI>0x000000000012 0x00000000	OPEN
+    Applies to region from 0x14d62d0 to 0x14d62e0
+  GA!stack_realign:fal 0x00000000	OPEN
+    Applies to region from 0x14d62d0 to 0x14d62e0
+  GA*FORTIFY:0x000000002 0x00000010	func
+    Applies to region from 0x14d62d0 to 0x14d62e0 (pthread_atfork)
+  GA+GLIBCXX_ASSERTION: 0x00000010	func
+    Applies to region from 0x14d62d0 to 0x14d62e0 (pthread_atfork)
+  GA$<version>3p1113   0x00000010	OPEN
+    Applies to region from 0x14d62e0 to 0x14d62f4 (.annobin_pthread_atfork.c_end)
+  GA$<tool>running gcc 0x00000000	OPEN
+    Applies to region from 0x14d62e0 to 0x14d62f4
+  GA$<tool>annobin gcc 0x00000000	OPEN
+    Applies to region from 0x14d62e0 to 0x14d62f4
+  GA$<tool>plugin name 0x00000000	OPEN
+    Applies to region from 0x14d62e0 to 0x14d62f4
+  GA*GOW:0x000000002052a 0x00000000	OPEN
+    Applies to region from 0x14d62e0 to 0x14d62f4
+  GA*<stack prot>stron 0x00000000	OPEN
+    Applies to region from 0x14d62e0 to 0x14d62f4
+  GA+stack_clash:true  0x00000000	OPEN
+    Applies to region from 0x14d62e0 to 0x14d62f4
+  GA*cf_protection:0x008 0x00000000	OPEN
+    Applies to region from 0x14d62e0 to 0x14d62f4
+  GA*FORTIFY:0x000000002 0x00000000	OPEN
+    Applies to region from 0x14d62e0 to 0x14d62f4
+  GA+GLIBCXX_ASSERTION: 0x00000000	OPEN
+    Applies to region from 0x14d62e0 to 0x14d62f4
+  GA*<PIC>PIC          0x00000000	OPEN
+    Applies to region from 0x14d62e0 to 0x14d62f4
+  GA!<short enum>false 0x00000000	OPEN
+    Applies to region from 0x14d62e0 to 0x14d62f4
+  GA+omit_frame_pointe: 0x00000000	OPEN
+    Applies to region from 0x14d62e0 to 0x14d62f4
+  GA*<ABI>0x000000000012 0x00000000	OPEN
+    Applies to region from 0x14d62e0 to 0x14d62f4
+  GA!stack_realign:fal 0x00000000	OPEN
+    Applies to region from 0x14d62e0 to 0x14d62f4
+  GA*FORTIFY:0x000000002 0x00000010	func
+    Applies to region from 0x14d62e0 to 0x14d62f4 (stat)
+  GA+GLIBCXX_ASSERTION: 0x00000010	func
+    Applies to region from 0x14d62e0 to 0x14d62f4 (stat)
+  GA$<version>3p1113   0x00000010	OPEN
+    Applies to region from 0x14d6300 to 0x14d6314 (.annobin_stat64.c)
+  GA$<tool>running gcc 0x00000000	OPEN
+    Applies to region from 0x14d6300 to 0x14d6314
+  GA$<tool>annobin gcc 0x00000000	OPEN
+    Applies to region from 0x14d6300 to 0x14d6314
+  GA$<tool>plugin name 0x00000000	OPEN
+    Applies to region from 0x14d6300 to 0x14d6314
+  GA*GOW:0x000000002052a 0x00000000	OPEN
+    Applies to region from 0x14d6300 to 0x14d6314
+  GA*<stack prot>stron 0x00000000	OPEN
+    Applies to region from 0x14d6300 to 0x14d6314
+  GA+stack_clash:true  0x00000000	OPEN
+    Applies to region from 0x14d6300 to 0x14d6314
+  GA*cf_protection:0x008 0x00000000	OPEN
+    Applies to region from 0x14d6300 to 0x14d6314
+  GA*FORTIFY:0x000000002 0x00000000	OPEN
+    Applies to region from 0x14d6300 to 0x14d6314
+  GA+GLIBCXX_ASSERTION: 0x00000000	OPEN
+    Applies to region from 0x14d6300 to 0x14d6314
+  GA*<PIC>PIC          0x00000000	OPEN
+    Applies to region from 0x14d6300 to 0x14d6314
+  GA!<short enum>false 0x00000000	OPEN
+    Applies to region from 0x14d6300 to 0x14d6314
+  GA+omit_frame_pointe: 0x00000000	OPEN
+    Applies to region from 0x14d6300 to 0x14d6314
+  GA*<ABI>0x000000000012 0x00000000	OPEN
+    Applies to region from 0x14d6300 to 0x14d6314
+  GA!stack_realign:fal 0x00000000	OPEN
+    Applies to region from 0x14d6300 to 0x14d6314
+  GA*FORTIFY:0x000000002 0x00000010	func
+    Applies to region from 0x14d6300 to 0x14d6314 (stat64)
+  GA+GLIBCXX_ASSERTION: 0x00000010	func
+    Applies to region from 0x14d6300 to 0x14d6314 (stat64)
+  GA$<version>3p1113   0x00000010	OPEN
+    Applies to region from 0x14d6320 to 0x14d6333 (.annobin_fstat64.c)
+  GA$<tool>running gcc 0x00000000	OPEN
+    Applies to region from 0x14d6320 to 0x14d6333
+  GA$<tool>annobin gcc 0x00000000	OPEN
+    Applies to region from 0x14d6320 to 0x14d6333
+  GA$<tool>plugin name 0x00000000	OPEN
+    Applies to region from 0x14d6320 to 0x14d6333
+  GA*GOW:0x000000002052a 0x00000000	OPEN
+    Applies to region from 0x14d6320 to 0x14d6333
+  GA*<stack prot>stron 0x00000000	OPEN
+    Applies to region from 0x14d6320 to 0x14d6333
+  GA+stack_clash:true  0x00000000	OPEN
+    Applies to region from 0x14d6320 to 0x14d6333
+  GA*cf_protection:0x008 0x00000000	OPEN
+    Applies to region from 0x14d6320 to 0x14d6333
+  GA*FORTIFY:0x000000002 0x00000000	OPEN
+    Applies to region from 0x14d6320 to 0x14d6333
+  GA+GLIBCXX_ASSERTION: 0x00000000	OPEN
+    Applies to region from 0x14d6320 to 0x14d6333
+  GA*<PIC>PIC          0x00000000	OPEN
+    Applies to region from 0x14d6320 to 0x14d6333
+  GA!<short enum>false 0x00000000	OPEN
+    Applies to region from 0x14d6320 to 0x14d6333
+  GA+omit_frame_pointe: 0x00000000	OPEN
+    Applies to region from 0x14d6320 to 0x14d6333
+  GA*<ABI>0x000000000012 0x00000000	OPEN
+    Applies to region from 0x14d6320 to 0x14d6333
+  GA!stack_realign:fal 0x00000000	OPEN
+    Applies to region from 0x14d6320 to 0x14d6333
+  GA*FORTIFY:0x000000002 0x00000010	func
+    Applies to region from 0x14d6320 to 0x14d6333 (fstat64)
+  GA+GLIBCXX_ASSERTION: 0x00000010	func
+    Applies to region from 0x14d6320 to 0x14d6333 (fstat64)
+  GA$<version>3p1113   0x00000010	OPEN
+    Applies to region from 0x14d6340 to 0x14d6354 (.annobin_lstat64.c)
+  GA$<tool>running gcc 0x00000000	OPEN
+    Applies to region from 0x14d6340 to 0x14d6354
+  GA$<tool>annobin gcc 0x00000000	OPEN
+    Applies to region from 0x14d6340 to 0x14d6354
+  GA$<tool>plugin name 0x00000000	OPEN
+    Applies to region from 0x14d6340 to 0x14d6354
+  GA*GOW:0x000000002052a 0x00000000	OPEN
+    Applies to region from 0x14d6340 to 0x14d6354
+  GA*<stack prot>stron 0x00000000	OPEN
+    Applies to region from 0x14d6340 to 0x14d6354
+  GA+stack_clash:true  0x00000000	OPEN
+    Applies to region from 0x14d6340 to 0x14d6354
+  GA*cf_protection:0x008 0x00000000	OPEN
+    Applies to region from 0x14d6340 to 0x14d6354
+  GA*FORTIFY:0x000000002 0x00000000	OPEN
+    Applies to region from 0x14d6340 to 0x14d6354
+  GA+GLIBCXX_ASSERTION: 0x00000000	OPEN
+    Applies to region from 0x14d6340 to 0x14d6354
+  GA*<PIC>PIC          0x00000000	OPEN
+    Applies to region from 0x14d6340 to 0x14d6354
+  GA!<short enum>false 0x00000000	OPEN
+    Applies to region from 0x14d6340 to 0x14d6354
+  GA+omit_frame_pointe: 0x00000000	OPEN
+    Applies to region from 0x14d6340 to 0x14d6354
+  GA*<ABI>0x000000000012 0x00000000	OPEN
+    Applies to region from 0x14d6340 to 0x14d6354
+  GA!stack_realign:fal 0x00000000	OPEN
+    Applies to region from 0x14d6340 to 0x14d6354
+  GA*FORTIFY:0x000000002 0x00000010	func
+    Applies to region from 0x14d6340 to 0x14d6354 (lstat64)
+  GA+GLIBCXX_ASSERTION: 0x00000010	func
+    Applies to region from 0x14d6340 to 0x14d6354 (lstat64)
+  GA$<version>3a1      0x00000010	OPEN
+    Applies to region from 0x14d6354 to 0x14d6354 (.annobin_lstat64.c_end)
+  GA$<version>3a1      0x00000010	OPEN
+    Applies to region from 0x14d636f to 0x14d6374
+  GA$<version>3a1      0x00000010	OPEN
+    Applies to region from 0x14d637c to 0x14d6381
+
+Displaying notes found in: .note.stapsdt
+  Owner                Data size 	Description
+  stapsdt              0x0000003b	NT_STAPSDT (SystemTap probe descriptors)
+    Provider: libstdcxx
+    Name: catch
+    Location: 0x000000000123a5b5, Base: 0x00000000003e43c4, Semaphore: 0x0000000000000000
+    Arguments: 8@%rdx 8@-80(%rbx)
+  stapsdt              0x00000036	NT_STAPSDT (SystemTap probe descriptors)
+    Provider: libstdcxx
+    Name: throw
+    Location: 0x000000000123b781, Base: 0x00000000003e43c4, Semaphore: 0x0000000000000000
+    Arguments: 8@%rdi 8@%rsi
+  stapsdt              0x00000038	NT_STAPSDT (SystemTap probe descriptors)
+    Provider: libstdcxx
+    Name: rethrow
+    Location: 0x000000000123b819, Base: 0x00000000003e43c4, Semaphore: 0x0000000000000000
+    Arguments: 8@%rdx 8@%rax
+  stapsdt              0x00000034	NT_STAPSDT (SystemTap probe descriptors)
+    Provider: libgcc
+    Name: unwind
+    Location: 0x00000000014d2424, Base: 0x00000000003e43c4, Semaphore: 0x0000000000000000
+    Arguments: 8@%rdi 8@%rsi
+
+Displaying notes found in: .gnu.build.attributes.hot
+  Owner                Data size 	Description
+  GA$<version>3p1113   0x00000010	OPEN
+    Applies to region from 0x14d62c2 to 0x14d62c2 (.annobin_atexit.c_end)
+  GA$<tool>running gcc 0x00000000	OPEN
+    Applies to region from 0x14d62c2
+  GA$<tool>annobin gcc 0x00000000	OPEN
+    Applies to region from 0x14d62c2
+  GA$<tool>plugin name 0x00000000	OPEN
+    Applies to region from 0x14d62c2
+  GA*GOW:0x000000002052a 0x00000000	OPEN
+    Applies to region from 0x14d62c2
+  GA*<stack prot>stron 0x00000000	OPEN
+    Applies to region from 0x14d62c2
+  GA+stack_clash:true  0x00000000	OPEN
+    Applies to region from 0x14d62c2
+  GA*cf_protection:0x008 0x00000000	OPEN
+    Applies to region from 0x14d62c2
+  GA*FORTIFY:0x000000002 0x00000000	OPEN
+    Applies to region from 0x14d62c2
+  GA+GLIBCXX_ASSERTION: 0x00000000	OPEN
+    Applies to region from 0x14d62c2
+  GA*<PIC>PIC          0x00000000	OPEN
+    Applies to region from 0x14d62c2
+  GA!<short enum>false 0x00000000	OPEN
+    Applies to region from 0x14d62c2
+  GA+omit_frame_pointe: 0x00000000	OPEN
+    Applies to region from 0x14d62c2
+  GA*<ABI>0x000000000012 0x00000000	OPEN
+    Applies to region from 0x14d62c2
+  GA!stack_realign:fal 0x00000000	OPEN
+    Applies to region from 0x14d62c2
+  GA$<version>3p1113   0x00000010	OPEN
+    Applies to region from 0x14d62e0 to 0x14d62e0 (.annobin_pthread_atfork.c_end)
+  GA$<tool>running gcc 0x00000000	OPEN
+    Applies to region from 0x14d62e0
+  GA$<tool>annobin gcc 0x00000000	OPEN
+    Applies to region from 0x14d62e0
+  GA$<tool>plugin name 0x00000000	OPEN
+    Applies to region from 0x14d62e0
+  GA*GOW:0x000000002052a 0x00000000	OPEN
+    Applies to region from 0x14d62e0
+  GA*<stack prot>stron 0x00000000	OPEN
+    Applies to region from 0x14d62e0
+  GA+stack_clash:true  0x00000000	OPEN
+    Applies to region from 0x14d62e0
+  GA*cf_protection:0x008 0x00000000	OPEN
+    Applies to region from 0x14d62e0
+  GA*FORTIFY:0x000000002 0x00000000	OPEN
+    Applies to region from 0x14d62e0
+  GA+GLIBCXX_ASSERTION: 0x00000000	OPEN
+    Applies to region from 0x14d62e0
+  GA*<PIC>PIC          0x00000000	OPEN
+    Applies to region from 0x14d62e0
+  GA!<short enum>false 0x00000000	OPEN
+    Applies to region from 0x14d62e0
+  GA+omit_frame_pointe: 0x00000000	OPEN
+    Applies to region from 0x14d62e0
+  GA*<ABI>0x000000000012 0x00000000	OPEN
+    Applies to region from 0x14d62e0
+  GA!stack_realign:fal 0x00000000	OPEN
+    Applies to region from 0x14d62e0
+  GA$<version>3p1113   0x00000010	OPEN
+    Applies to region from 0x14d62f4 to 0x14d62f4 (.annobin_stat.c_end)
+  GA$<tool>running gcc 0x00000000	OPEN
+    Applies to region from 0x14d62f4
+  GA$<tool>annobin gcc 0x00000000	OPEN
+    Applies to region from 0x14d62f4
+  GA$<tool>plugin name 0x00000000	OPEN
+    Applies to region from 0x14d62f4
+  GA*GOW:0x000000002052a 0x00000000	OPEN
+    Applies to region from 0x14d62f4
+  GA*<stack prot>stron 0x00000000	OPEN
+    Applies to region from 0x14d62f4
+  GA+stack_clash:true  0x00000000	OPEN
+    Applies to region from 0x14d62f4
+  GA*cf_protection:0x008 0x00000000	OPEN
+    Applies to region from 0x14d62f4
+  GA*FORTIFY:0x000000002 0x00000000	OPEN
+    Applies to region from 0x14d62f4
+  GA+GLIBCXX_ASSERTION: 0x00000000	OPEN
+    Applies to region from 0x14d62f4
+  GA*<PIC>PIC          0x00000000	OPEN
+    Applies to region from 0x14d62f4
+  GA!<short enum>false 0x00000000	OPEN
+    Applies to region from 0x14d62f4
+  GA+omit_frame_pointe: 0x00000000	OPEN
+    Applies to region from 0x14d62f4
+  GA*<ABI>0x000000000012 0x00000000	OPEN
+    Applies to region from 0x14d62f4
+  GA!stack_realign:fal 0x00000000	OPEN
+    Applies to region from 0x14d62f4
+  GA$<version>3p1113   0x00000010	OPEN
+    Applies to region from 0x14d6314 to 0x14d6314 (.annobin_stat64.c_end)
+  GA$<tool>running gcc 0x00000000	OPEN
+    Applies to region from 0x14d6314
+  GA$<tool>annobin gcc 0x00000000	OPEN
+    Applies to region from 0x14d6314
+  GA$<tool>plugin name 0x00000000	OPEN
+    Applies to region from 0x14d6314
+  GA*GOW:0x000000002052a 0x00000000	OPEN
+    Applies to region from 0x14d6314
+  GA*<stack prot>stron 0x00000000	OPEN
+    Applies to region from 0x14d6314
+  GA+stack_clash:true  0x00000000	OPEN
+    Applies to region from 0x14d6314
+  GA*cf_protection:0x008 0x00000000	OPEN
+    Applies to region from 0x14d6314
+  GA*FORTIFY:0x000000002 0x00000000	OPEN
+    Applies to region from 0x14d6314
+  GA+GLIBCXX_ASSERTION: 0x00000000	OPEN
+    Applies to region from 0x14d6314
+  GA*<PIC>PIC          0x00000000	OPEN
+    Applies to region from 0x14d6314
+  GA!<short enum>false 0x00000000	OPEN
+    Applies to region from 0x14d6314
+  GA+omit_frame_pointe: 0x00000000	OPEN
+    Applies to region from 0x14d6314
+  GA*<ABI>0x000000000012 0x00000000	OPEN
+    Applies to region from 0x14d6314
+  GA!stack_realign:fal 0x00000000	OPEN
+    Applies to region from 0x14d6314
+  GA$<version>3p1113   0x00000010	OPEN
+    Applies to region from 0x14d6333 to 0x14d6333 (.annobin_fstat64.c_end)
+  GA$<tool>running gcc 0x00000000	OPEN
+    Applies to region from 0x14d6333
+  GA$<tool>annobin gcc 0x00000000	OPEN
+    Applies to region from 0x14d6333
+  GA$<tool>plugin name 0x00000000	OPEN
+    Applies to region from 0x14d6333
+  GA*GOW:0x000000002052a 0x00000000	OPEN
+    Applies to region from 0x14d6333
+  GA*<stack prot>stron 0x00000000	OPEN
+    Applies to region from 0x14d6333
+  GA+stack_clash:true  0x00000000	OPEN
+    Applies to region from 0x14d6333
+  GA*cf_protection:0x008 0x00000000	OPEN
+    Applies to region from 0x14d6333
+  GA*FORTIFY:0x000000002 0x00000000	OPEN
+    Applies to region from 0x14d6333
+  GA+GLIBCXX_ASSERTION: 0x00000000	OPEN
+    Applies to region from 0x14d6333
+  GA*<PIC>PIC          0x00000000	OPEN
+    Applies to region from 0x14d6333
+  GA!<short enum>false 0x00000000	OPEN
+    Applies to region from 0x14d6333
+  GA+omit_frame_pointe: 0x00000000	OPEN
+    Applies to region from 0x14d6333
+  GA*<ABI>0x000000000012 0x00000000	OPEN
+    Applies to region from 0x14d6333
+  GA!stack_realign:fal 0x00000000	OPEN
+    Applies to region from 0x14d6333
+  GA$<version>3p1113   0x00000010	OPEN
+    Applies to region from 0x14d6354 to 0x14d6354 (.annobin_lstat64.c_end)
+  GA$<tool>running gcc 0x00000000	OPEN
+    Applies to region from 0x14d6354
+  GA$<tool>annobin gcc 0x00000000	OPEN
+    Applies to region from 0x14d6354
+  GA$<tool>plugin name 0x00000000	OPEN
+    Applies to region from 0x14d6354
+  GA*GOW:0x000000002052a 0x00000000	OPEN
+    Applies to region from 0x14d6354
+  GA*<stack prot>stron 0x00000000	OPEN
+    Applies to region from 0x14d6354
+  GA+stack_clash:true  0x00000000	OPEN
+    Applies to region from 0x14d6354
+  GA*cf_protection:0x008 0x00000000	OPEN
+    Applies to region from 0x14d6354
+  GA*FORTIFY:0x000000002 0x00000000	OPEN
+    Applies to region from 0x14d6354
+  GA+GLIBCXX_ASSERTION: 0x00000000	OPEN
+    Applies to region from 0x14d6354
+  GA*<PIC>PIC          0x00000000	OPEN
+    Applies to region from 0x14d6354
+  GA!<short enum>false 0x00000000	OPEN
+    Applies to region from 0x14d6354
+  GA+omit_frame_pointe: 0x00000000	OPEN
+    Applies to region from 0x14d6354
+  GA*<ABI>0x000000000012 0x00000000	OPEN
+    Applies to region from 0x14d6354
+  GA!stack_realign:fal 0x00000000	OPEN
+    Applies to region from 0x14d6354
+
+Displaying notes found in: .gnu.build.attributes.unlikely
+  Owner                Data size 	Description
+  GA$<version>3p1113   0x00000010	OPEN
+    Applies to region from 0x14d62c2 to 0x14d62c2 (.annobin_atexit.c_end)
+  GA$<tool>running gcc 0x00000000	OPEN
+    Applies to region from 0x14d62c2
+  GA$<tool>annobin gcc 0x00000000	OPEN
+    Applies to region from 0x14d62c2
+  GA$<tool>plugin name 0x00000000	OPEN
+    Applies to region from 0x14d62c2
+  GA*GOW:0x000000002052a 0x00000000	OPEN
+    Applies to region from 0x14d62c2
+  GA*<stack prot>stron 0x00000000	OPEN
+    Applies to region from 0x14d62c2
+  GA+stack_clash:true  0x00000000	OPEN
+    Applies to region from 0x14d62c2
+  GA*cf_protection:0x008 0x00000000	OPEN
+    Applies to region from 0x14d62c2
+  GA*FORTIFY:0x000000002 0x00000000	OPEN
+    Applies to region from 0x14d62c2
+  GA+GLIBCXX_ASSERTION: 0x00000000	OPEN
+    Applies to region from 0x14d62c2
+  GA*<PIC>PIC          0x00000000	OPEN
+    Applies to region from 0x14d62c2
+  GA!<short enum>false 0x00000000	OPEN
+    Applies to region from 0x14d62c2
+  GA+omit_frame_pointe: 0x00000000	OPEN
+    Applies to region from 0x14d62c2
+  GA*<ABI>0x000000000012 0x00000000	OPEN
+    Applies to region from 0x14d62c2
+  GA!stack_realign:fal 0x00000000	OPEN
+    Applies to region from 0x14d62c2
+  GA$<version>3p1113   0x00000010	OPEN
+    Applies to region from 0x14d62e0 to 0x14d62e0 (.annobin_pthread_atfork.c_end)
+  GA$<tool>running gcc 0x00000000	OPEN
+    Applies to region from 0x14d62e0
+  GA$<tool>annobin gcc 0x00000000	OPEN
+    Applies to region from 0x14d62e0
+  GA$<tool>plugin name 0x00000000	OPEN
+    Applies to region from 0x14d62e0
+  GA*GOW:0x000000002052a 0x00000000	OPEN
+    Applies to region from 0x14d62e0
+  GA*<stack prot>stron 0x00000000	OPEN
+    Applies to region from 0x14d62e0
+  GA+stack_clash:true  0x00000000	OPEN
+    Applies to region from 0x14d62e0
+  GA*cf_protection:0x008 0x00000000	OPEN
+    Applies to region from 0x14d62e0
+  GA*FORTIFY:0x000000002 0x00000000	OPEN
+    Applies to region from 0x14d62e0
+  GA+GLIBCXX_ASSERTION: 0x00000000	OPEN
+    Applies to region from 0x14d62e0
+  GA*<PIC>PIC          0x00000000	OPEN
+    Applies to region from 0x14d62e0
+  GA!<short enum>false 0x00000000	OPEN
+    Applies to region from 0x14d62e0
+  GA+omit_frame_pointe: 0x00000000	OPEN
+    Applies to region from 0x14d62e0
+  GA*<ABI>0x000000000012 0x00000000	OPEN
+    Applies to region from 0x14d62e0
+  GA!stack_realign:fal 0x00000000	OPEN
+    Applies to region from 0x14d62e0
+  GA$<version>3p1113   0x00000010	OPEN
+    Applies to region from 0x14d62f4 to 0x14d62f4 (.annobin_stat.c_end)
+  GA$<tool>running gcc 0x00000000	OPEN
+    Applies to region from 0x14d62f4
+  GA$<tool>annobin gcc 0x00000000	OPEN
+    Applies to region from 0x14d62f4
+  GA$<tool>plugin name 0x00000000	OPEN
+    Applies to region from 0x14d62f4
+  GA*GOW:0x000000002052a 0x00000000	OPEN
+    Applies to region from 0x14d62f4
+  GA*<stack prot>stron 0x00000000	OPEN
+    Applies to region from 0x14d62f4
+  GA+stack_clash:true  0x00000000	OPEN
+    Applies to region from 0x14d62f4
+  GA*cf_protection:0x008 0x00000000	OPEN
+    Applies to region from 0x14d62f4
+  GA*FORTIFY:0x000000002 0x00000000	OPEN
+    Applies to region from 0x14d62f4
+  GA+GLIBCXX_ASSERTION: 0x00000000	OPEN
+    Applies to region from 0x14d62f4
+  GA*<PIC>PIC          0x00000000	OPEN
+    Applies to region from 0x14d62f4
+  GA!<short enum>false 0x00000000	OPEN
+    Applies to region from 0x14d62f4
+  GA+omit_frame_pointe: 0x00000000	OPEN
+    Applies to region from 0x14d62f4
+  GA*<ABI>0x000000000012 0x00000000	OPEN
+    Applies to region from 0x14d62f4
+  GA!stack_realign:fal 0x00000000	OPEN
+    Applies to region from 0x14d62f4
+  GA$<version>3p1113   0x00000010	OPEN
+    Applies to region from 0x14d6314 to 0x14d6314 (.annobin_stat64.c_end)
+  GA$<tool>running gcc 0x00000000	OPEN
+    Applies to region from 0x14d6314
+  GA$<tool>annobin gcc 0x00000000	OPEN
+    Applies to region from 0x14d6314
+  GA$<tool>plugin name 0x00000000	OPEN
+    Applies to region from 0x14d6314
+  GA*GOW:0x000000002052a 0x00000000	OPEN
+    Applies to region from 0x14d6314
+  GA*<stack prot>stron 0x00000000	OPEN
+    Applies to region from 0x14d6314
+  GA+stack_clash:true  0x00000000	OPEN
+    Applies to region from 0x14d6314
+  GA*cf_protection:0x008 0x00000000	OPEN
+    Applies to region from 0x14d6314
+  GA*FORTIFY:0x000000002 0x00000000	OPEN
+    Applies to region from 0x14d6314
+  GA+GLIBCXX_ASSERTION: 0x00000000	OPEN
+    Applies to region from 0x14d6314
+  GA*<PIC>PIC          0x00000000	OPEN
+    Applies to region from 0x14d6314
+  GA!<short enum>false 0x00000000	OPEN
+    Applies to region from 0x14d6314
+  GA+omit_frame_pointe: 0x00000000	OPEN
+    Applies to region from 0x14d6314
+  GA*<ABI>0x000000000012 0x00000000	OPEN
+    Applies to region from 0x14d6314
+  GA!stack_realign:fal 0x00000000	OPEN
+    Applies to region from 0x14d6314
+  GA$<version>3p1113   0x00000010	OPEN
+    Applies to region from 0x14d6333 to 0x14d6333 (.annobin_fstat64.c_end)
+  GA$<tool>running gcc 0x00000000	OPEN
+    Applies to region from 0x14d6333
+  GA$<tool>annobin gcc 0x00000000	OPEN
+    Applies to region from 0x14d6333
+  GA$<tool>plugin name 0x00000000	OPEN
+    Applies to region from 0x14d6333
+  GA*GOW:0x000000002052a 0x00000000	OPEN
+    Applies to region from 0x14d6333
+  GA*<stack prot>stron 0x00000000	OPEN
+    Applies to region from 0x14d6333
+  GA+stack_clash:true  0x00000000	OPEN
+    Applies to region from 0x14d6333
+  GA*cf_protection:0x008 0x00000000	OPEN
+    Applies to region from 0x14d6333
+  GA*FORTIFY:0x000000002 0x00000000	OPEN
+    Applies to region from 0x14d6333
+  GA+GLIBCXX_ASSERTION: 0x00000000	OPEN
+    Applies to region from 0x14d6333
+  GA*<PIC>PIC          0x00000000	OPEN
+    Applies to region from 0x14d6333
+  GA!<short enum>false 0x00000000	OPEN
+    Applies to region from 0x14d6333
+  GA+omit_frame_pointe: 0x00000000	OPEN
+    Applies to region from 0x14d6333
+  GA*<ABI>0x000000000012 0x00000000	OPEN
+    Applies to region from 0x14d6333
+  GA!stack_realign:fal 0x00000000	OPEN
+    Applies to region from 0x14d6333
+  GA$<version>3p1113   0x00000010	OPEN
+    Applies to region from 0x14d6354 to 0x14d6354 (.annobin_lstat64.c_end)
+  GA$<tool>running gcc 0x00000000	OPEN
+    Applies to region from 0x14d6354
+  GA$<tool>annobin gcc 0x00000000	OPEN
+    Applies to region from 0x14d6354
+  GA$<tool>plugin name 0x00000000	OPEN
+    Applies to region from 0x14d6354
+  GA*GOW:0x000000002052a 0x00000000	OPEN
+    Applies to region from 0x14d6354
+  GA*<stack prot>stron 0x00000000	OPEN
+    Applies to region from 0x14d6354
+  GA+stack_clash:true  0x00000000	OPEN
+    Applies to region from 0x14d6354
+  GA*cf_protection:0x008 0x00000000	OPEN
+    Applies to region from 0x14d6354
+  GA*FORTIFY:0x000000002 0x00000000	OPEN
+    Applies to region from 0x14d6354
+  GA+GLIBCXX_ASSERTION: 0x00000000	OPEN
+    Applies to region from 0x14d6354
+  GA*<PIC>PIC          0x00000000	OPEN
+    Applies to region from 0x14d6354
+  GA!<short enum>false 0x00000000	OPEN
+    Applies to region from 0x14d6354
+  GA+omit_frame_pointe: 0x00000000	OPEN
+    Applies to region from 0x14d6354
+  GA*<ABI>0x000000000012 0x00000000	OPEN
+    Applies to region from 0x14d6354
+  GA!stack_realign:fal 0x00000000	OPEN
+    Applies to region from 0x14d6354
+
+Displaying notes found in: .gnu.build.attributes.startup
+  Owner                Data size 	Description
+  GA$<version>3p1113   0x00000010	OPEN
+    Applies to region from 0x14d62c2 to 0x14d62c2 (.annobin_atexit.c_end)
+  GA$<tool>running gcc 0x00000000	OPEN
+    Applies to region from 0x14d62c2
+  GA$<tool>annobin gcc 0x00000000	OPEN
+    Applies to region from 0x14d62c2
+  GA$<tool>plugin name 0x00000000	OPEN
+    Applies to region from 0x14d62c2
+  GA*GOW:0x000000002052a 0x00000000	OPEN
+    Applies to region from 0x14d62c2
+  GA*<stack prot>stron 0x00000000	OPEN
+    Applies to region from 0x14d62c2
+  GA+stack_clash:true  0x00000000	OPEN
+    Applies to region from 0x14d62c2
+  GA*cf_protection:0x008 0x00000000	OPEN
+    Applies to region from 0x14d62c2
+  GA*FORTIFY:0x000000002 0x00000000	OPEN
+    Applies to region from 0x14d62c2
+  GA+GLIBCXX_ASSERTION: 0x00000000	OPEN
+    Applies to region from 0x14d62c2
+  GA*<PIC>PIC          0x00000000	OPEN
+    Applies to region from 0x14d62c2
+  GA!<short enum>false 0x00000000	OPEN
+    Applies to region from 0x14d62c2
+  GA+omit_frame_pointe: 0x00000000	OPEN
+    Applies to region from 0x14d62c2
+  GA*<ABI>0x000000000012 0x00000000	OPEN
+    Applies to region from 0x14d62c2
+  GA!stack_realign:fal 0x00000000	OPEN
+    Applies to region from 0x14d62c2
+  GA$<version>3p1113   0x00000010	OPEN
+    Applies to region from 0x14d62e0 to 0x14d62e0 (.annobin_pthread_atfork.c_end)
+  GA$<tool>running gcc 0x00000000	OPEN
+    Applies to region from 0x14d62e0
+  GA$<tool>annobin gcc 0x00000000	OPEN
+    Applies to region from 0x14d62e0
+  GA$<tool>plugin name 0x00000000	OPEN
+    Applies to region from 0x14d62e0
+  GA*GOW:0x000000002052a 0x00000000	OPEN
+    Applies to region from 0x14d62e0
+  GA*<stack prot>stron 0x00000000	OPEN
+    Applies to region from 0x14d62e0
+  GA+stack_clash:true  0x00000000	OPEN
+    Applies to region from 0x14d62e0
+  GA*cf_protection:0x008 0x00000000	OPEN
+    Applies to region from 0x14d62e0
+  GA*FORTIFY:0x000000002 0x00000000	OPEN
+    Applies to region from 0x14d62e0
+  GA+GLIBCXX_ASSERTION: 0x00000000	OPEN
+    Applies to region from 0x14d62e0
+  GA*<PIC>PIC          0x00000000	OPEN
+    Applies to region from 0x14d62e0
+  GA!<short enum>false 0x00000000	OPEN
+    Applies to region from 0x14d62e0
+  GA+omit_frame_pointe: 0x00000000	OPEN
+    Applies to region from 0x14d62e0
+  GA*<ABI>0x000000000012 0x00000000	OPEN
+    Applies to region from 0x14d62e0
+  GA!stack_realign:fal 0x00000000	OPEN
+    Applies to region from 0x14d62e0
+  GA$<version>3p1113   0x00000010	OPEN
+    Applies to region from 0x14d62f4 to 0x14d62f4 (.annobin_stat.c_end)
+  GA$<tool>running gcc 0x00000000	OPEN
+    Applies to region from 0x14d62f4
+  GA$<tool>annobin gcc 0x00000000	OPEN
+    Applies to region from 0x14d62f4
+  GA$<tool>plugin name 0x00000000	OPEN
+    Applies to region from 0x14d62f4
+  GA*GOW:0x000000002052a 0x00000000	OPEN
+    Applies to region from 0x14d62f4
+  GA*<stack prot>stron 0x00000000	OPEN
+    Applies to region from 0x14d62f4
+  GA+stack_clash:true  0x00000000	OPEN
+    Applies to region from 0x14d62f4
+  GA*cf_protection:0x008 0x00000000	OPEN
+    Applies to region from 0x14d62f4
+  GA*FORTIFY:0x000000002 0x00000000	OPEN
+    Applies to region from 0x14d62f4
+  GA+GLIBCXX_ASSERTION: 0x00000000	OPEN
+    Applies to region from 0x14d62f4
+  GA*<PIC>PIC          0x00000000	OPEN
+    Applies to region from 0x14d62f4
+  GA!<short enum>false 0x00000000	OPEN
+    Applies to region from 0x14d62f4
+  GA+omit_frame_pointe: 0x00000000	OPEN
+    Applies to region from 0x14d62f4
+  GA*<ABI>0x000000000012 0x00000000	OPEN
+    Applies to region from 0x14d62f4
+  GA!stack_realign:fal 0x00000000	OPEN
+    Applies to region from 0x14d62f4
+  GA$<version>3p1113   0x00000010	OPEN
+    Applies to region from 0x14d6314 to 0x14d6314 (.annobin_stat64.c_end)
+  GA$<tool>running gcc 0x00000000	OPEN
+    Applies to region from 0x14d6314
+  GA$<tool>annobin gcc 0x00000000	OPEN
+    Applies to region from 0x14d6314
+  GA$<tool>plugin name 0x00000000	OPEN
+    Applies to region from 0x14d6314
+  GA*GOW:0x000000002052a 0x00000000	OPEN
+    Applies to region from 0x14d6314
+  GA*<stack prot>stron 0x00000000	OPEN
+    Applies to region from 0x14d6314
+  GA+stack_clash:true  0x00000000	OPEN
+    Applies to region from 0x14d6314
+  GA*cf_protection:0x008 0x00000000	OPEN
+    Applies to region from 0x14d6314
+  GA*FORTIFY:0x000000002 0x00000000	OPEN
+    Applies to region from 0x14d6314
+  GA+GLIBCXX_ASSERTION: 0x00000000	OPEN
+    Applies to region from 0x14d6314
+  GA*<PIC>PIC          0x00000000	OPEN
+    Applies to region from 0x14d6314
+  GA!<short enum>false 0x00000000	OPEN
+    Applies to region from 0x14d6314
+  GA+omit_frame_pointe: 0x00000000	OPEN
+    Applies to region from 0x14d6314
+  GA*<ABI>0x000000000012 0x00000000	OPEN
+    Applies to region from 0x14d6314
+  GA!stack_realign:fal 0x00000000	OPEN
+    Applies to region from 0x14d6314
+  GA$<version>3p1113   0x00000010	OPEN
+    Applies to region from 0x14d6333 to 0x14d6333 (.annobin_fstat64.c_end)
+  GA$<tool>running gcc 0x00000000	OPEN
+    Applies to region from 0x14d6333
+  GA$<tool>annobin gcc 0x00000000	OPEN
+    Applies to region from 0x14d6333
+  GA$<tool>plugin name 0x00000000	OPEN
+    Applies to region from 0x14d6333
+  GA*GOW:0x000000002052a 0x00000000	OPEN
+    Applies to region from 0x14d6333
+  GA*<stack prot>stron 0x00000000	OPEN
+    Applies to region from 0x14d6333
+  GA+stack_clash:true  0x00000000	OPEN
+    Applies to region from 0x14d6333
+  GA*cf_protection:0x008 0x00000000	OPEN
+    Applies to region from 0x14d6333
+  GA*FORTIFY:0x000000002 0x00000000	OPEN
+    Applies to region from 0x14d6333
+  GA+GLIBCXX_ASSERTION: 0x00000000	OPEN
+    Applies to region from 0x14d6333
+  GA*<PIC>PIC          0x00000000	OPEN
+    Applies to region from 0x14d6333
+  GA!<short enum>false 0x00000000	OPEN
+    Applies to region from 0x14d6333
+  GA+omit_frame_pointe: 0x00000000	OPEN
+    Applies to region from 0x14d6333
+  GA*<ABI>0x000000000012 0x00000000	OPEN
+    Applies to region from 0x14d6333
+  GA!stack_realign:fal 0x00000000	OPEN
+    Applies to region from 0x14d6333
+  GA$<version>3p1113   0x00000010	OPEN
+    Applies to region from 0x14d6354 to 0x14d6354 (.annobin_lstat64.c_end)
+  GA$<tool>running gcc 0x00000000	OPEN
+    Applies to region from 0x14d6354
+  GA$<tool>annobin gcc 0x00000000	OPEN
+    Applies to region from 0x14d6354
+  GA$<tool>plugin name 0x00000000	OPEN
+    Applies to region from 0x14d6354
+  GA*GOW:0x000000002052a 0x00000000	OPEN
+    Applies to region from 0x14d6354
+  GA*<stack prot>stron 0x00000000	OPEN
+    Applies to region from 0x14d6354
+  GA+stack_clash:true  0x00000000	OPEN
+    Applies to region from 0x14d6354
+  GA*cf_protection:0x008 0x00000000	OPEN
+    Applies to region from 0x14d6354
+  GA*FORTIFY:0x000000002 0x00000000	OPEN
+    Applies to region from 0x14d6354
+  GA+GLIBCXX_ASSERTION: 0x00000000	OPEN
+    Applies to region from 0x14d6354
+  GA*<PIC>PIC          0x00000000	OPEN
+    Applies to region from 0x14d6354
+  GA!<short enum>false 0x00000000	OPEN
+    Applies to region from 0x14d6354
+  GA+omit_frame_pointe: 0x00000000	OPEN
+    Applies to region from 0x14d6354
+  GA*<ABI>0x000000000012 0x00000000	OPEN
+    Applies to region from 0x14d6354
+  GA!stack_realign:fal 0x00000000	OPEN
+    Applies to region from 0x14d6354
+
+Displaying notes found in: .gnu.build.attributes.exit
+  Owner                Data size 	Description
+  GA$<version>3p1113   0x00000010	OPEN
+    Applies to region from 0x14d62c2 to 0x14d62c2 (.annobin_atexit.c_end)
+  GA$<tool>running gcc 0x00000000	OPEN
+    Applies to region from 0x14d62c2
+  GA$<tool>annobin gcc 0x00000000	OPEN
+    Applies to region from 0x14d62c2
+  GA$<tool>plugin name 0x00000000	OPEN
+    Applies to region from 0x14d62c2
+  GA*GOW:0x000000002052a 0x00000000	OPEN
+    Applies to region from 0x14d62c2
+  GA*<stack prot>stron 0x00000000	OPEN
+    Applies to region from 0x14d62c2
+  GA+stack_clash:true  0x00000000	OPEN
+    Applies to region from 0x14d62c2
+  GA*cf_protection:0x008 0x00000000	OPEN
+    Applies to region from 0x14d62c2
+  GA*FORTIFY:0x000000002 0x00000000	OPEN
+    Applies to region from 0x14d62c2
+  GA+GLIBCXX_ASSERTION: 0x00000000	OPEN
+    Applies to region from 0x14d62c2
+  GA*<PIC>PIC          0x00000000	OPEN
+    Applies to region from 0x14d62c2
+  GA!<short enum>false 0x00000000	OPEN
+    Applies to region from 0x14d62c2
+  GA+omit_frame_pointe: 0x00000000	OPEN
+    Applies to region from 0x14d62c2
+  GA*<ABI>0x000000000012 0x00000000	OPEN
+    Applies to region from 0x14d62c2
+  GA!stack_realign:fal 0x00000000	OPEN
+    Applies to region from 0x14d62c2
+  GA$<version>3p1113   0x00000010	OPEN
+    Applies to region from 0x14d62e0 to 0x14d62e0 (.annobin_pthread_atfork.c_end)
+  GA$<tool>running gcc 0x00000000	OPEN
+    Applies to region from 0x14d62e0
+  GA$<tool>annobin gcc 0x00000000	OPEN
+    Applies to region from 0x14d62e0
+  GA$<tool>plugin name 0x00000000	OPEN
+    Applies to region from 0x14d62e0
+  GA*GOW:0x000000002052a 0x00000000	OPEN
+    Applies to region from 0x14d62e0
+  GA*<stack prot>stron 0x00000000	OPEN
+    Applies to region from 0x14d62e0
+  GA+stack_clash:true  0x00000000	OPEN
+    Applies to region from 0x14d62e0
+  GA*cf_protection:0x008 0x00000000	OPEN
+    Applies to region from 0x14d62e0
+  GA*FORTIFY:0x000000002 0x00000000	OPEN
+    Applies to region from 0x14d62e0
+  GA+GLIBCXX_ASSERTION: 0x00000000	OPEN
+    Applies to region from 0x14d62e0
+  GA*<PIC>PIC          0x00000000	OPEN
+    Applies to region from 0x14d62e0
+  GA!<short enum>false 0x00000000	OPEN
+    Applies to region from 0x14d62e0
+  GA+omit_frame_pointe: 0x00000000	OPEN
+    Applies to region from 0x14d62e0
+  GA*<ABI>0x000000000012 0x00000000	OPEN
+    Applies to region from 0x14d62e0
+  GA!stack_realign:fal 0x00000000	OPEN
+    Applies to region from 0x14d62e0
+  GA$<version>3p1113   0x00000010	OPEN
+    Applies to region from 0x14d62f4 to 0x14d62f4 (.annobin_stat.c_end)
+  GA$<tool>running gcc 0x00000000	OPEN
+    Applies to region from 0x14d62f4
+  GA$<tool>annobin gcc 0x00000000	OPEN
+    Applies to region from 0x14d62f4
+  GA$<tool>plugin name 0x00000000	OPEN
+    Applies to region from 0x14d62f4
+  GA*GOW:0x000000002052a 0x00000000	OPEN
+    Applies to region from 0x14d62f4
+  GA*<stack prot>stron 0x00000000	OPEN
+    Applies to region from 0x14d62f4
+  GA+stack_clash:true  0x00000000	OPEN
+    Applies to region from 0x14d62f4
+  GA*cf_protection:0x008 0x00000000	OPEN
+    Applies to region from 0x14d62f4
+  GA*FORTIFY:0x000000002 0x00000000	OPEN
+    Applies to region from 0x14d62f4
+  GA+GLIBCXX_ASSERTION: 0x00000000	OPEN
+    Applies to region from 0x14d62f4
+  GA*<PIC>PIC          0x00000000	OPEN
+    Applies to region from 0x14d62f4
+  GA!<short enum>false 0x00000000	OPEN
+    Applies to region from 0x14d62f4
+  GA+omit_frame_pointe: 0x00000000	OPEN
+    Applies to region from 0x14d62f4
+  GA*<ABI>0x000000000012 0x00000000	OPEN
+    Applies to region from 0x14d62f4
+  GA!stack_realign:fal 0x00000000	OPEN
+    Applies to region from 0x14d62f4
+  GA$<version>3p1113   0x00000010	OPEN
+    Applies to region from 0x14d6314 to 0x14d6314 (.annobin_stat64.c_end)
+  GA$<tool>running gcc 0x00000000	OPEN
+    Applies to region from 0x14d6314
+  GA$<tool>annobin gcc 0x00000000	OPEN
+    Applies to region from 0x14d6314
+  GA$<tool>plugin name 0x00000000	OPEN
+    Applies to region from 0x14d6314
+  GA*GOW:0x000000002052a 0x00000000	OPEN
+    Applies to region from 0x14d6314
+  GA*<stack prot>stron 0x00000000	OPEN
+    Applies to region from 0x14d6314
+  GA+stack_clash:true  0x00000000	OPEN
+    Applies to region from 0x14d6314
+  GA*cf_protection:0x008 0x00000000	OPEN
+    Applies to region from 0x14d6314
+  GA*FORTIFY:0x000000002 0x00000000	OPEN
+    Applies to region from 0x14d6314
+  GA+GLIBCXX_ASSERTION: 0x00000000	OPEN
+    Applies to region from 0x14d6314
+  GA*<PIC>PIC          0x00000000	OPEN
+    Applies to region from 0x14d6314
+  GA!<short enum>false 0x00000000	OPEN
+    Applies to region from 0x14d6314
+  GA+omit_frame_pointe: 0x00000000	OPEN
+    Applies to region from 0x14d6314
+  GA*<ABI>0x000000000012 0x00000000	OPEN
+    Applies to region from 0x14d6314
+  GA!stack_realign:fal 0x00000000	OPEN
+    Applies to region from 0x14d6314
+  GA$<version>3p1113   0x00000010	OPEN
+    Applies to region from 0x14d6333 to 0x14d6333 (.annobin_fstat64.c_end)
+  GA$<tool>running gcc 0x00000000	OPEN
+    Applies to region from 0x14d6333
+  GA$<tool>annobin gcc 0x00000000	OPEN
+    Applies to region from 0x14d6333
+  GA$<tool>plugin name 0x00000000	OPEN
+    Applies to region from 0x14d6333
+  GA*GOW:0x000000002052a 0x00000000	OPEN
+    Applies to region from 0x14d6333
+  GA*<stack prot>stron 0x00000000	OPEN
+    Applies to region from 0x14d6333
+  GA+stack_clash:true  0x00000000	OPEN
+    Applies to region from 0x14d6333
+  GA*cf_protection:0x008 0x00000000	OPEN
+    Applies to region from 0x14d6333
+  GA*FORTIFY:0x000000002 0x00000000	OPEN
+    Applies to region from 0x14d6333
+  GA+GLIBCXX_ASSERTION: 0x00000000	OPEN
+    Applies to region from 0x14d6333
+  GA*<PIC>PIC          0x00000000	OPEN
+    Applies to region from 0x14d6333
+  GA!<short enum>false 0x00000000	OPEN
+    Applies to region from 0x14d6333
+  GA+omit_frame_pointe: 0x00000000	OPEN
+    Applies to region from 0x14d6333
+  GA*<ABI>0x000000000012 0x00000000	OPEN
+    Applies to region from 0x14d6333
+  GA!stack_realign:fal 0x00000000	OPEN
+    Applies to region from 0x14d6333
+  GA$<version>3p1113   0x00000010	OPEN
+    Applies to region from 0x14d6354 to 0x14d6354 (.annobin_lstat64.c_end)
+  GA$<tool>running gcc 0x00000000	OPEN
+    Applies to region from 0x14d6354
+  GA$<tool>annobin gcc 0x00000000	OPEN
+    Applies to region from 0x14d6354
+  GA$<tool>plugin name 0x00000000	OPEN
+    Applies to region from 0x14d6354
+  GA*GOW:0x000000002052a 0x00000000	OPEN
+    Applies to region from 0x14d6354
+  GA*<stack prot>stron 0x00000000	OPEN
+    Applies to region from 0x14d6354
+  GA+stack_clash:true  0x00000000	OPEN
+    Applies to region from 0x14d6354
+  GA*cf_protection:0x008 0x00000000	OPEN
+    Applies to region from 0x14d6354
+  GA*FORTIFY:0x000000002 0x00000000	OPEN
+    Applies to region from 0x14d6354
+  GA+GLIBCXX_ASSERTION: 0x00000000	OPEN
+    Applies to region from 0x14d6354
+  GA*<PIC>PIC          0x00000000	OPEN
+    Applies to region from 0x14d6354
+  GA!<short enum>false 0x00000000	OPEN
+    Applies to region from 0x14d6354
+  GA+omit_frame_pointe: 0x00000000	OPEN
+    Applies to region from 0x14d6354
+  GA*<ABI>0x000000000012 0x00000000	OPEN
+    Applies to region from 0x14d6354
+  GA!stack_realign:fal 0x00000000	OPEN
+    Applies to region from 0x14d6354

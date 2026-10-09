@@ -1,0 +1,59 @@
+
+/opt/Synopsys/verdi/Y-2026.03-SP2/share/FsdbReader/linux64/libnffr.so:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+0000000000713472 <ffrDisk::ReadVCFsdbHeader()>:
+  713472:	41 54                	push   %r12
+  713474:	55                   	push   %rbp
+  713475:	53                   	push   %rbx
+  713476:	48 89 fd             	mov    %rdi,%rbp
+  713479:	48 8b 87 a0 00 00 00 	mov    0xa0(%rdi),%rax
+  713480:	48 83 b8 68 1f 00 00 	cmpq   $0x0,0x1f68(%rax)
+  713487:	00 
+  713488:	0f 84 a9 00 00 00    	je     713537 <ffrDisk::ReadVCFsdbHeader()+0xc5>
+  71348e:	83 b8 70 1f 00 00 00 	cmpl   $0x0,0x1f70(%rax)
+  713495:	0f 84 9c 00 00 00    	je     713537 <ffrDisk::ReadVCFsdbHeader()+0xc5>
+  71349b:	bb 00 00 00 00       	mov    $0x0,%ebx
+  7134a0:	41 bc 00 00 00 00    	mov    $0x0,%r12d
+  7134a6:	48 89 de             	mov    %rbx,%rsi
+  7134a9:	48 03 b0 68 1f 00 00 	add    0x1f68(%rax),%rsi
+  7134b0:	8b be 00 10 00 00    	mov    0x1000(%rsi),%edi
+  7134b6:	b9 00 00 00 00       	mov    $0x0,%ecx
+  7134bb:	ba 00 10 00 00       	mov    $0x1000,%edx
+  7134c0:	e8 3a 08 1e 00       	callq  8f3cff <wrap_pread>
+  7134c5:	48 85 c0             	test   %rax,%rax
+  7134c8:	78 7a                	js     713544 <ffrDisk::ReadVCFsdbHeader()+0xd2>
+  7134ca:	48 8b b5 a0 00 00 00 	mov    0xa0(%rbp),%rsi
+  7134d1:	48 89 df             	mov    %rbx,%rdi
+  7134d4:	48 03 be 68 1f 00 00 	add    0x1f68(%rsi),%rdi
+  7134db:	48 81 c7 00 08 00 00 	add    $0x800,%rdi
+  7134e2:	48 81 c6 38 0c 00 00 	add    $0xc38,%rsi
+  7134e9:	48 89 fa             	mov    %rdi,%rdx
+  7134ec:	e8 37 ff ff ff       	callq  713428 <HLTagAPlusBIsC(fsdbXTag*, fsdbXTag*, fsdbXTag*)>
+  7134f1:	48 8b b5 a0 00 00 00 	mov    0xa0(%rbp),%rsi
+  7134f8:	48 89 df             	mov    %rbx,%rdi
+  7134fb:	48 03 be 68 1f 00 00 	add    0x1f68(%rsi),%rdi
+  713502:	48 81 c7 08 08 00 00 	add    $0x808,%rdi
+  713509:	48 81 c6 38 0c 00 00 	add    $0xc38,%rsi
+  713510:	48 89 fa             	mov    %rdi,%rdx
+  713513:	e8 10 ff ff ff       	callq  713428 <HLTagAPlusBIsC(fsdbXTag*, fsdbXTag*, fsdbXTag*)>
+  713518:	41 83 c4 01          	add    $0x1,%r12d
+  71351c:	48 8b 85 a0 00 00 00 	mov    0xa0(%rbp),%rax
+  713523:	48 81 c3 f8 10 00 00 	add    $0x10f8,%rbx
+  71352a:	44 3b a0 70 1f 00 00 	cmp    0x1f70(%rax),%r12d
+  713531:	0f 82 6f ff ff ff    	jb     7134a6 <ffrDisk::ReadVCFsdbHeader()+0x34>
+  713537:	48 89 ef             	mov    %rbp,%rdi
+  71353a:	e8 c1 f8 e3 00       	callq  1552e00 <ffrDisk::AdjustMinMaxTime()@plt>
+  71353f:	5b                   	pop    %rbx
+  713540:	5d                   	pop    %rbp
+  713541:	41 5c                	pop    %r12
+  713543:	c3                   	retq   
+  713544:	e8 77 e5 e3 00       	callq  1551ac0 <__errno_location@plt>
+  713549:	8b 30                	mov    (%rax),%esi
+  71354b:	48 8d 3d 16 84 b4 ff 	lea    -0x4b7bea(%rip),%rdi        # 25b968 <davinciThreadIndex+0x258148>
+  713552:	b8 00 00 00 00       	mov    $0x0,%eax
+  713557:	e8 74 e9 e3 00       	callq  1551ed0 <sysWarn@plt>
+  71355c:	b8 ff ff ff ff       	mov    $0xffffffff,%eax
+  713561:	eb dc                	jmp    71353f <ffrDisk::ReadVCFsdbHeader()+0xcd>

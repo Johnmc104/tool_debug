@@ -1,0 +1,142 @@
+
+/opt/Synopsys/verdi/Y-2026.03-SP2/share/FsdbReader/linux64/libnffr.so:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+00000000007088ef <ReadFlushHdr(int, int, unsigned char, fsdbFlushHdr*, unsigned char)>:
+  7088ef:	48 85 c9             	test   %rcx,%rcx
+  7088f2:	0f 84 f7 01 00 00    	je     708aef <ReadFlushHdr(int, int, unsigned char, fsdbFlushHdr*, unsigned char)+0x200>
+  7088f8:	41 57                	push   %r15
+  7088fa:	41 56                	push   %r14
+  7088fc:	41 55                	push   %r13
+  7088fe:	41 54                	push   %r12
+  708900:	55                   	push   %rbp
+  708901:	53                   	push   %rbx
+  708902:	48 83 ec 08          	sub    $0x8,%rsp
+  708906:	41 89 fd             	mov    %edi,%r13d
+  708909:	41 89 f6             	mov    %esi,%r14d
+  70890c:	48 89 cb             	mov    %rcx,%rbx
+  70890f:	44 89 c5             	mov    %r8d,%ebp
+  708912:	45 84 c0             	test   %r8b,%r8b
+  708915:	75 71                	jne    708988 <ReadFlushHdr(int, int, unsigned char, fsdbFlushHdr*, unsigned char)+0x99>
+  708917:	ba 01 00 00 00       	mov    $0x1,%edx
+  70891c:	be 00 00 00 00       	mov    $0x0,%esi
+  708921:	e8 1e b2 1e 00       	callq  8f3b44 <wrap_lseek>
+  708926:	49 89 c4             	mov    %rax,%r12
+  708929:	48 3d 38 01 00 00    	cmp    $0x138,%rax
+  70892f:	0f 84 6c 01 00 00    	je     708aa1 <ReadFlushHdr(int, int, unsigned char, fsdbFlushHdr*, unsigned char)+0x1b2>
+  708935:	ba 00 00 00 00       	mov    $0x0,%edx
+  70893a:	be 38 01 00 00       	mov    $0x138,%esi
+  70893f:	44 89 ef             	mov    %r13d,%edi
+  708942:	e8 fd b1 1e 00       	callq  8f3b44 <wrap_lseek>
+  708947:	48 85 c0             	test   %rax,%rax
+  70894a:	0f 88 e4 00 00 00    	js     708a34 <ReadFlushHdr(int, int, unsigned char, fsdbFlushHdr*, unsigned char)+0x145>
+  708950:	48 c7 03 00 00 00 00 	movq   $0x0,(%rbx)
+  708957:	48 c7 83 f8 03 00 00 	movq   $0x0,0x3f8(%rbx)
+  70895e:	00 00 00 00 
+  708962:	48 8d 7b 08          	lea    0x8(%rbx),%rdi
+  708966:	48 83 e7 f8          	and    $0xfffffffffffffff8,%rdi
+  70896a:	48 89 d9             	mov    %rbx,%rcx
+  70896d:	48 29 f9             	sub    %rdi,%rcx
+  708970:	81 c1 00 04 00 00    	add    $0x400,%ecx
+  708976:	c1 e9 03             	shr    $0x3,%ecx
+  708979:	89 c9                	mov    %ecx,%ecx
+  70897b:	b8 00 00 00 00       	mov    $0x0,%eax
+  708980:	f3 48 ab             	rep stos %rax,%es:(%rdi)
+  708983:	e9 4c 01 00 00       	jmpq   708ad4 <ReadFlushHdr(int, int, unsigned char, fsdbFlushHdr*, unsigned char)+0x1e5>
+  708988:	45 0f b6 f8          	movzbl %r8b,%r15d
+  70898c:	44 89 ff             	mov    %r15d,%edi
+  70898f:	e8 9c a3 e4 00       	callq  1552d30 <ffrDisk::GetFixedHdrSize(unsigned char)@plt>
+  708994:	41 89 c4             	mov    %eax,%r12d
+  708997:	44 89 ff             	mov    %r15d,%edi
+  70899a:	e8 a1 a3 e4 00       	callq  1552d40 <ffrDisk::GetCloseHdrSize(unsigned char)@plt>
+  70899f:	45 8d 3c 04          	lea    (%r12,%rax,1),%r15d
+  7089a3:	ba 01 00 00 00       	mov    $0x1,%edx
+  7089a8:	be 00 00 00 00       	mov    $0x0,%esi
+  7089ad:	44 89 ef             	mov    %r13d,%edi
+  7089b0:	e8 8f b1 1e 00       	callq  8f3b44 <wrap_lseek>
+  7089b5:	49 89 c4             	mov    %rax,%r12
+  7089b8:	49 39 c7             	cmp    %rax,%r15
+  7089bb:	0f 84 a5 00 00 00    	je     708a66 <ReadFlushHdr(int, int, unsigned char, fsdbFlushHdr*, unsigned char)+0x177>
+  7089c1:	ba 00 00 00 00       	mov    $0x0,%edx
+  7089c6:	4c 89 fe             	mov    %r15,%rsi
+  7089c9:	44 89 ef             	mov    %r13d,%edi
+  7089cc:	e8 73 b1 1e 00       	callq  8f3b44 <wrap_lseek>
+  7089d1:	48 85 c0             	test   %rax,%rax
+  7089d4:	78 5e                	js     708a34 <ReadFlushHdr(int, int, unsigned char, fsdbFlushHdr*, unsigned char)+0x145>
+  7089d6:	48 c7 03 00 00 00 00 	movq   $0x0,(%rbx)
+  7089dd:	48 c7 83 f8 03 00 00 	movq   $0x0,0x3f8(%rbx)
+  7089e4:	00 00 00 00 
+  7089e8:	48 8d 7b 08          	lea    0x8(%rbx),%rdi
+  7089ec:	48 83 e7 f8          	and    $0xfffffffffffffff8,%rdi
+  7089f0:	48 89 d9             	mov    %rbx,%rcx
+  7089f3:	48 29 f9             	sub    %rdi,%rcx
+  7089f6:	81 c1 00 04 00 00    	add    $0x400,%ecx
+  7089fc:	c1 e9 03             	shr    $0x3,%ecx
+  7089ff:	89 c9                	mov    %ecx,%ecx
+  708a01:	b8 00 00 00 00       	mov    $0x0,%eax
+  708a06:	f3 48 ab             	rep stos %rax,%es:(%rdi)
+  708a09:	48 89 ea             	mov    %rbp,%rdx
+  708a0c:	48 c1 e2 08          	shl    $0x8,%rdx
+  708a10:	81 e2 00 ff 00 00    	and    $0xff00,%edx
+  708a16:	48 89 de             	mov    %rbx,%rsi
+  708a19:	44 89 ef             	mov    %r13d,%edi
+  708a1c:	e8 9d b1 1e 00       	callq  8f3bbe <wrap_read>
+  708a21:	41 81 fe 04 03 02 01 	cmp    $0x1020304,%r14d
+  708a28:	75 19                	jne    708a43 <ReadFlushHdr(int, int, unsigned char, fsdbFlushHdr*, unsigned char)+0x154>
+  708a2a:	4d 39 e7             	cmp    %r12,%r15
+  708a2d:	74 05                	je     708a34 <ReadFlushHdr(int, int, unsigned char, fsdbFlushHdr*, unsigned char)+0x145>
+  708a2f:	4d 85 e4             	test   %r12,%r12
+  708a32:	79 20                	jns    708a54 <ReadFlushHdr(int, int, unsigned char, fsdbFlushHdr*, unsigned char)+0x165>
+  708a34:	48 83 c4 08          	add    $0x8,%rsp
+  708a38:	5b                   	pop    %rbx
+  708a39:	5d                   	pop    %rbp
+  708a3a:	41 5c                	pop    %r12
+  708a3c:	41 5d                	pop    %r13
+  708a3e:	41 5e                	pop    %r14
+  708a40:	41 5f                	pop    %r15
+  708a42:	c3                   	retq   
+  708a43:	40 0f b6 d5          	movzbl %bpl,%edx
+  708a47:	48 89 de             	mov    %rbx,%rsi
+  708a4a:	44 89 f7             	mov    %r14d,%edi
+  708a4d:	e8 b3 fb ff ff       	callq  708605 <ByteSwap_FlushHdr(int, fsdbFlushHdr*, unsigned char)>
+  708a52:	eb d6                	jmp    708a2a <ReadFlushHdr(int, int, unsigned char, fsdbFlushHdr*, unsigned char)+0x13b>
+  708a54:	ba 00 00 00 00       	mov    $0x0,%edx
+  708a59:	4c 89 e6             	mov    %r12,%rsi
+  708a5c:	44 89 ef             	mov    %r13d,%edi
+  708a5f:	e8 e0 b0 1e 00       	callq  8f3b44 <wrap_lseek>
+  708a64:	eb ce                	jmp    708a34 <ReadFlushHdr(int, int, unsigned char, fsdbFlushHdr*, unsigned char)+0x145>
+  708a66:	48 c7 03 00 00 00 00 	movq   $0x0,(%rbx)
+  708a6d:	48 c7 83 f8 03 00 00 	movq   $0x0,0x3f8(%rbx)
+  708a74:	00 00 00 00 
+  708a78:	48 8d 7b 08          	lea    0x8(%rbx),%rdi
+  708a7c:	48 83 e7 f8          	and    $0xfffffffffffffff8,%rdi
+  708a80:	48 89 d9             	mov    %rbx,%rcx
+  708a83:	48 29 f9             	sub    %rdi,%rcx
+  708a86:	81 c1 00 04 00 00    	add    $0x400,%ecx
+  708a8c:	c1 e9 03             	shr    $0x3,%ecx
+  708a8f:	89 c9                	mov    %ecx,%ecx
+  708a91:	b8 00 00 00 00       	mov    $0x0,%eax
+  708a96:	f3 48 ab             	rep stos %rax,%es:(%rdi)
+  708a99:	4d 89 e7             	mov    %r12,%r15
+  708a9c:	e9 68 ff ff ff       	jmpq   708a09 <ReadFlushHdr(int, int, unsigned char, fsdbFlushHdr*, unsigned char)+0x11a>
+  708aa1:	48 c7 03 00 00 00 00 	movq   $0x0,(%rbx)
+  708aa8:	48 c7 83 f8 03 00 00 	movq   $0x0,0x3f8(%rbx)
+  708aaf:	00 00 00 00 
+  708ab3:	48 8d 7b 08          	lea    0x8(%rbx),%rdi
+  708ab7:	48 83 e7 f8          	and    $0xfffffffffffffff8,%rdi
+  708abb:	48 89 d9             	mov    %rbx,%rcx
+  708abe:	48 29 f9             	sub    %rdi,%rcx
+  708ac1:	81 c1 00 04 00 00    	add    $0x400,%ecx
+  708ac7:	c1 e9 03             	shr    $0x3,%ecx
+  708aca:	89 c9                	mov    %ecx,%ecx
+  708acc:	b8 00 00 00 00       	mov    $0x0,%eax
+  708ad1:	f3 48 ab             	rep stos %rax,%es:(%rdi)
+  708ad4:	ba c8 00 00 00       	mov    $0xc8,%edx
+  708ad9:	48 89 de             	mov    %rbx,%rsi
+  708adc:	44 89 ef             	mov    %r13d,%edi
+  708adf:	e8 da b0 1e 00       	callq  8f3bbe <wrap_read>
+  708ae4:	41 bf 38 01 00 00    	mov    $0x138,%r15d
+  708aea:	e9 32 ff ff ff       	jmpq   708a21 <ReadFlushHdr(int, int, unsigned char, fsdbFlushHdr*, unsigned char)+0x132>
+  708aef:	c3                   	retq   

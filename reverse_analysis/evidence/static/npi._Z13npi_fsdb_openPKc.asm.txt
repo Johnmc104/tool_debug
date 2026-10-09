@@ -1,0 +1,51 @@
+
+/opt/Synopsys/verdi/Y-2026.03-SP2/share/NPI/lib/linux64/libNPI.so:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+000000000222b84b <npi_fsdb_open(char const*)>:
+ 222b84b:	55                   	push   %rbp
+ 222b84c:	53                   	push   %rbx
+ 222b84d:	48 83 ec 08          	sub    $0x8,%rsp
+ 222b851:	48 89 fb             	mov    %rdi,%rbx
+ 222b854:	48 8b 05 1d b8 65 03 	mov    0x365b81d(%rip),%rax        # 5887078 <.got+0x458>
+ 222b85b:	48 83 38 00          	cmpq   $0x0,(%rax)
+ 222b85f:	74 1f                	je     222b880 <npi_fsdb_open(char const*)+0x35>
+ 222b861:	48 8b 05 10 b8 65 03 	mov    0x365b810(%rip),%rax        # 5887078 <.got+0x458>
+ 222b868:	48 8b 00             	mov    (%rax),%rax
+ 222b86b:	f6 40 20 01          	testb  $0x1,0x20(%rax)
+ 222b86f:	74 48                	je     222b8b9 <npi_fsdb_open(char const*)+0x6e>
+ 222b871:	48 89 df             	mov    %rbx,%rdi
+ 222b874:	e8 b7 fa ff ff       	callq  222b330 <npi_fsdb_direct_open(char const*)>
+ 222b879:	48 83 c4 08          	add    $0x8,%rsp
+ 222b87d:	5b                   	pop    %rbx
+ 222b87e:	5d                   	pop    %rbp
+ 222b87f:	c3                   	retq   
+ 222b880:	bf f0 00 00 00       	mov    $0xf0,%edi
+ 222b885:	e8 e6 59 6b 02       	callq  48e1270 <operator new(unsigned long)>
+ 222b88a:	48 89 c5             	mov    %rax,%rbp
+ 222b88d:	48 89 c7             	mov    %rax,%rdi
+ 222b890:	e8 0b 62 06 00       	callq  2291aa0 <dsys_cntr_t::dsys_cntr_t()>
+ 222b895:	48 8b 05 dc b7 65 03 	mov    0x365b7dc(%rip),%rax        # 5887078 <.got+0x458>
+ 222b89c:	48 89 28             	mov    %rbp,(%rax)
+ 222b89f:	eb c0                	jmp    222b861 <npi_fsdb_open(char const*)+0x16>
+ 222b8a1:	48 89 c3             	mov    %rax,%rbx
+ 222b8a4:	be f0 00 00 00       	mov    $0xf0,%esi
+ 222b8a9:	48 89 ef             	mov    %rbp,%rdi
+ 222b8ac:	e8 3f 10 64 02       	callq  486c8f0 <operator delete(void*, unsigned long)>
+ 222b8b1:	48 89 df             	mov    %rbx,%rdi
+ 222b8b4:	e8 f7 2f ec 02       	callq  50ee8b0 <_Unwind_Resume>
+ 222b8b9:	e8 5a fa fd ff       	callq  220b318 <fda_log()>
+ 222b8be:	89 c2                	mov    %eax,%edx
+ 222b8c0:	b8 00 00 00 00       	mov    $0x0,%eax
+ 222b8c5:	85 d2                	test   %edx,%edx
+ 222b8c7:	74 b0                	je     222b879 <npi_fsdb_open(char const*)+0x2e>
+ 222b8c9:	48 8b 05 08 ba 65 03 	mov    0x365ba08(%rip),%rax        # 58872d8 <stderr@GLIBC_2.2.5>
+ 222b8d0:	48 8b 38             	mov    (%rax),%rdi
+ 222b8d3:	48 8d 15 94 a1 ff fe 	lea    -0x1005e6c(%rip),%rdx        # 1225a6e <ul_jrand_seed+0x1206602>
+ 222b8da:	48 8d 35 af 60 03 ff 	lea    -0xfc9f51(%rip),%rsi        # 1261990 <ul_jrand_seed+0x1242524>
+ 222b8e1:	b8 00 00 00 00       	mov    $0x0,%eax
+ 222b8e6:	e8 55 4a ee 02       	callq  5110340 <fprintf@plt>
+ 222b8eb:	b8 00 00 00 00       	mov    $0x0,%eax
+ 222b8f0:	eb 87                	jmp    222b879 <npi_fsdb_open(char const*)+0x2e>

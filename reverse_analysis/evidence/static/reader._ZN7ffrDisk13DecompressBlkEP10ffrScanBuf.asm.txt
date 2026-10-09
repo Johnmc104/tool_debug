@@ -1,0 +1,511 @@
+
+/opt/Synopsys/verdi/Y-2026.03-SP2/share/FsdbReader/linux64/libnffr.so:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+000000000073db9c <ffrDisk::DecompressBlk(ffrScanBuf*)>:
+  73db9c:	55                   	push   %rbp
+  73db9d:	48 89 e5             	mov    %rsp,%rbp
+  73dba0:	41 57                	push   %r15
+  73dba2:	41 56                	push   %r14
+  73dba4:	41 55                	push   %r13
+  73dba6:	41 54                	push   %r12
+  73dba8:	53                   	push   %rbx
+  73dba9:	48 83 e4 f0          	and    $0xfffffffffffffff0,%rsp
+  73dbad:	48 83 ec 30          	sub    $0x30,%rsp
+  73dbb1:	48 8b 87 a0 00 00 00 	mov    0xa0(%rdi),%rax
+  73dbb8:	83 b8 5c 16 00 00 00 	cmpl   $0x0,0x165c(%rax)
+  73dbbf:	0f 85 36 08 00 00    	jne    73e3fb <ffrDisk::DecompressBlk(ffrScanBuf*)+0x85f>
+  73dbc5:	49 89 fc             	mov    %rdi,%r12
+  73dbc8:	48 89 f3             	mov    %rsi,%rbx
+  73dbcb:	48 85 f6             	test   %rsi,%rsi
+  73dbce:	0f 84 27 08 00 00    	je     73e3fb <ffrDisk::DecompressBlk(ffrScanBuf*)+0x85f>
+  73dbd4:	80 7e 0c 01          	cmpb   $0x1,0xc(%rsi)
+  73dbd8:	0f 84 e4 00 00 00    	je     73dcc2 <ffrDisk::DecompressBlk(ffrScanBuf*)+0x126>
+  73dbde:	48 8b 7b 50          	mov    0x50(%rbx),%rdi
+  73dbe2:	48 85 ff             	test   %rdi,%rdi
+  73dbe5:	74 0a                	je     73dbf1 <ffrDisk::DecompressBlk(ffrScanBuf*)+0x55>
+  73dbe7:	80 7b 0f 00          	cmpb   $0x0,0xf(%rbx)
+  73dbeb:	0f 84 63 01 00 00    	je     73dd54 <ffrDisk::DecompressBlk(ffrScanBuf*)+0x1b8>
+  73dbf1:	8b 4b 14             	mov    0x14(%rbx),%ecx
+  73dbf4:	8b 53 18             	mov    0x18(%rbx),%edx
+  73dbf7:	0f b6 73 26          	movzbl 0x26(%rbx),%esi
+  73dbfb:	4c 89 e7             	mov    %r12,%rdi
+  73dbfe:	e8 5d 4f fd ff       	callq  712b60 <ffrDisk::GetFileDescriptorByTmpFileBlkType(unsigned char, unsigned int, unsigned int)>
+  73dc03:	41 89 c6             	mov    %eax,%r14d
+  73dc06:	49 8b 84 24 a0 00 00 	mov    0xa0(%r12),%rax
+  73dc0d:	00 
+  73dc0e:	48 83 b8 a0 0c 00 00 	cmpq   $0x0,0xca0(%rax)
+  73dc15:	00 
+  73dc16:	74 3e                	je     73dc56 <ffrDisk::DecompressBlk(ffrScanBuf*)+0xba>
+  73dc18:	48 39 98 30 10 00 00 	cmp    %rbx,0x1030(%rax)
+  73dc1f:	74 24                	je     73dc45 <ffrDisk::DecompressBlk(ffrScanBuf*)+0xa9>
+  73dc21:	48 39 98 38 10 00 00 	cmp    %rbx,0x1038(%rax)
+  73dc28:	74 1b                	je     73dc45 <ffrDisk::DecompressBlk(ffrScanBuf*)+0xa9>
+  73dc2a:	48 39 98 40 10 00 00 	cmp    %rbx,0x1040(%rax)
+  73dc31:	74 12                	je     73dc45 <ffrDisk::DecompressBlk(ffrScanBuf*)+0xa9>
+  73dc33:	48 39 98 f8 1f 00 00 	cmp    %rbx,0x1ff8(%rax)
+  73dc3a:	74 09                	je     73dc45 <ffrDisk::DecompressBlk(ffrScanBuf*)+0xa9>
+  73dc3c:	48 39 98 00 20 00 00 	cmp    %rbx,0x2000(%rax)
+  73dc43:	75 11                	jne    73dc56 <ffrDisk::DecompressBlk(ffrScanBuf*)+0xba>
+  73dc45:	44 8b b0 1c 11 00 00 	mov    0x111c(%rax),%r14d
+  73dc4c:	41 83 fe ff          	cmp    $0xffffffff,%r14d
+  73dc50:	0f 84 52 01 00 00    	je     73dda8 <ffrDisk::DecompressBlk(ffrScanBuf*)+0x20c>
+  73dc56:	8b 43 18             	mov    0x18(%rbx),%eax
+  73dc59:	89 43 1c             	mov    %eax,0x1c(%rbx)
+  73dc5c:	48 8d 54 24 10       	lea    0x10(%rsp),%rdx
+  73dc61:	48 89 de             	mov    %rbx,%rsi
+  73dc64:	4c 89 e7             	mov    %r12,%rdi
+  73dc67:	e8 f4 51 e1 00       	callq  1552e60 <ffrDisk::GetBlkLayoutByScanBuf(ffrScanBuf*, fsdbBlkLayout**)@plt>
+  73dc6c:	41 89 c5             	mov    %eax,%r13d
+  73dc6f:	85 c0                	test   %eax,%eax
+  73dc71:	75 3d                	jne    73dcb0 <ffrDisk::DecompressBlk(ffrScanBuf*)+0x114>
+  73dc73:	48 8b 74 24 10       	mov    0x10(%rsp),%rsi
+  73dc78:	48 85 f6             	test   %rsi,%rsi
+  73dc7b:	0f 84 71 01 00 00    	je     73ddf2 <ffrDisk::DecompressBlk(ffrScanBuf*)+0x256>
+  73dc81:	0f b6 46 10          	movzbl 0x10(%rsi),%eax
+  73dc85:	83 e0 01             	and    $0x1,%eax
+  73dc88:	88 43 27             	mov    %al,0x27(%rbx)
+  73dc8b:	8b 46 10             	mov    0x10(%rsi),%eax
+  73dc8e:	d1 e8                	shr    %eax
+  73dc90:	89 43 28             	mov    %eax,0x28(%rbx)
+  73dc93:	48 8d 4c 24 1c       	lea    0x1c(%rsp),%rcx
+  73dc98:	48 8d 54 24 20       	lea    0x20(%rsp),%rdx
+  73dc9d:	4c 89 e7             	mov    %r12,%rdi
+  73dca0:	e8 9b 52 e1 00       	callq  1552f40 <ffrDisk::GetOffAndCmpLenByBlkLayout(fsdbBlkLayout*, long&, unsigned int&)@plt>
+  73dca5:	41 89 c5             	mov    %eax,%r13d
+  73dca8:	85 c0                	test   %eax,%eax
+  73dcaa:	0f 84 a3 01 00 00    	je     73de53 <ffrDisk::DecompressBlk(ffrScanBuf*)+0x2b7>
+  73dcb0:	44 89 e8             	mov    %r13d,%eax
+  73dcb3:	48 8d 65 d8          	lea    -0x28(%rbp),%rsp
+  73dcb7:	5b                   	pop    %rbx
+  73dcb8:	41 5c                	pop    %r12
+  73dcba:	41 5d                	pop    %r13
+  73dcbc:	41 5e                	pop    %r14
+  73dcbe:	41 5f                	pop    %r15
+  73dcc0:	5d                   	pop    %rbp
+  73dcc1:	c3                   	retq   
+  73dcc2:	8b 06                	mov    (%rsi),%eax
+  73dcc4:	39 46 08             	cmp    %eax,0x8(%rsi)
+  73dcc7:	74 09                	je     73dcd2 <ffrDisk::DecompressBlk(ffrScanBuf*)+0x136>
+  73dcc9:	c6 43 0c 00          	movb   $0x0,0xc(%rbx)
+  73dccd:	e9 0c ff ff ff       	jmpq   73dbde <ffrDisk::DecompressBlk(ffrScanBuf*)+0x42>
+  73dcd2:	8b 46 18             	mov    0x18(%rsi),%eax
+  73dcd5:	39 46 1c             	cmp    %eax,0x1c(%rsi)
+  73dcd8:	75 ef                	jne    73dcc9 <ffrDisk::DecompressBlk(ffrScanBuf*)+0x12d>
+  73dcda:	8b 46 04             	mov    0x4(%rsi),%eax
+  73dcdd:	48 03 46 70          	add    0x70(%rsi),%rax
+  73dce1:	48 89 46 60          	mov    %rax,0x60(%rsi)
+  73dce5:	48 3b 46 68          	cmp    0x68(%rsi),%rax
+  73dce9:	73 08                	jae    73dcf3 <ffrDisk::DecompressBlk(ffrScanBuf*)+0x157>
+  73dceb:	41 bd 00 00 00 00    	mov    $0x0,%r13d
+  73dcf1:	eb bd                	jmp    73dcb0 <ffrDisk::DecompressBlk(ffrScanBuf*)+0x114>
+  73dcf3:	48 8d 3d be 51 b5 ff 	lea    -0x4aae42(%rip),%rdi        # 292eb8 <davinciThreadIndex+0x28f698>
+  73dcfa:	b8 00 00 00 00       	mov    $0x0,%eax
+  73dcff:	e8 cc 41 e1 00       	callq  1551ed0 <sysWarn@plt>
+  73dd04:	48 8b 05 85 78 ee 00 	mov    0xee7885(%rip),%rax        # 1625590 <sysvCnlMfg@Base>
+  73dd0b:	0f b6 00             	movzbl (%rax),%eax
+  73dd0e:	48 8b 15 83 78 ee 00 	mov    0xee7883(%rip),%rdx        # 1625598 <sysvInstDir@Base>
+  73dd15:	0a 02                	or     (%rdx),%al
+  73dd17:	74 1f                	je     73dd38 <ffrDisk::DecompressBlk(ffrScanBuf*)+0x19c>
+  73dd19:	48 8b 05 80 78 ee 00 	mov    0xee7880(%rip),%rax        # 16255a0 <sysvEnDassert@Base>
+  73dd20:	0f b6 00             	movzbl (%rax),%eax
+  73dd23:	41 bd ff ff ff ff    	mov    $0xffffffff,%r13d
+  73dd29:	48 8b 15 78 78 ee 00 	mov    0xee7878(%rip),%rdx        # 16255a8 <sysvEnLogDassert@Base>
+  73dd30:	0a 02                	or     (%rdx),%al
+  73dd32:	0f 84 78 ff ff ff    	je     73dcb0 <ffrDisk::DecompressBlk(ffrScanBuf*)+0x114>
+  73dd38:	be f7 22 00 00       	mov    $0x22f7,%esi
+  73dd3d:	48 8d 3d 9c 44 ad ff 	lea    -0x52bb64(%rip),%rdi        # 2121e0 <davinciThreadIndex+0x20e9c0>
+  73dd44:	e8 97 41 e1 00       	callq  1551ee0 <sysCnlAssert@plt>
+  73dd49:	41 bd ff ff ff ff    	mov    $0xffffffff,%r13d
+  73dd4f:	e9 5c ff ff ff       	jmpq   73dcb0 <ffrDisk::DecompressBlk(ffrScanBuf*)+0x114>
+  73dd54:	c6 04 24 00          	movb   $0x0,(%rsp)
+  73dd58:	48 8d 4b 70          	lea    0x70(%rbx),%rcx
+  73dd5c:	48 89 e2             	mov    %rsp,%rdx
+  73dd5f:	8b 33                	mov    (%rbx),%esi
+  73dd61:	44 8b 4b 18          	mov    0x18(%rbx),%r9d
+  73dd65:	4c 8d 43 68          	lea    0x68(%rbx),%r8
+  73dd69:	e8 a0 90 fc ff       	callq  706e0e <LRUBlockBufferCacheMgr::GetBlock(unsigned int, char&, unsigned char**, unsigned char**, unsigned int)>
+  73dd6e:	41 89 c5             	mov    %eax,%r13d
+  73dd71:	48 8b 43 70          	mov    0x70(%rbx),%rax
+  73dd75:	48 8d 90 00 70 14 00 	lea    0x147000(%rax),%rdx
+  73dd7c:	48 89 53 78          	mov    %rdx,0x78(%rbx)
+  73dd80:	80 3c 24 00          	cmpb   $0x0,(%rsp)
+  73dd84:	0f 84 67 fe ff ff    	je     73dbf1 <ffrDisk::DecompressBlk(ffrScanBuf*)+0x55>
+  73dd8a:	8b 53 04             	mov    0x4(%rbx),%edx
+  73dd8d:	48 01 d0             	add    %rdx,%rax
+  73dd90:	48 89 43 60          	mov    %rax,0x60(%rbx)
+  73dd94:	c6 43 0c 01          	movb   $0x1,0xc(%rbx)
+  73dd98:	8b 03                	mov    (%rbx),%eax
+  73dd9a:	89 43 08             	mov    %eax,0x8(%rbx)
+  73dd9d:	8b 43 18             	mov    0x18(%rbx),%eax
+  73dda0:	89 43 1c             	mov    %eax,0x1c(%rbx)
+  73dda3:	e9 08 ff ff ff       	jmpq   73dcb0 <ffrDisk::DecompressBlk(ffrScanBuf*)+0x114>
+  73dda8:	48 8b 05 e1 77 ee 00 	mov    0xee77e1(%rip),%rax        # 1625590 <sysvCnlMfg@Base>
+  73ddaf:	0f b6 00             	movzbl (%rax),%eax
+  73ddb2:	48 8b 15 df 77 ee 00 	mov    0xee77df(%rip),%rdx        # 1625598 <sysvInstDir@Base>
+  73ddb9:	0a 02                	or     (%rdx),%al
+  73ddbb:	74 1c                	je     73ddd9 <ffrDisk::DecompressBlk(ffrScanBuf*)+0x23d>
+  73ddbd:	48 8b 05 dc 77 ee 00 	mov    0xee77dc(%rip),%rax        # 16255a0 <sysvEnDassert@Base>
+  73ddc4:	0f b6 00             	movzbl (%rax),%eax
+  73ddc7:	45 89 f5             	mov    %r14d,%r13d
+  73ddca:	48 8b 15 d7 77 ee 00 	mov    0xee77d7(%rip),%rdx        # 16255a8 <sysvEnLogDassert@Base>
+  73ddd1:	0a 02                	or     (%rdx),%al
+  73ddd3:	0f 84 d7 fe ff ff    	je     73dcb0 <ffrDisk::DecompressBlk(ffrScanBuf*)+0x114>
+  73ddd9:	be 29 23 00 00       	mov    $0x2329,%esi
+  73ddde:	48 8d 3d fb 43 ad ff 	lea    -0x52bc05(%rip),%rdi        # 2121e0 <davinciThreadIndex+0x20e9c0>
+  73dde5:	e8 f6 40 e1 00       	callq  1551ee0 <sysCnlAssert@plt>
+  73ddea:	45 89 f5             	mov    %r14d,%r13d
+  73dded:	e9 be fe ff ff       	jmpq   73dcb0 <ffrDisk::DecompressBlk(ffrScanBuf*)+0x114>
+  73ddf2:	48 8d 3d 8f be b5 ff 	lea    -0x4a4171(%rip),%rdi        # 299c88 <davinciThreadIndex+0x296468>
+  73ddf9:	b8 00 00 00 00       	mov    $0x0,%eax
+  73ddfe:	e8 cd 40 e1 00       	callq  1551ed0 <sysWarn@plt>
+  73de03:	48 8b 05 86 77 ee 00 	mov    0xee7786(%rip),%rax        # 1625590 <sysvCnlMfg@Base>
+  73de0a:	0f b6 00             	movzbl (%rax),%eax
+  73de0d:	48 8b 15 84 77 ee 00 	mov    0xee7784(%rip),%rdx        # 1625598 <sysvInstDir@Base>
+  73de14:	0a 02                	or     (%rdx),%al
+  73de16:	74 1f                	je     73de37 <ffrDisk::DecompressBlk(ffrScanBuf*)+0x29b>
+  73de18:	48 8b 05 81 77 ee 00 	mov    0xee7781(%rip),%rax        # 16255a0 <sysvEnDassert@Base>
+  73de1f:	0f b6 00             	movzbl (%rax),%eax
+  73de22:	41 bd ff ff ff ff    	mov    $0xffffffff,%r13d
+  73de28:	48 8b 15 79 77 ee 00 	mov    0xee7779(%rip),%rdx        # 16255a8 <sysvEnLogDassert@Base>
+  73de2f:	0a 02                	or     (%rdx),%al
+  73de31:	0f 84 79 fe ff ff    	je     73dcb0 <ffrDisk::DecompressBlk(ffrScanBuf*)+0x114>
+  73de37:	be 3d 23 00 00       	mov    $0x233d,%esi
+  73de3c:	48 8d 3d 9d 43 ad ff 	lea    -0x52bc63(%rip),%rdi        # 2121e0 <davinciThreadIndex+0x20e9c0>
+  73de43:	e8 98 40 e1 00       	callq  1551ee0 <sysCnlAssert@plt>
+  73de48:	41 bd ff ff ff ff    	mov    $0xffffffff,%r13d
+  73de4e:	e9 5d fe ff ff       	jmpq   73dcb0 <ffrDisk::DecompressBlk(ffrScanBuf*)+0x114>
+  73de53:	8b 54 24 1c          	mov    0x1c(%rsp),%edx
+  73de57:	48 8b 73 70          	mov    0x70(%rbx),%rsi
+  73de5b:	48 8b 4c 24 20       	mov    0x20(%rsp),%rcx
+  73de60:	44 89 f7             	mov    %r14d,%edi
+  73de63:	e8 97 5e 1b 00       	callq  8f3cff <wrap_pread>
+  73de68:	48 83 f8 ff          	cmp    $0xffffffffffffffff,%rax
+  73de6c:	0f 84 94 05 00 00    	je     73e406 <ffrDisk::DecompressBlk(ffrScanBuf*)+0x86a>
+  73de72:	8b 54 24 1c          	mov    0x1c(%rsp),%edx
+  73de76:	48 8b 43 78          	mov    0x78(%rbx),%rax
+  73de7a:	48 2b 43 70          	sub    0x70(%rbx),%rax
+  73de7e:	48 39 c2             	cmp    %rax,%rdx
+  73de81:	0f 8f d4 02 00 00    	jg     73e15b <ffrDisk::DecompressBlk(ffrScanBuf*)+0x5bf>
+  73de87:	80 7b 27 00          	cmpb   $0x0,0x27(%rbx)
+  73de8b:	0f 84 ff 00 00 00    	je     73df90 <ffrDisk::DecompressBlk(ffrScanBuf*)+0x3f4>
+  73de91:	48 8b 05 f8 76 ee 00 	mov    0xee76f8(%rip),%rax        # 1625590 <sysvCnlMfg@Base>
+  73de98:	0f b6 00             	movzbl (%rax),%eax
+  73de9b:	48 8b 15 f6 76 ee 00 	mov    0xee76f6(%rip),%rdx        # 1625598 <sysvInstDir@Base>
+  73dea2:	0a 02                	or     (%rdx),%al
+  73dea4:	74 15                	je     73debb <ffrDisk::DecompressBlk(ffrScanBuf*)+0x31f>
+  73dea6:	48 8b 05 f3 76 ee 00 	mov    0xee76f3(%rip),%rax        # 16255a0 <sysvEnDassert@Base>
+  73dead:	0f b6 00             	movzbl (%rax),%eax
+  73deb0:	48 8b 15 f1 76 ee 00 	mov    0xee76f1(%rip),%rdx        # 16255a8 <sysvEnLogDassert@Base>
+  73deb7:	0a 02                	or     (%rdx),%al
+  73deb9:	74 15                	je     73ded0 <ffrDisk::DecompressBlk(ffrScanBuf*)+0x334>
+  73debb:	49 8b 84 24 a0 00 00 	mov    0xa0(%r12),%rax
+  73dec2:	00 
+  73dec3:	80 b8 50 0e 00 00 00 	cmpb   $0x0,0xe50(%rax)
+  73deca:	0f 84 ec 02 00 00    	je     73e1bc <ffrDisk::DecompressBlk(ffrScanBuf*)+0x620>
+  73ded0:	48 8b 4b 38          	mov    0x38(%rbx),%rcx
+  73ded4:	48 85 c9             	test   %rcx,%rcx
+  73ded7:	74 08                	je     73dee1 <ffrDisk::DecompressBlk(ffrScanBuf*)+0x345>
+  73ded9:	8b 43 2c             	mov    0x2c(%rbx),%eax
+  73dedc:	39 43 28             	cmp    %eax,0x28(%rbx)
+  73dedf:	74 1b                	je     73defc <ffrDisk::DecompressBlk(ffrScanBuf*)+0x360>
+  73dee1:	8b 73 28             	mov    0x28(%rbx),%esi
+  73dee4:	4c 89 e7             	mov    %r12,%rdi
+  73dee7:	e8 d6 d9 fe ff       	callq  72b8c2 <ffrDisk::GetDataKey(unsigned int)>
+  73deec:	48 89 c1             	mov    %rax,%rcx
+  73deef:	48 89 43 38          	mov    %rax,0x38(%rbx)
+  73def3:	48 85 c0             	test   %rax,%rax
+  73def6:	0f 84 f8 02 00 00    	je     73e1f4 <ffrDisk::DecompressBlk(ffrScanBuf*)+0x658>
+  73defc:	8b 43 28             	mov    0x28(%rbx),%eax
+  73deff:	89 43 2c             	mov    %eax,0x2c(%rbx)
+  73df02:	49 8b 84 24 a0 00 00 	mov    0xa0(%r12),%rax
+  73df09:	00 
+  73df0a:	48 8b 80 10 13 00 00 	mov    0x1310(%rax),%rax
+  73df11:	4c 8b 78 28          	mov    0x28(%rax),%r15
+  73df15:	44 8b 74 24 1c       	mov    0x1c(%rsp),%r14d
+  73df1a:	48 8b 7b 70          	mov    0x70(%rbx),%rdi
+  73df1e:	48 b8 32 30 32 34 30 	movabs $0x3130343034323032,%rax
+  73df25:	34 30 31 
+  73df28:	48 ba 6a 6f 68 6e 61 	movabs $0x616161616e686f6a,%rdx
+  73df2f:	61 61 61 
+  73df32:	48 89 04 24          	mov    %rax,(%rsp)
+  73df36:	48 89 54 24 08       	mov    %rdx,0x8(%rsp)
+  73df3b:	44 89 f2             	mov    %r14d,%edx
+  73df3e:	41 b9 00 00 00 00    	mov    $0x0,%r9d
+  73df44:	49 89 e0             	mov    %rsp,%r8
+  73df47:	4c 89 fe             	mov    %r15,%rsi
+  73df4a:	e8 81 90 96 00       	callq  10a6fd0 <AES_cbc_encrypt>
+  73df4f:	41 8d 46 ff          	lea    -0x1(%r14),%eax
+  73df53:	41 0f b6 04 07       	movzbl (%r15,%rax,1),%eax
+  73df58:	3c 10                	cmp    $0x10,%al
+  73df5a:	0f 87 72 02 00 00    	ja     73e1d2 <ffrDisk::DecompressBlk(ffrScanBuf*)+0x636>
+  73df60:	0f b6 c0             	movzbl %al,%eax
+  73df63:	41 29 c6             	sub    %eax,%r14d
+  73df66:	0f 88 a5 04 00 00    	js     73e411 <ffrDisk::DecompressBlk(ffrScanBuf*)+0x875>
+  73df6c:	44 89 74 24 1c       	mov    %r14d,0x1c(%rsp)
+  73df71:	48 8b 7b 70          	mov    0x70(%rbx),%rdi
+  73df75:	44 89 f2             	mov    %r14d,%edx
+  73df78:	49 8b 84 24 a0 00 00 	mov    0xa0(%r12),%rax
+  73df7f:	00 
+  73df80:	48 8b 80 10 13 00 00 	mov    0x1310(%rax),%rax
+  73df87:	48 8b 70 28          	mov    0x28(%rax),%rsi
+  73df8b:	e8 90 3d e1 00       	callq  1551d20 <memcpy@plt>
+  73df90:	80 7b 0e 00          	cmpb   $0x0,0xe(%rbx)
+  73df94:	0f 84 8c 00 00 00    	je     73e026 <ffrDisk::DecompressBlk(ffrScanBuf*)+0x48a>
+  73df9a:	8b 7c 24 1c          	mov    0x1c(%rsp),%edi
+  73df9e:	48 8b 53 70          	mov    0x70(%rbx),%rdx
+  73dfa2:	8d 47 03             	lea    0x3(%rdi),%eax
+  73dfa5:	85 ff                	test   %edi,%edi
+  73dfa7:	0f 49 c7             	cmovns %edi,%eax
+  73dfaa:	c1 f8 02             	sar    $0x2,%eax
+  73dfad:	89 c1                	mov    %eax,%ecx
+  73dfaf:	41 89 f8             	mov    %edi,%r8d
+  73dfb2:	41 c1 f8 1f          	sar    $0x1f,%r8d
+  73dfb6:	41 c1 e8 1e          	shr    $0x1e,%r8d
+  73dfba:	42 8d 34 07          	lea    (%rdi,%r8,1),%esi
+  73dfbe:	83 e6 03             	and    $0x3,%esi
+  73dfc1:	44 29 c6             	sub    %r8d,%esi
+  73dfc4:	85 c0                	test   %eax,%eax
+  73dfc6:	0f 84 45 02 00 00    	je     73e211 <ffrDisk::DecompressBlk(ffrScanBuf*)+0x675>
+  73dfcc:	89 c0                	mov    %eax,%eax
+  73dfce:	48 8d 04 82          	lea    (%rdx,%rax,4),%rax
+  73dfd2:	b9 00 00 00 00       	mov    $0x0,%ecx
+  73dfd7:	33 0a                	xor    (%rdx),%ecx
+  73dfd9:	48 83 c2 04          	add    $0x4,%rdx
+  73dfdd:	48 39 c2             	cmp    %rax,%rdx
+  73dfe0:	75 f5                	jne    73dfd7 <ffrDisk::DecompressBlk(ffrScanBuf*)+0x43b>
+  73dfe2:	85 f6                	test   %esi,%esi
+  73dfe4:	0f 84 2f 02 00 00    	je     73e219 <ffrDisk::DecompressBlk(ffrScanBuf*)+0x67d>
+  73dfea:	89 f6                	mov    %esi,%esi
+  73dfec:	48 01 c6             	add    %rax,%rsi
+  73dfef:	ba 00 00 00 00       	mov    $0x0,%edx
+  73dff4:	32 10                	xor    (%rax),%dl
+  73dff6:	48 83 c0 01          	add    $0x1,%rax
+  73dffa:	48 39 f0             	cmp    %rsi,%rax
+  73dffd:	75 f5                	jne    73dff4 <ffrDisk::DecompressBlk(ffrScanBuf*)+0x458>
+  73dfff:	89 c8                	mov    %ecx,%eax
+  73e001:	c1 e8 18             	shr    $0x18,%eax
+  73e004:	89 ce                	mov    %ecx,%esi
+  73e006:	c1 ee 10             	shr    $0x10,%esi
+  73e009:	31 f0                	xor    %esi,%eax
+  73e00b:	30 e8                	xor    %ch,%al
+  73e00d:	31 d0                	xor    %edx,%eax
+  73e00f:	38 c8                	cmp    %cl,%al
+  73e011:	0f 85 0c 02 00 00    	jne    73e223 <ffrDisk::DecompressBlk(ffrScanBuf*)+0x687>
+  73e017:	85 ff                	test   %edi,%edi
+  73e019:	0f 84 04 02 00 00    	je     73e223 <ffrDisk::DecompressBlk(ffrScanBuf*)+0x687>
+  73e01f:	83 ef 01             	sub    $0x1,%edi
+  73e022:	89 7c 24 1c          	mov    %edi,0x1c(%rsp)
+  73e026:	48 8b 73 70          	mov    0x70(%rbx),%rsi
+  73e02a:	49 8b 84 24 a0 00 00 	mov    0xa0(%r12),%rax
+  73e031:	00 
+  73e032:	48 8b b8 10 13 00 00 	mov    0x1310(%rax),%rdi
+  73e039:	8b 54 24 1c          	mov    0x1c(%rsp),%edx
+  73e03d:	e8 2e 4b e1 00       	callq  1552b70 <ffCmpSetInBufPtrSz@plt>
+  73e042:	0f b6 73 25          	movzbl 0x25(%rbx),%esi
+  73e046:	49 8b 84 24 a0 00 00 	mov    0xa0(%r12),%rax
+  73e04d:	00 
+  73e04e:	48 8b b8 10 13 00 00 	mov    0x1310(%rax),%rdi
+  73e055:	e8 26 4b e1 00       	callq  1552b80 <ffCmpSetMethod@plt>
+  73e05a:	0f be 73 0d          	movsbl 0xd(%rbx),%esi
+  73e05e:	49 8b 84 24 a0 00 00 	mov    0xa0(%r12),%rax
+  73e065:	00 
+  73e066:	48 8b b8 10 13 00 00 	mov    0x1310(%rax),%rdi
+  73e06d:	e8 1e 4b e1 00       	callq  1552b90 <ffCmpSetDoubleCmp@plt>
+  73e072:	0f b6 73 24          	movzbl 0x24(%rbx),%esi
+  73e076:	49 8b 84 24 a0 00 00 	mov    0xa0(%r12),%rax
+  73e07d:	00 
+  73e07e:	48 8b b8 10 13 00 00 	mov    0x1310(%rax),%rdi
+  73e085:	e8 16 4b e1 00       	callq  1552ba0 <ffCmpSetDoubleCmpMethod@plt>
+  73e08a:	48 8d 74 24 18       	lea    0x18(%rsp),%rsi
+  73e08f:	49 8b 84 24 a0 00 00 	mov    0xa0(%r12),%rax
+  73e096:	00 
+  73e097:	48 8b b8 10 13 00 00 	mov    0x1310(%rax),%rdi
+  73e09e:	e8 0d 4b e1 00       	callq  1552bb0 <ffCmpDecompress@plt>
+  73e0a3:	48 89 c6             	mov    %rax,%rsi
+  73e0a6:	83 43 20 01          	addl   $0x1,0x20(%rbx)
+  73e0aa:	48 85 c0             	test   %rax,%rax
+  73e0ad:	0f 84 d1 01 00 00    	je     73e284 <ffrDisk::DecompressBlk(ffrScanBuf*)+0x6e8>
+  73e0b3:	8b 54 24 18          	mov    0x18(%rsp),%edx
+  73e0b7:	85 d2                	test   %edx,%edx
+  73e0b9:	0f 84 c5 01 00 00    	je     73e284 <ffrDisk::DecompressBlk(ffrScanBuf*)+0x6e8>
+  73e0bf:	48 8b 7b 70          	mov    0x70(%rbx),%rdi
+  73e0c3:	48 63 d2             	movslq %edx,%rdx
+  73e0c6:	e8 55 3c e1 00       	callq  1551d20 <memcpy@plt>
+  73e0cb:	48 8b 43 70          	mov    0x70(%rbx),%rax
+  73e0cf:	4c 63 74 24 18       	movslq 0x18(%rsp),%r14
+  73e0d4:	49 01 c6             	add    %rax,%r14
+  73e0d7:	4c 89 73 68          	mov    %r14,0x68(%rbx)
+  73e0db:	8b 53 04             	mov    0x4(%rbx),%edx
+  73e0de:	48 01 d0             	add    %rdx,%rax
+  73e0e1:	48 89 43 60          	mov    %rax,0x60(%rbx)
+  73e0e5:	49 39 c6             	cmp    %rax,%r14
+  73e0e8:	0f 84 f5 01 00 00    	je     73e2e3 <ffrDisk::DecompressBlk(ffrScanBuf*)+0x747>
+  73e0ee:	0f 82 0c 02 00 00    	jb     73e300 <ffrDisk::DecompressBlk(ffrScanBuf*)+0x764>
+  73e0f4:	4c 8b 7b 50          	mov    0x50(%rbx),%r15
+  73e0f8:	4d 85 ff             	test   %r15,%r15
+  73e0fb:	74 0a                	je     73e107 <ffrDisk::DecompressBlk(ffrScanBuf*)+0x56b>
+  73e0fd:	80 7b 0f 00          	cmpb   $0x0,0xf(%rbx)
+  73e101:	0f 84 5a 02 00 00    	je     73e361 <ffrDisk::DecompressBlk(ffrScanBuf*)+0x7c5>
+  73e107:	c6 43 0c 01          	movb   $0x1,0xc(%rbx)
+  73e10b:	8b 03                	mov    (%rbx),%eax
+  73e10d:	89 43 08             	mov    %eax,0x8(%rbx)
+  73e110:	49 8b 84 24 a0 00 00 	mov    0xa0(%r12),%rax
+  73e117:	00 
+  73e118:	f6 80 49 16 00 00 20 	testb  $0x20,0x1649(%rax)
+  73e11f:	0f 85 79 02 00 00    	jne    73e39e <ffrDisk::DecompressBlk(ffrScanBuf*)+0x802>
+  73e125:	49 8b 84 24 a0 00 00 	mov    0xa0(%r12),%rax
+  73e12c:	00 
+  73e12d:	48 39 98 30 10 00 00 	cmp    %rbx,0x1030(%rax)
+  73e134:	0f 84 b5 02 00 00    	je     73e3ef <ffrDisk::DecompressBlk(ffrScanBuf*)+0x853>
+  73e13a:	49 8b 84 24 a0 00 00 	mov    0xa0(%r12),%rax
+  73e141:	00 
+  73e142:	48 39 98 f8 1f 00 00 	cmp    %rbx,0x1ff8(%rax)
+  73e149:	0f 85 61 fb ff ff    	jne    73dcb0 <ffrDisk::DecompressBlk(ffrScanBuf*)+0x114>
+  73e14f:	83 80 9c 1e 00 00 01 	addl   $0x1,0x1e9c(%rax)
+  73e156:	e9 55 fb ff ff       	jmpq   73dcb0 <ffrDisk::DecompressBlk(ffrScanBuf*)+0x114>
+  73e15b:	48 8d 3d 36 90 b6 ff 	lea    -0x496fca(%rip),%rdi        # 2a7198 <davinciThreadIndex+0x2a3978>
+  73e162:	b8 00 00 00 00       	mov    $0x0,%eax
+  73e167:	e8 64 3d e1 00       	callq  1551ed0 <sysWarn@plt>
+  73e16c:	48 8b 05 1d 74 ee 00 	mov    0xee741d(%rip),%rax        # 1625590 <sysvCnlMfg@Base>
+  73e173:	0f b6 00             	movzbl (%rax),%eax
+  73e176:	48 8b 15 1b 74 ee 00 	mov    0xee741b(%rip),%rdx        # 1625598 <sysvInstDir@Base>
+  73e17d:	0a 02                	or     (%rdx),%al
+  73e17f:	74 1f                	je     73e1a0 <ffrDisk::DecompressBlk(ffrScanBuf*)+0x604>
+  73e181:	48 8b 05 18 74 ee 00 	mov    0xee7418(%rip),%rax        # 16255a0 <sysvEnDassert@Base>
+  73e188:	0f b6 00             	movzbl (%rax),%eax
+  73e18b:	41 bd ff ff ff ff    	mov    $0xffffffff,%r13d
+  73e191:	48 8b 15 10 74 ee 00 	mov    0xee7410(%rip),%rdx        # 16255a8 <sysvEnLogDassert@Base>
+  73e198:	0a 02                	or     (%rdx),%al
+  73e19a:	0f 84 10 fb ff ff    	je     73dcb0 <ffrDisk::DecompressBlk(ffrScanBuf*)+0x114>
+  73e1a0:	be 63 23 00 00       	mov    $0x2363,%esi
+  73e1a5:	48 8d 3d 34 40 ad ff 	lea    -0x52bfcc(%rip),%rdi        # 2121e0 <davinciThreadIndex+0x20e9c0>
+  73e1ac:	e8 2f 3d e1 00       	callq  1551ee0 <sysCnlAssert@plt>
+  73e1b1:	41 bd ff ff ff ff    	mov    $0xffffffff,%r13d
+  73e1b7:	e9 f4 fa ff ff       	jmpq   73dcb0 <ffrDisk::DecompressBlk(ffrScanBuf*)+0x114>
+  73e1bc:	be 6a 23 00 00       	mov    $0x236a,%esi
+  73e1c1:	48 8d 3d 18 40 ad ff 	lea    -0x52bfe8(%rip),%rdi        # 2121e0 <davinciThreadIndex+0x20e9c0>
+  73e1c8:	e8 13 3d e1 00       	callq  1551ee0 <sysCnlAssert@plt>
+  73e1cd:	e9 fe fc ff ff       	jmpq   73ded0 <ffrDisk::DecompressBlk(ffrScanBuf*)+0x334>
+  73e1d2:	0f b6 d0             	movzbl %al,%edx
+  73e1d5:	44 89 f6             	mov    %r14d,%esi
+  73e1d8:	48 8d 3d 29 05 b8 ff 	lea    -0x47fad7(%rip),%rdi        # 2be708 <davinciThreadIndex+0x2baee8>
+  73e1df:	b8 00 00 00 00       	mov    $0x0,%eax
+  73e1e4:	e8 17 4b e1 00       	callq  1552d00 <printf@plt>
+  73e1e9:	41 bd ff ff ff ff    	mov    $0xffffffff,%r13d
+  73e1ef:	e9 bc fa ff ff       	jmpq   73dcb0 <ffrDisk::DecompressBlk(ffrScanBuf*)+0x114>
+  73e1f4:	c7 43 04 00 00 00 00 	movl   $0x0,0x4(%rbx)
+  73e1fb:	83 03 01             	addl   $0x1,(%rbx)
+  73e1fe:	48 89 de             	mov    %rbx,%rsi
+  73e201:	4c 89 e7             	mov    %r12,%rdi
+  73e204:	e8 93 f9 ff ff       	callq  73db9c <ffrDisk::DecompressBlk(ffrScanBuf*)>
+  73e209:	41 89 c5             	mov    %eax,%r13d
+  73e20c:	e9 9f fa ff ff       	jmpq   73dcb0 <ffrDisk::DecompressBlk(ffrScanBuf*)+0x114>
+  73e211:	48 89 d0             	mov    %rdx,%rax
+  73e214:	e9 c9 fd ff ff       	jmpq   73dfe2 <ffrDisk::DecompressBlk(ffrScanBuf*)+0x446>
+  73e219:	ba 00 00 00 00       	mov    $0x0,%edx
+  73e21e:	e9 dc fd ff ff       	jmpq   73dfff <ffrDisk::DecompressBlk(ffrScanBuf*)+0x463>
+  73e223:	48 8d 3d 7e a8 b2 ff 	lea    -0x4d5782(%rip),%rdi        # 268aa8 <davinciThreadIndex+0x265288>
+  73e22a:	b8 00 00 00 00       	mov    $0x0,%eax
+  73e22f:	e8 9c 3c e1 00       	callq  1551ed0 <sysWarn@plt>
+  73e234:	48 8b 05 55 73 ee 00 	mov    0xee7355(%rip),%rax        # 1625590 <sysvCnlMfg@Base>
+  73e23b:	0f b6 00             	movzbl (%rax),%eax
+  73e23e:	48 8b 15 53 73 ee 00 	mov    0xee7353(%rip),%rdx        # 1625598 <sysvInstDir@Base>
+  73e245:	0a 02                	or     (%rdx),%al
+  73e247:	74 1f                	je     73e268 <ffrDisk::DecompressBlk(ffrScanBuf*)+0x6cc>
+  73e249:	48 8b 05 50 73 ee 00 	mov    0xee7350(%rip),%rax        # 16255a0 <sysvEnDassert@Base>
+  73e250:	0f b6 00             	movzbl (%rax),%eax
+  73e253:	41 bd ff ff ff ff    	mov    $0xffffffff,%r13d
+  73e259:	48 8b 15 48 73 ee 00 	mov    0xee7348(%rip),%rdx        # 16255a8 <sysvEnLogDassert@Base>
+  73e260:	0a 02                	or     (%rdx),%al
+  73e262:	0f 84 48 fa ff ff    	je     73dcb0 <ffrDisk::DecompressBlk(ffrScanBuf*)+0x114>
+  73e268:	be 96 23 00 00       	mov    $0x2396,%esi
+  73e26d:	48 8d 3d 6c 3f ad ff 	lea    -0x52c094(%rip),%rdi        # 2121e0 <davinciThreadIndex+0x20e9c0>
+  73e274:	e8 67 3c e1 00       	callq  1551ee0 <sysCnlAssert@plt>
+  73e279:	41 bd ff ff ff ff    	mov    $0xffffffff,%r13d
+  73e27f:	e9 2c fa ff ff       	jmpq   73dcb0 <ffrDisk::DecompressBlk(ffrScanBuf*)+0x114>
+  73e284:	8b 54 24 1c          	mov    0x1c(%rsp),%edx
+  73e288:	48 8b 74 24 20       	mov    0x20(%rsp),%rsi
+  73e28d:	48 8d 3d 3c a8 b2 ff 	lea    -0x4d57c4(%rip),%rdi        # 268ad0 <davinciThreadIndex+0x2652b0>
+  73e294:	b8 00 00 00 00       	mov    $0x0,%eax
+  73e299:	e8 32 3c e1 00       	callq  1551ed0 <sysWarn@plt>
+  73e29e:	49 8b 84 24 a0 00 00 	mov    0xa0(%r12),%rax
+  73e2a5:	00 
+  73e2a6:	48 8b 88 70 10 00 00 	mov    0x1070(%rax),%rcx
+  73e2ad:	8b 54 24 1c          	mov    0x1c(%rsp),%edx
+  73e2b1:	48 8b 74 24 20       	mov    0x20(%rsp),%rsi
+  73e2b6:	48 8d 3d f3 ed b5 ff 	lea    -0x4a120d(%rip),%rdi        # 29d0b0 <davinciThreadIndex+0x299890>
+  73e2bd:	b8 00 00 00 00       	mov    $0x0,%eax
+  73e2c2:	e8 09 3c e1 00       	callq  1551ed0 <sysWarn@plt>
+  73e2c7:	48 8d 3d da 2a b7 ff 	lea    -0x48d526(%rip),%rdi        # 2b0da8 <davinciThreadIndex+0x2ad588>
+  73e2ce:	b8 00 00 00 00       	mov    $0x0,%eax
+  73e2d3:	e8 f8 3b e1 00       	callq  1551ed0 <sysWarn@plt>
+  73e2d8:	41 bd ff ff ff ff    	mov    $0xffffffff,%r13d
+  73e2de:	e9 cd f9 ff ff       	jmpq   73dcb0 <ffrDisk::DecompressBlk(ffrScanBuf*)+0x114>
+  73e2e3:	c7 43 04 00 00 00 00 	movl   $0x0,0x4(%rbx)
+  73e2ea:	83 03 01             	addl   $0x1,(%rbx)
+  73e2ed:	48 89 de             	mov    %rbx,%rsi
+  73e2f0:	4c 89 e7             	mov    %r12,%rdi
+  73e2f3:	e8 a4 f8 ff ff       	callq  73db9c <ffrDisk::DecompressBlk(ffrScanBuf*)>
+  73e2f8:	41 89 c5             	mov    %eax,%r13d
+  73e2fb:	e9 b0 f9 ff ff       	jmpq   73dcb0 <ffrDisk::DecompressBlk(ffrScanBuf*)+0x114>
+  73e300:	48 8d 3d b1 4b b5 ff 	lea    -0x4ab44f(%rip),%rdi        # 292eb8 <davinciThreadIndex+0x28f698>
+  73e307:	b8 00 00 00 00       	mov    $0x0,%eax
+  73e30c:	e8 bf 3b e1 00       	callq  1551ed0 <sysWarn@plt>
+  73e311:	48 8b 05 78 72 ee 00 	mov    0xee7278(%rip),%rax        # 1625590 <sysvCnlMfg@Base>
+  73e318:	0f b6 00             	movzbl (%rax),%eax
+  73e31b:	48 8b 15 76 72 ee 00 	mov    0xee7276(%rip),%rdx        # 1625598 <sysvInstDir@Base>
+  73e322:	0a 02                	or     (%rdx),%al
+  73e324:	74 1f                	je     73e345 <ffrDisk::DecompressBlk(ffrScanBuf*)+0x7a9>
+  73e326:	48 8b 05 73 72 ee 00 	mov    0xee7273(%rip),%rax        # 16255a0 <sysvEnDassert@Base>
+  73e32d:	0f b6 00             	movzbl (%rax),%eax
+  73e330:	41 bd ff ff ff ff    	mov    $0xffffffff,%r13d
+  73e336:	48 8b 15 6b 72 ee 00 	mov    0xee726b(%rip),%rdx        # 16255a8 <sysvEnLogDassert@Base>
+  73e33d:	0a 02                	or     (%rdx),%al
+  73e33f:	0f 84 6b f9 ff ff    	je     73dcb0 <ffrDisk::DecompressBlk(ffrScanBuf*)+0x114>
+  73e345:	be c1 23 00 00       	mov    $0x23c1,%esi
+  73e34a:	48 8d 3d 8f 3e ad ff 	lea    -0x52c171(%rip),%rdi        # 2121e0 <davinciThreadIndex+0x20e9c0>
+  73e351:	e8 8a 3b e1 00       	callq  1551ee0 <sysCnlAssert@plt>
+  73e356:	41 bd ff ff ff ff    	mov    $0xffffffff,%r13d
+  73e35c:	e9 4f f9 ff ff       	jmpq   73dcb0 <ffrDisk::DecompressBlk(ffrScanBuf*)+0x114>
+  73e361:	8b 03                	mov    (%rbx),%eax
+  73e363:	8b 53 18             	mov    0x18(%rbx),%edx
+  73e366:	89 54 24 28          	mov    %edx,0x28(%rsp)
+  73e36a:	89 44 24 2c          	mov    %eax,0x2c(%rsp)
+  73e36e:	48 8d 74 24 28       	lea    0x28(%rsp),%rsi
+  73e373:	49 8d 7f 28          	lea    0x28(%r15),%rdi
+  73e377:	e8 3a 87 fc ff       	callq  706ab6 <std::_Rb_tree<std::pair<unsigned int, unsigned int>, std::pair<std::pair<unsigned int, unsigned int> const, std::_List_iterator<LRUBlockBufferCacheMgr::Block> >, std::_Select1st<std::pair<std::pair<unsigned int, unsigned int> const, std::_List_iterator<LRUBlockBufferCacheMgr::Block> > >, std::less<std::pair<unsigned int, unsigned int> >, std::allocator<std::pair<std::pair<unsigned int, unsigned int> const, std::_List_iterator<LRUBlockBufferCacheMgr::Block> > > >::find(std::pair<unsigned int, unsigned int> const&)>
+  73e37c:	49 83 c7 30          	add    $0x30,%r15
+  73e380:	4c 39 f8             	cmp    %r15,%rax
+  73e383:	0f 84 7e fd ff ff    	je     73e107 <ffrDisk::DecompressBlk(ffrScanBuf*)+0x56b>
+  73e389:	48 8b 50 28          	mov    0x28(%rax),%rdx
+  73e38d:	4c 89 72 28          	mov    %r14,0x28(%rdx)
+  73e391:	48 8b 40 28          	mov    0x28(%rax),%rax
+  73e395:	c6 40 10 01          	movb   $0x1,0x10(%rax)
+  73e399:	e9 69 fd ff ff       	jmpq   73e107 <ffrDisk::DecompressBlk(ffrScanBuf*)+0x56b>
+  73e39e:	48 8b 05 c3 70 ee 00 	mov    0xee70c3(%rip),%rax        # 1625468 <stderr@GLIBC_2.2.5>
+  73e3a5:	48 8b 30             	mov    (%rax),%rsi
+  73e3a8:	bf 2e 00 00 00       	mov    $0x2e,%edi
+  73e3ad:	e8 3e 3a e1 00       	callq  1551df0 <fputc@plt>
+  73e3b2:	49 8b 84 24 a0 00 00 	mov    0xa0(%r12),%rax
+  73e3b9:	00 
+  73e3ba:	83 80 4c 16 00 00 01 	addl   $0x1,0x164c(%rax)
+  73e3c1:	49 8b 84 24 a0 00 00 	mov    0xa0(%r12),%rax
+  73e3c8:	00 
+  73e3c9:	f6 80 4c 16 00 00 1f 	testb  $0x1f,0x164c(%rax)
+  73e3d0:	0f 85 4f fd ff ff    	jne    73e125 <ffrDisk::DecompressBlk(ffrScanBuf*)+0x589>
+  73e3d6:	48 8b 05 8b 70 ee 00 	mov    0xee708b(%rip),%rax        # 1625468 <stderr@GLIBC_2.2.5>
+  73e3dd:	48 8b 30             	mov    (%rax),%rsi
+  73e3e0:	bf 0a 00 00 00       	mov    $0xa,%edi
+  73e3e5:	e8 06 3a e1 00       	callq  1551df0 <fputc@plt>
+  73e3ea:	e9 36 fd ff ff       	jmpq   73e125 <ffrDisk::DecompressBlk(ffrScanBuf*)+0x589>
+  73e3ef:	83 80 9c 1e 00 00 01 	addl   $0x1,0x1e9c(%rax)
+  73e3f6:	e9 3f fd ff ff       	jmpq   73e13a <ffrDisk::DecompressBlk(ffrScanBuf*)+0x59e>
+  73e3fb:	41 bd ff ff ff ff    	mov    $0xffffffff,%r13d
+  73e401:	e9 aa f8 ff ff       	jmpq   73dcb0 <ffrDisk::DecompressBlk(ffrScanBuf*)+0x114>
+  73e406:	41 bd ff ff ff ff    	mov    $0xffffffff,%r13d
+  73e40c:	e9 9f f8 ff ff       	jmpq   73dcb0 <ffrDisk::DecompressBlk(ffrScanBuf*)+0x114>
+  73e411:	41 bd ff ff ff ff    	mov    $0xffffffff,%r13d
+  73e417:	e9 94 f8 ff ff       	jmpq   73dcb0 <ffrDisk::DecompressBlk(ffrScanBuf*)+0x114>

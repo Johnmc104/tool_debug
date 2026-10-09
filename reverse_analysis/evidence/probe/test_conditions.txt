@@ -1,0 +1,7 @@
+reader_home=/opt/Synopsys/verdi/Y-2026.03-SP2
+sample_path=/home/zhhe/work/python_auto/tool_wave/test_vwave/tb_top.fsdb
+signal_path=tb.clk
+SNPSLMD_LICENSE_FILE=1@127.0.0.1
+LM_LICENSE_FILE=1@127.0.0.1
+trace=network (all child processes)
+timeout=20s

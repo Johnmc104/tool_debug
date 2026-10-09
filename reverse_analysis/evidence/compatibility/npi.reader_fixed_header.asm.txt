@@ -1,0 +1,90 @@
+
+/opt/Synopsys/verdi/Y-2026.03-SP2/share/NPI/lib/linux64/libNPI.so:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+0000000003c193b5 <ReadFixedHdr(int, int, fsdbFixedHdr*)>:
+ 3c193b5:	48 85 d2             	test   %rdx,%rdx
+ 3c193b8:	0f 84 24 01 00 00    	je     3c194e2 <ReadFixedHdr(int, int, fsdbFixedHdr*)+0x12d>
+ 3c193be:	41 55                	push   %r13
+ 3c193c0:	41 54                	push   %r12
+ 3c193c2:	55                   	push   %rbp
+ 3c193c3:	53                   	push   %rbx
+ 3c193c4:	48 83 ec 08          	sub    $0x8,%rsp
+ 3c193c8:	89 fd                	mov    %edi,%ebp
+ 3c193ca:	41 89 f4             	mov    %esi,%r12d
+ 3c193cd:	48 89 d3             	mov    %rdx,%rbx
+ 3c193d0:	ba 01 00 00 00       	mov    $0x1,%edx
+ 3c193d5:	be 00 00 00 00       	mov    $0x0,%esi
+ 3c193da:	e8 ef a5 1e 00       	callq  3e039ce <wrap_lseek>
+ 3c193df:	49 89 c5             	mov    %rax,%r13
+ 3c193e2:	48 85 c0             	test   %rax,%rax
+ 3c193e5:	74 1a                	je     3c19401 <ReadFixedHdr(int, int, fsdbFixedHdr*)+0x4c>
+ 3c193e7:	ba 00 00 00 00       	mov    $0x0,%edx
+ 3c193ec:	be 00 00 00 00       	mov    $0x0,%esi
+ 3c193f1:	89 ef                	mov    %ebp,%edi
+ 3c193f3:	e8 d6 a5 1e 00       	callq  3e039ce <wrap_lseek>
+ 3c193f8:	48 85 c0             	test   %rax,%rax
+ 3c193fb:	0f 88 b8 00 00 00    	js     3c194b9 <ReadFixedHdr(int, int, fsdbFixedHdr*)+0x104>
+ 3c19401:	ba c0 00 00 00       	mov    $0xc0,%edx
+ 3c19406:	48 89 de             	mov    %rbx,%rsi
+ 3c19409:	89 ef                	mov    %ebp,%edi
+ 3c1940b:	e8 38 a6 1e 00       	callq  3e03a48 <wrap_read>
+ 3c19410:	0f b6 53 3c          	movzbl 0x3c(%rbx),%edx
+ 3c19414:	84 d2                	test   %dl,%dl
+ 3c19416:	74 4a                	je     3c19462 <ReadFixedHdr(int, int, fsdbFixedHdr*)+0xad>
+ 3c19418:	48 c1 e2 08          	shl    $0x8,%rdx
+ 3c1941c:	81 e2 00 ff 00 00    	and    $0xff00,%edx
+ 3c19422:	48 81 ea c0 00 00 00 	sub    $0xc0,%rdx
+ 3c19429:	48 8d b3 c0 00 00 00 	lea    0xc0(%rbx),%rsi
+ 3c19430:	89 ef                	mov    %ebp,%edi
+ 3c19432:	e8 11 a6 1e 00       	callq  3e03a48 <wrap_read>
+ 3c19437:	0f b6 7b 3c          	movzbl 0x3c(%rbx),%edi
+ 3c1943b:	40 80 ff 04          	cmp    $0x4,%dil
+ 3c1943f:	74 59                	je     3c1949a <ReadFixedHdr(int, int, fsdbFixedHdr*)+0xe5>
+ 3c19441:	48 c1 e7 08          	shl    $0x8,%rdi
+ 3c19445:	81 e7 00 ff 00 00    	and    $0xff00,%edi
+ 3c1944b:	ba 00 04 00 00       	mov    $0x400,%edx
+ 3c19450:	48 29 fa             	sub    %rdi,%rdx
+ 3c19453:	48 01 df             	add    %rbx,%rdi
+ 3c19456:	be 00 00 00 00       	mov    $0x0,%esi
+ 3c1945b:	e8 30 6c 4f 01       	callq  5110090 <memset@plt>
+ 3c19460:	eb 38                	jmp    3c1949a <ReadFixedHdr(int, int, fsdbFixedHdr*)+0xe5>
+ 3c19462:	48 c7 83 c0 00 00 00 	movq   $0x0,0xc0(%rbx)
+ 3c19469:	00 00 00 00 
+ 3c1946d:	48 c7 83 f8 03 00 00 	movq   $0x0,0x3f8(%rbx)
+ 3c19474:	00 00 00 00 
+ 3c19478:	48 8d bb c8 00 00 00 	lea    0xc8(%rbx),%rdi
+ 3c1947f:	48 83 e7 f8          	and    $0xfffffffffffffff8,%rdi
+ 3c19483:	89 d8                	mov    %ebx,%eax
+ 3c19485:	29 f8                	sub    %edi,%eax
+ 3c19487:	8d 88 00 04 00 00    	lea    0x400(%rax),%ecx
+ 3c1948d:	c1 e9 03             	shr    $0x3,%ecx
+ 3c19490:	89 c9                	mov    %ecx,%ecx
+ 3c19492:	b8 00 00 00 00       	mov    $0x0,%eax
+ 3c19497:	f3 48 ab             	rep stos %rax,%es:(%rdi)
+ 3c1949a:	41 81 fc 04 03 02 01 	cmp    $0x1020304,%r12d
+ 3c194a1:	75 21                	jne    3c194c4 <ReadFixedHdr(int, int, fsdbFixedHdr*)+0x10f>
+ 3c194a3:	83 7b 2c 00          	cmpl   $0x0,0x2c(%rbx)
+ 3c194a7:	75 0b                	jne    3c194b4 <ReadFixedHdr(int, int, fsdbFixedHdr*)+0xff>
+ 3c194a9:	c7 43 2c 00 00 10 00 	movl   $0x100000,0x2c(%rbx)
+ 3c194b0:	c6 43 30 00          	movb   $0x0,0x30(%rbx)
+ 3c194b4:	4d 85 ed             	test   %r13,%r13
+ 3c194b7:	7f 18                	jg     3c194d1 <ReadFixedHdr(int, int, fsdbFixedHdr*)+0x11c>
+ 3c194b9:	48 83 c4 08          	add    $0x8,%rsp
+ 3c194bd:	5b                   	pop    %rbx
+ 3c194be:	5d                   	pop    %rbp
+ 3c194bf:	41 5c                	pop    %r12
+ 3c194c1:	41 5d                	pop    %r13
+ 3c194c3:	c3                   	retq   
+ 3c194c4:	48 89 de             	mov    %rbx,%rsi
+ 3c194c7:	44 89 e7             	mov    %r12d,%edi
+ 3c194ca:	e8 70 fe ff ff       	callq  3c1933f <ByteSwap_FixedHdr(int, fsdbFixedHdr*)>
+ 3c194cf:	eb d2                	jmp    3c194a3 <ReadFixedHdr(int, int, fsdbFixedHdr*)+0xee>
+ 3c194d1:	ba 00 00 00 00       	mov    $0x0,%edx
+ 3c194d6:	4c 89 ee             	mov    %r13,%rsi
+ 3c194d9:	89 ef                	mov    %ebp,%edi
+ 3c194db:	e8 ee a4 1e 00       	callq  3e039ce <wrap_lseek>
+ 3c194e0:	eb d7                	jmp    3c194b9 <ReadFixedHdr(int, int, fsdbFixedHdr*)+0x104>
+ 3c194e2:	c3                   	retq   

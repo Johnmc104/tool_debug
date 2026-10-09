@@ -1,0 +1,268 @@
+{
+  "collected_utc": "2026-10-09T01:48:19.097067+00:00",
+  "libraries": [
+    {
+      "name": "npi",
+      "path": "/opt/Synopsys/verdi/Y-2026.03-SP2/share/NPI/lib/linux64/libNPI.so",
+      "size": 130047768,
+      "sha256": "fa34dd31985272732e6bd56ff3768c1611f8e9d86c2441c06e89d7948f68f3da",
+      "selected_symbols": 611,
+      "dynamic_defined_symbols": 854,
+      "all_defined_symbols": 258573
+    },
+    {
+      "name": "reader",
+      "path": "/opt/Synopsys/verdi/Y-2026.03-SP2/share/FsdbReader/linux64/libnffr.so",
+      "size": 46132936,
+      "sha256": "dad1ed19f6f9bf4b521a4f0bbb3cfc06ef6b4f151e4bf0eb34067a898a9575f3",
+      "selected_symbols": 568,
+      "dynamic_defined_symbols": 1732,
+      "all_defined_symbols": 75511
+    },
+    {
+      "name": "reader_system",
+      "path": "/opt/Synopsys/verdi/Y-2026.03-SP2/share/FsdbReader/linux64/libnsys.so",
+      "size": 10695384,
+      "sha256": "4e6b5e8dfb690b018263dcaec2bba852f4f1e4dc34fdedd90185e6315ec0797b",
+      "selected_symbols": 0,
+      "dynamic_defined_symbols": 6233,
+      "all_defined_symbols": 7763
+    }
+  ],
+  "sample_sha256": "20cfd9439699ef49e135b5bb50e4961dfaf796d322838fb71f888ad719a50a3d",
+  "commands": [
+    {
+      "argv": [
+        "xxd",
+        "-l",
+        "512",
+        "/home/zhhe/work/python_auto/tool_wave/test_vwave/tb_top.fsdb"
+      ],
+      "returncode": 0
+    },
+    {
+      "argv": [
+        "readelf",
+        "-h",
+        "-d",
+        "-n",
+        "/opt/Synopsys/verdi/Y-2026.03-SP2/share/NPI/lib/linux64/libNPI.so"
+      ],
+      "returncode": 0
+    },
+    {
+      "argv": [
+        "nm",
+        "-D",
+        "-S",
+        "--defined-only",
+        "/opt/Synopsys/verdi/Y-2026.03-SP2/share/NPI/lib/linux64/libNPI.so"
+      ],
+      "returncode": 0
+    },
+    {
+      "argv": [
+        "nm",
+        "-S",
+        "--defined-only",
+        "/opt/Synopsys/verdi/Y-2026.03-SP2/share/NPI/lib/linux64/libNPI.so"
+      ],
+      "returncode": 0
+    },
+    {
+      "argv": [
+        "nm",
+        "-C",
+        "--defined-only",
+        "/opt/Synopsys/verdi/Y-2026.03-SP2/share/NPI/lib/linux64/libNPI.so"
+      ],
+      "returncode": 0
+    },
+    {
+      "argv": [
+        "objdump",
+        "-d",
+        "-C",
+        "--start-address=35829835",
+        "--stop-address=35830002",
+        "/opt/Synopsys/verdi/Y-2026.03-SP2/share/NPI/lib/linux64/libNPI.so"
+      ],
+      "returncode": 0
+    },
+    {
+      "argv": [
+        "objdump",
+        "-d",
+        "-C",
+        "--start-address=35828528",
+        "--stop-address=35828552",
+        "/opt/Synopsys/verdi/Y-2026.03-SP2/share/NPI/lib/linux64/libNPI.so"
+      ],
+      "returncode": 0
+    },
+    {
+      "argv": [
+        "objdump",
+        "-d",
+        "-C",
+        "--start-address=35826951",
+        "--stop-address=35827201",
+        "/opt/Synopsys/verdi/Y-2026.03-SP2/share/NPI/lib/linux64/libNPI.so"
+      ],
+      "returncode": 0
+    },
+    {
+      "argv": [
+        "readelf",
+        "-h",
+        "-d",
+        "-n",
+        "/opt/Synopsys/verdi/Y-2026.03-SP2/share/FsdbReader/linux64/libnffr.so"
+      ],
+      "returncode": 0
+    },
+    {
+      "argv": [
+        "nm",
+        "-D",
+        "-S",
+        "--defined-only",
+        "/opt/Synopsys/verdi/Y-2026.03-SP2/share/FsdbReader/linux64/libnffr.so"
+      ],
+      "returncode": 0
+    },
+    {
+      "argv": [
+        "nm",
+        "-S",
+        "--defined-only",
+        "/opt/Synopsys/verdi/Y-2026.03-SP2/share/FsdbReader/linux64/libnffr.so"
+      ],
+      "returncode": 0
+    },
+    {
+      "argv": [
+        "nm",
+        "-C",
+        "--defined-only",
+        "/opt/Synopsys/verdi/Y-2026.03-SP2/share/FsdbReader/linux64/libnffr.so"
+      ],
+      "returncode": 0
+    },
+    {
+      "argv": [
+        "objdump",
+        "-d",
+        "-C",
+        "--start-address=7476846",
+        "--stop-address=7477157",
+        "/opt/Synopsys/verdi/Y-2026.03-SP2/share/FsdbReader/linux64/libnffr.so"
+      ],
+      "returncode": 0
+    },
+    {
+      "argv": [
+        "objdump",
+        "-d",
+        "-C",
+        "--start-address=7418994",
+        "--stop-address=7419235",
+        "/opt/Synopsys/verdi/Y-2026.03-SP2/share/FsdbReader/linux64/libnffr.so"
+      ],
+      "returncode": 0
+    },
+    {
+      "argv": [
+        "objdump",
+        "-d",
+        "-C",
+        "--start-address=7592860",
+        "--stop-address=7595036",
+        "/opt/Synopsys/verdi/Y-2026.03-SP2/share/FsdbReader/linux64/libnffr.so"
+      ],
+      "returncode": 0
+    },
+    {
+      "argv": [
+        "objdump",
+        "-d",
+        "-C",
+        "--start-address=10596120",
+        "--stop-address=10596345",
+        "/opt/Synopsys/verdi/Y-2026.03-SP2/share/FsdbReader/linux64/libnffr.so"
+      ],
+      "returncode": 0
+    },
+    {
+      "argv": [
+        "objdump",
+        "-d",
+        "-C",
+        "--start-address=7372051",
+        "--stop-address=7372353",
+        "/opt/Synopsys/verdi/Y-2026.03-SP2/share/FsdbReader/linux64/libnffr.so"
+      ],
+      "returncode": 0
+    },
+    {
+      "argv": [
+        "objdump",
+        "-d",
+        "-C",
+        "--start-address=7372999",
+        "--stop-address=7373398",
+        "/opt/Synopsys/verdi/Y-2026.03-SP2/share/FsdbReader/linux64/libnffr.so"
+      ],
+      "returncode": 0
+    },
+    {
+      "argv": [
+        "objdump",
+        "-d",
+        "-C",
+        "--start-address=7375087",
+        "--stop-address=7375600",
+        "/opt/Synopsys/verdi/Y-2026.03-SP2/share/FsdbReader/linux64/libnffr.so"
+      ],
+      "returncode": 0
+    },
+    {
+      "argv": [
+        "readelf",
+        "-h",
+        "-d",
+        "-n",
+        "/opt/Synopsys/verdi/Y-2026.03-SP2/share/FsdbReader/linux64/libnsys.so"
+      ],
+      "returncode": 0
+    },
+    {
+      "argv": [
+        "nm",
+        "-D",
+        "-S",
+        "--defined-only",
+        "/opt/Synopsys/verdi/Y-2026.03-SP2/share/FsdbReader/linux64/libnsys.so"
+      ],
+      "returncode": 0
+    },
+    {
+      "argv": [
+        "nm",
+        "-S",
+        "--defined-only",
+        "/opt/Synopsys/verdi/Y-2026.03-SP2/share/FsdbReader/linux64/libnsys.so"
+      ],
+      "returncode": 0
+    },
+    {
+      "argv": [
+        "nm",
+        "-C",
+        "--defined-only",
+        "/opt/Synopsys/verdi/Y-2026.03-SP2/share/FsdbReader/linux64/libnsys.so"
+      ],
+      "returncode": 0
+    }
+  ]
+}

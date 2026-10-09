@@ -1,0 +1,2 @@
+# Preserve whitespace emitted by readelf, objdump and other evidence tools.
+* -whitespace

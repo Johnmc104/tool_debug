@@ -1,0 +1,174 @@
+{
+  "centos7_glibc": "2.17",
+  "libraries": [
+    {
+      "version": "T-2022.06-SP2",
+      "library": "libnffr.so",
+      "path": "/opt/Synopsys/verdi/T-2022.06-SP2/share/FsdbReader/linux64/libnffr.so",
+      "size": 40610528,
+      "sha256": "9edea072d20d000852437f6b12d4fadc128255a3f28a905ad2c594ac5d1d55de",
+      "required_versions": {
+        "GLIBC": [
+          "GLIBC_2.2.5",
+          "GLIBC_2.3",
+          "GLIBC_2.3.2",
+          "GLIBC_2.3.4",
+          "GLIBC_2.4",
+          "GLIBC_2.6",
+          "GLIBC_2.7",
+          "GLIBC_2.14",
+          "GLIBC_2.16",
+          "GLIBC_2.17"
+        ],
+        "GLIBCXX": [],
+        "CXXABI": []
+      },
+      "max_glibc": "GLIBC_2.17",
+      "incompatible_with_glibc_2_17": [],
+      "needed": [
+        "libpthread.so.0",
+        "libm.so.6",
+        "libc.so.6",
+        "ld-linux-x86-64.so.2"
+      ]
+    },
+    {
+      "version": "T-2022.06-SP2",
+      "library": "libnsys.so",
+      "path": "/opt/Synopsys/verdi/T-2022.06-SP2/share/FsdbReader/linux64/libnsys.so",
+      "size": 12488352,
+      "sha256": "4f74074dee038a573006570c35c386f9d6b290c2cc37467c89af3f4f93d26326",
+      "required_versions": {
+        "GLIBC": [
+          "GLIBC_2.2.5",
+          "GLIBC_2.3",
+          "GLIBC_2.3.2",
+          "GLIBC_2.7",
+          "GLIBC_2.14",
+          "GLIBC_2.17"
+        ],
+        "GLIBCXX": [],
+        "CXXABI": []
+      },
+      "max_glibc": "GLIBC_2.17",
+      "incompatible_with_glibc_2_17": [],
+      "needed": [
+        "libpthread.so.0",
+        "libm.so.6",
+        "libc.so.6",
+        "ld-linux-x86-64.so.2"
+      ]
+    },
+    {
+      "version": "Y-2026.03-SP2",
+      "library": "libnffr.so",
+      "path": "/opt/Synopsys/verdi/Y-2026.03-SP2/share/FsdbReader/linux64/libnffr.so",
+      "size": 46132936,
+      "sha256": "dad1ed19f6f9bf4b521a4f0bbb3cfc06ef6b4f151e4bf0eb34067a898a9575f3",
+      "required_versions": {
+        "GLIBC": [
+          "GLIBC_2.2.5",
+          "GLIBC_2.3",
+          "GLIBC_2.3.2",
+          "GLIBC_2.3.4",
+          "GLIBC_2.4",
+          "GLIBC_2.6",
+          "GLIBC_2.7",
+          "GLIBC_2.14",
+          "GLIBC_2.17",
+          "GLIBC_2.18",
+          "GLIBC_2.25",
+          "GLIBC_2.26",
+          "GLIBC_2.27"
+        ],
+        "GLIBCXX": [],
+        "CXXABI": []
+      },
+      "max_glibc": "GLIBC_2.27",
+      "incompatible_with_glibc_2_17": [
+        "618: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND glob64@GLIBC_2.27 (11)",
+        "634: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND getentropy@GLIBC_2.25 (12)",
+        "671: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND __cxa_thread_atexit_impl@GLIBC_2.18 (13)",
+        "724: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND strtof128@GLIBC_2.26 (17)",
+        "727: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND strfromf128@GLIBC_2.26 (17)",
+        "750: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND logf@GLIBC_2.27 (18)"
+      ],
+      "needed": [
+        "libpthread.so.0",
+        "libm.so.6",
+        "libc.so.6",
+        "ld-linux-x86-64.so.2"
+      ]
+    },
+    {
+      "version": "Y-2026.03-SP2",
+      "library": "libnsys.so",
+      "path": "/opt/Synopsys/verdi/Y-2026.03-SP2/share/FsdbReader/linux64/libnsys.so",
+      "size": 10695384,
+      "sha256": "4e6b5e8dfb690b018263dcaec2bba852f4f1e4dc34fdedd90185e6315ec0797b",
+      "required_versions": {
+        "GLIBC": [
+          "GLIBC_2.2.5",
+          "GLIBC_2.3",
+          "GLIBC_2.3.2",
+          "GLIBC_2.7",
+          "GLIBC_2.14",
+          "GLIBC_2.17",
+          "GLIBC_2.25",
+          "GLIBC_2.28"
+        ],
+        "GLIBCXX": [],
+        "CXXABI": []
+      },
+      "max_glibc": "GLIBC_2.28",
+      "incompatible_with_glibc_2_17": [
+        "278: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND getentropy@GLIBC_2.25 (12)",
+        "94: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND fcntl64@GLIBC_2.28 (7)"
+      ],
+      "needed": [
+        "libpthread.so.0",
+        "libm.so.6",
+        "libc.so.6",
+        "ld-linux-x86-64.so.2"
+      ]
+    }
+  ],
+  "npi_internal_functions": {
+    "open_file": {
+      "address": 35826198,
+      "size": 753,
+      "symbol_type": "t",
+      "symbol": "_ZN14fda_file_mgr_t9open_fileEPKccc"
+    },
+    "open_file_with_ffr": {
+      "address": 35825344,
+      "size": 854,
+      "symbol_type": "t",
+      "symbol": "_ZN14fda_file_mgr_t18open_file_with_ffrEPccc"
+    },
+    "ffr_open3": {
+      "address": 64444208,
+      "size": 41,
+      "symbol_type": "t",
+      "symbol": "_ZN9ffrObject8ffrOpen3EPc"
+    },
+    "ffr_open_impl": {
+      "address": 64467968,
+      "size": 1525,
+      "symbol_type": "t",
+      "symbol": "_ZN9ffrObject12ffrOpen_implEPcPFc14fsdbTreeCBTypePvS2_ES2_13ffrOpenOptionP15ffrCmprsFileArgP11IJoinedFile"
+    },
+    "reader_fixed_header": {
+      "address": 63017909,
+      "size": 302,
+      "symbol_type": "t",
+      "symbol": "_Z12ReadFixedHdriiP12fsdbFixedHdr"
+    },
+    "reader_header": {
+      "address": 63122704,
+      "size": 311,
+      "symbol_type": "t",
+      "symbol": "_ZN7ffrDisk10ReadHeaderEv"
+    }
+  }
+}

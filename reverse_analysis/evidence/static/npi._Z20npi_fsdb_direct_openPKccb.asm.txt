@@ -1,0 +1,75 @@
+
+/opt/Synopsys/verdi/Y-2026.03-SP2/share/NPI/lib/linux64/libNPI.so:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+000000000222ad07 <npi_fsdb_direct_open(char const*, char, bool)>:
+ 222ad07:	41 55                	push   %r13
+ 222ad09:	41 54                	push   %r12
+ 222ad0b:	55                   	push   %rbp
+ 222ad0c:	53                   	push   %rbx
+ 222ad0d:	48 83 ec 08          	sub    $0x8,%rsp
+ 222ad11:	48 89 fb             	mov    %rdi,%rbx
+ 222ad14:	41 89 f5             	mov    %esi,%r13d
+ 222ad17:	89 d5                	mov    %edx,%ebp
+ 222ad19:	48 8b 05 58 c3 65 03 	mov    0x365c358(%rip),%rax        # 5887078 <.got+0x458>
+ 222ad20:	48 83 38 00          	cmpq   $0x0,(%rax)
+ 222ad24:	74 5e                	je     222ad84 <npi_fsdb_direct_open(char const*, char, bool)+0x7d>
+ 222ad26:	48 8b 05 4b c3 65 03 	mov    0x365c34b(%rip),%rax        # 5887078 <.got+0x458>
+ 222ad2d:	48 8b 38             	mov    (%rax),%rdi
+ 222ad30:	e8 27 76 06 00       	callq  229235c <dsys_cntr_t::dump_lic_log()>
+ 222ad35:	48 85 db             	test   %rbx,%rbx
+ 222ad38:	0f 84 bb 00 00 00    	je     222adf9 <npi_fsdb_direct_open(char const*, char, bool)+0xf2>
+ 222ad3e:	48 8b 05 bb e3 65 03 	mov    0x365e3bb(%rip),%rax        # 5889100 <.got+0x24e0>
+ 222ad45:	48 83 38 00          	cmpq   $0x0,(%rax)
+ 222ad49:	74 72                	je     222adbd <npi_fsdb_direct_open(char const*, char, bool)+0xb6>
+ 222ad4b:	48 8b 05 ae e3 65 03 	mov    0x365e3ae(%rip),%rax        # 5889100 <.got+0x24e0>
+ 222ad52:	4c 8b 20             	mov    (%rax),%r12
+ 222ad55:	e8 f5 12 fe ff       	callq  220c04f <fda_allow_zwd()>
+ 222ad5a:	40 0f b6 cd          	movzbl %bpl,%ecx
+ 222ad5e:	45 84 ed             	test   %r13b,%r13b
+ 222ad61:	0f 95 c2             	setne  %dl
+ 222ad64:	85 c0                	test   %eax,%eax
+ 222ad66:	0f 95 c0             	setne  %al
+ 222ad69:	09 c2                	or     %eax,%edx
+ 222ad6b:	0f b6 d2             	movzbl %dl,%edx
+ 222ad6e:	48 89 de             	mov    %rbx,%rsi
+ 222ad71:	4c 89 e7             	mov    %r12,%rdi
+ 222ad74:	e8 9d fc ff ff       	callq  222aa16 <fda_file_mgr_t::open_file(char const*, char, char)>
+ 222ad79:	48 83 c4 08          	add    $0x8,%rsp
+ 222ad7d:	5b                   	pop    %rbx
+ 222ad7e:	5d                   	pop    %rbp
+ 222ad7f:	41 5c                	pop    %r12
+ 222ad81:	41 5d                	pop    %r13
+ 222ad83:	c3                   	retq   
+ 222ad84:	bf f0 00 00 00       	mov    $0xf0,%edi
+ 222ad89:	e8 e2 64 6b 02       	callq  48e1270 <operator new(unsigned long)>
+ 222ad8e:	49 89 c4             	mov    %rax,%r12
+ 222ad91:	48 89 c7             	mov    %rax,%rdi
+ 222ad94:	e8 07 6d 06 00       	callq  2291aa0 <dsys_cntr_t::dsys_cntr_t()>
+ 222ad99:	48 8b 05 d8 c2 65 03 	mov    0x365c2d8(%rip),%rax        # 5887078 <.got+0x458>
+ 222ada0:	4c 89 20             	mov    %r12,(%rax)
+ 222ada3:	eb 81                	jmp    222ad26 <npi_fsdb_direct_open(char const*, char, bool)+0x1f>
+ 222ada5:	48 89 c3             	mov    %rax,%rbx
+ 222ada8:	be f0 00 00 00       	mov    $0xf0,%esi
+ 222adad:	4c 89 e7             	mov    %r12,%rdi
+ 222adb0:	e8 3b 1b 64 02       	callq  486c8f0 <operator delete(void*, unsigned long)>
+ 222adb5:	48 89 df             	mov    %rbx,%rdi
+ 222adb8:	e8 f3 3a ec 02       	callq  50ee8b0 <_Unwind_Resume>
+ 222adbd:	bf 18 00 00 00       	mov    $0x18,%edi
+ 222adc2:	e8 a9 64 6b 02       	callq  48e1270 <operator new(unsigned long)>
+ 222adc7:	49 89 c4             	mov    %rax,%r12
+ 222adca:	48 89 c7             	mov    %rax,%rdi
+ 222adcd:	e8 2e 32 fe ff       	callq  220e000 <fda_file_mgr_t::fda_file_mgr_t()>
+ 222add2:	48 8b 05 27 e3 65 03 	mov    0x365e327(%rip),%rax        # 5889100 <.got+0x24e0>
+ 222add9:	4c 89 20             	mov    %r12,(%rax)
+ 222addc:	e9 6a ff ff ff       	jmpq   222ad4b <npi_fsdb_direct_open(char const*, char, bool)+0x44>
+ 222ade1:	48 89 c3             	mov    %rax,%rbx
+ 222ade4:	be 18 00 00 00       	mov    $0x18,%esi
+ 222ade9:	4c 89 e7             	mov    %r12,%rdi
+ 222adec:	e8 ff 1a 64 02       	callq  486c8f0 <operator delete(void*, unsigned long)>
+ 222adf1:	48 89 df             	mov    %rbx,%rdi
+ 222adf4:	e8 b7 3a ec 02       	callq  50ee8b0 <_Unwind_Resume>
+ 222adf9:	48 89 d8             	mov    %rbx,%rax
+ 222adfc:	e9 78 ff ff ff       	jmpq   222ad79 <npi_fsdb_direct_open(char const*, char, bool)+0x72>
