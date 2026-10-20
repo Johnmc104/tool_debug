@@ -10,6 +10,8 @@
 #include <iostream>
 #include <string>
 #include <chrono>
+#include <functional>
+#include <cstdio>
 
 #include <unistd.h>
 
@@ -62,7 +64,7 @@ static std::string dispatch_request(const std::string& request_json) {
 
     try {
     if (cmd_str == cmd::STATUS)            return handle_status(id);
-    if (cmd_str == cmd::SHUTDOWN) {
+    if (cmd_str == cmd::SHUTDOWN || cmd_str == "stdio.quit") {
         tw::server::g_running = 0;
         return make_ok_response(id, "{\"message\":\"shutting down\"}");
     }
@@ -114,6 +116,69 @@ inline int run_server(WaveBackend& backend, const Session& session, RunDir& run_
     run_dir.cleanup();
     std::cerr << "[vwave-server] Bye.\n";
     return rc;
+}
+
+/**
+ * Run the same JSON dispatcher over stdin/stdout.  This is the transport used
+ * by an LSF interactive job: bsub carries the pipes between the login host and
+ * the worker on the execution host.  stdout is deliberately limited to one
+ * ready envelope followed by one response per request; diagnostics stay on
+ * stderr so a long-lived client can parse the stream safely.
+ */
+inline int run_stdio_loop(WaveBackend& backend, const Session& session) {
+    g_backend = &backend;
+    g_session = session;
+    g_run_dir = nullptr;
+    g_fsdb_path = session.file;
+    std::cerr << "[vwave-stdio] Loading " << session.backend << ": "
+              << session.file << "\n";
+    // Some vendor readers print informational text to stdout.  Preserve a
+    // dedicated protocol descriptor and temporarily route that text to stderr
+    // during backend entry points.
+    int protocol_fd = ::dup(STDOUT_FILENO);
+    if (protocol_fd < 0) throw std::runtime_error("Cannot reserve stdio protocol descriptor");
+    auto backend_call = [&](const std::function<void()>& fn) {
+        std::cout.flush();
+        ::dup2(STDERR_FILENO, STDOUT_FILENO);
+        try { fn(); std::cout.flush(); std::fflush(nullptr); }
+        catch (...) { ::dup2(protocol_fd, STDOUT_FILENO); throw; }
+        ::dup2(protocol_fd, STDOUT_FILENO);
+    };
+    try {
+        backend_call([&]() { backend.open(session.file); });
+        FileInfo info;
+        backend_call([&]() { info = backend.info(); });
+        std::cerr << "[vwave-stdio] Time range: " << info.min_time << " ~ "
+                  << info.max_time << "\n";
+    } catch (...) {
+        // Keep startup failures out of stdout.  The launcher observes EOF and
+        // reports the stderr diagnostic to its caller.
+        throw;
+    }
+    g_start_time = std::chrono::steady_clock::now();
+    tw::server::g_running = 1;
+    tw::server::install_signal_handlers();
+
+    JsonObject ready;
+    ready.set("type", "ready");
+    ready.set("protocol", "vwave-stdio-loop");
+    ready.set("version", int64_t(1));
+    ready.set("pid", int64_t(getpid()));
+    ready.set("backend", session.backend);
+    std::cout << ready.dump() << std::endl;
+    std::cout.flush();
+
+    std::string request;
+    while (tw::server::g_running && std::getline(std::cin, request)) {
+        if (request.empty()) continue;
+        std::string response;
+        backend_call([&]() { response = dispatch_request(request); });
+        std::cout << response << std::endl;
+        std::cout.flush();
+    }
+    ::close(protocol_fd);
+    std::cerr << "[vwave-stdio] Bye.\n";
+    return 0;
 }
 
 }  // namespace server

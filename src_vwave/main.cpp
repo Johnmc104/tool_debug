@@ -39,6 +39,7 @@
 
 // No vendor code or SDK headers in the CLI.
 #include "common/session.h"
+#include "lsf_proxy.h"
 
 // ─── CLI options ────────────────────────────────────────────────────────────
 
@@ -51,6 +52,12 @@ struct CliOptions {
     std::string backend; // empty on queries means use the open session
     std::string verdi_home;
     std::string error;
+    std::string run_mode; // local or lsf; defaults to VWAVE_RUN_MODE/local
+    std::string lsf_queue;
+    std::string lsf_resource;
+    std::string lsf_bsub;
+    std::string lsf_bkill;
+    std::string lsf_job_name;
     bool json_mode       = false;
     int open_timeout_sec = 30;
 
@@ -135,6 +142,9 @@ Global options:
   --backend npi|ffr        Reader backend (open default: npi; queries: current session)
   --verdi-home <path>       FsdbReader install (ffr open; default: VERDI_HOME)
   --timeout <sec>           Server start timeout (default: 30, open only)
+  --run-mode local|lsf      Override VWAVE_RUN_MODE for open
+  --lsf-queue <name>        LSF queue (or VWAVE_LSF_QUEUE)
+  --lsf-resource <expr>     LSF resource requirement (or VWAVE_LSF_RESOURCE)
   -h, --help                Show this help
 
 Signal paths use dot-separated hierarchy: tb.u_cpu.core.clk
@@ -214,6 +224,41 @@ static int exec_worker(const std::string& worker, const wave::Session& session,
     return 1;
 }
 
+static int exec_lsf_proxy(const std::string& worker, const wave::Session& session,
+                          const wave::RunDir& run_dir, const CliOptions& opts) {
+    auto arg = [](const std::string& value, const char* fallback) {
+        if (!value.empty()) return value;
+        const char* env_name = std::strcmp(fallback, "bsub") == 0 ? "VWAVE_LSF_BSUB" : "VWAVE_LSF_BKILL";
+        return getenv(env_name) ? std::string(getenv(env_name)) : std::string(fallback);
+    };
+    std::string bsub = arg(opts.lsf_bsub, "bsub");
+    std::string bkill = arg(opts.lsf_bkill, "bkill");
+    std::string queue = opts.lsf_queue;
+    std::string resource = opts.lsf_resource;
+    std::string job = opts.lsf_job_name;
+    std::string startup = std::to_string(opts.open_timeout_sec);
+    std::string query = getenv("VWAVE_LSF_QUERY_TIMEOUT") ? getenv("VWAVE_LSF_QUERY_TIMEOUT") : "360";
+    std::string config = session.json();
+    char self_buf[PATH_MAX];
+    ssize_t self_size = readlink("/proc/self/exe", self_buf, sizeof(self_buf)-1);
+    std::string self = self_size > 0 ? std::string(self_buf, static_cast<size_t>(self_size))
+                                     : wave::absolute_path(g_executable);
+    execl(self.c_str(), self.c_str(), "--lsf-proxy", config.c_str(),
+          run_dir.dir().c_str(), worker.c_str(), bsub.c_str(), bkill.c_str(), queue.c_str(),
+          resource.c_str(), job.c_str(), startup.c_str(), query.c_str(), nullptr);
+    std::cerr << "ERROR: Cannot execute LSF proxy " << g_executable << ": " << strerror(errno) << "\n";
+    return 1;
+}
+
+static std::string configured_run_mode(const CliOptions& opts) {
+    std::string mode = opts.run_mode;
+    if (mode.empty() && getenv("VWAVE_RUN_MODE")) mode = getenv("VWAVE_RUN_MODE");
+    if (mode.empty()) mode = "local";
+    if (mode != "local" && mode != "lsf")
+        throw std::runtime_error("VWAVE_RUN_MODE/--run-mode must be local or lsf");
+    return mode;
+}
+
 static bool preflight(const std::string& worker, const wave::Session& session,
                       const std::string& mode="--check", std::string* output=nullptr) {
     int fds[2];
@@ -274,6 +319,15 @@ static wave::Session select_session(const CliOptions& opts) {
 
 static int cmd_open(const CliOptions& opts) {
     if (opts.fsdb_path.empty()) throw std::runtime_error("Missing FSDB file path");
+    const std::string run_mode = configured_run_mode(opts);
+    CliOptions launch_opts = opts;
+    if (launch_opts.lsf_queue.empty() && getenv("VWAVE_LSF_QUEUE")) launch_opts.lsf_queue = getenv("VWAVE_LSF_QUEUE");
+    if (launch_opts.lsf_resource.empty() && getenv("VWAVE_LSF_RESOURCE")) launch_opts.lsf_resource = getenv("VWAVE_LSF_RESOURCE");
+    if (launch_opts.lsf_bsub.empty() && getenv("VWAVE_LSF_BSUB")) launch_opts.lsf_bsub = getenv("VWAVE_LSF_BSUB");
+    if (launch_opts.lsf_bkill.empty() && getenv("VWAVE_LSF_BKILL")) launch_opts.lsf_bkill = getenv("VWAVE_LSF_BKILL");
+    if (launch_opts.lsf_job_name.empty()) {
+        launch_opts.lsf_job_name = "vwave_" + std::to_string(static_cast<long long>(getpid())) + "_" + opts.backend;
+    }
     auto session=select_session(opts);
     auto worker=worker_path(session.backend);
     if (access(worker.c_str(),X_OK)!=0) throw std::runtime_error("Missing backend worker: "+worker);
@@ -286,8 +340,11 @@ static int cmd_open(const CliOptions& opts) {
         bool verified=response.parse(status) && response.get_string("status")=="ok" &&
             data.parse(response.get_string("data")) && data.get_int("pid",0)==run_dir.read_pid();
         if (!verified) throw std::runtime_error("Live PID with unverified server status; check runtime directory: "+run_dir.dir());
+        std::string live_mode = "local";
+        std::ifstream mode_file(run_dir.dir()+"/run_mode");
+        if (mode_file) std::getline(mode_file, live_mode);
         bool live=data.get_string("backend","npi")==session.backend;
-        if (live && stored==session.json()) {
+        if (live && live_mode==run_mode && stored==session.json()) {
             if (opts.json_mode) {
                 wave::JsonObject result; result.set("status","ok"); result.set("message","Server already running");
                 result.set("pid",int64_t(run_dir.read_pid())); std::cout<<result.dump()<<std::endl;
@@ -303,10 +360,19 @@ static int cmd_open(const CliOptions& opts) {
     run_dir.cleanup();
     if (!run_dir.ensure_dir()) throw std::runtime_error("Cannot create runtime directory: "+run_dir.dir());
     tw::daemon::LaunchConfig cfg;
-    cfg.log_tag="vwave"; cfg.timeout_sec=opts.open_timeout_sec; cfg.json_mode=opts.json_mode;
-    return tw::daemon::fork_and_wait(run_dir.base(),
-        [&]() { return exec_worker(worker,session,"--serve",run_dir.dir()); },
+    cfg.log_tag = run_mode == "lsf" ? "vwave-lsf" : "vwave";
+    cfg.timeout_sec=opts.open_timeout_sec; cfg.json_mode=opts.json_mode;
+    int rc = tw::daemon::fork_and_wait(run_dir.base(),
+        [&]() {
+            if (run_mode == "lsf") return exec_lsf_proxy(worker, session, run_dir, launch_opts);
+            return exec_worker(worker,session,"--serve",run_dir.dir());
+        },
         [&]() { return wave::client::build_request(0,"status"); },send,cfg);
+    if (rc == 0) {
+        std::ofstream mode_file(run_dir.dir()+"/run_mode");
+        mode_file << run_mode << "\n";
+    }
+    return rc;
 }
 
 // ─── Command: close ──────────────────────────────────────────────────────────
@@ -521,6 +587,12 @@ static CliOptions parse_args(int argc, char** argv) {
         } else if (arg == "--backend" && i+1 < argc) { opts.backend = argv[++i];
         } else if (arg == "--verdi-home" && i+1 < argc) { opts.verdi_home = argv[++i];
         } else if (arg == "--run-dir" && i+1 < argc) { opts.run_dir_override = argv[++i];
+        } else if (arg == "--run-mode" && i+1 < argc) { opts.run_mode = argv[++i];
+        } else if (arg == "--lsf-queue" && i+1 < argc) { opts.lsf_queue = argv[++i];
+        } else if (arg == "--lsf-resource" && i+1 < argc) { opts.lsf_resource = argv[++i];
+        } else if (arg == "--lsf-bsub" && i+1 < argc) { opts.lsf_bsub = argv[++i];
+        } else if (arg == "--lsf-bkill" && i+1 < argc) { opts.lsf_bkill = argv[++i];
+        } else if (arg == "--lsf-job-name" && i+1 < argc) { opts.lsf_job_name = argv[++i];
         } else if (arg == "--timeout" && i+1 < argc) {
             opts.open_timeout_sec = std::atoi(argv[++i]);
             if (opts.open_timeout_sec < 1) opts.open_timeout_sec = 30;
@@ -561,6 +633,8 @@ static CliOptions parse_args(int argc, char** argv) {
 
     if (!opts.backend.empty() && opts.backend != "npi" && opts.backend != "ffr")
         opts.error = "--backend must be npi or ffr";
+    if (!opts.run_mode.empty() && opts.run_mode != "local" && opts.run_mode != "lsf")
+        opts.error = "--run-mode must be local or lsf";
     if (!opts.verdi_home.empty() && (opts.command != "open" || opts.backend != "ffr"))
         opts.error = "--verdi-home is only supported with open --backend ffr";
 
@@ -580,6 +654,8 @@ static CliOptions parse_args(int argc, char** argv) {
 
 int main(int argc, char** argv) {
     g_executable = argv[0];
+    if (argc > 1 && std::string(argv[1]) == "--lsf-proxy")
+        return wave::lsf::entry(argc, argv);
     try {
     CliOptions opts = parse_args(argc, argv);
     if (!opts.error.empty()) throw std::runtime_error(opts.error);

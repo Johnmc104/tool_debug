@@ -56,6 +56,9 @@ public:
     void   cleanup()         const {
         unlink((dir() + "/session.json").c_str());
         unlink((dir() + "/session.json.tmp").c_str());
+        unlink((dir() + "/run_mode").c_str());
+        unlink((dir() + "/lsf_job_id").c_str());
+        unlink((dir() + "/lsf_job_name").c_str());
         base_.cleanup();
     }
     void   cleanup_all()     const { cleanup(); base_.cleanup_all(); }

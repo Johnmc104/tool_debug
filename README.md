@@ -75,6 +75,27 @@ FFR 库来源为 `--verdi-home` 或当前 `VERDI_HOME`，加载配套 `share/Fsd
 
 切换 EDA 环境不会改变已有会话。再次 `open --backend ffr` 时，如果安装目录或库哈希变化，会重启该会话；加载预检失败则保留原会话。`status/info` 的 JSON 包含实际 backend、SDK 路径、库路径和 SHA-256。查询可显式指定 `--backend` 核对当前模式，不匹配时提示重新 open。
 
+### LSF 计算节点模式
+
+`vwave` 支持通过 `VWAVE_RUN_MODE` 选择本地 daemon 或 LSF 计算节点 worker：
+
+```bash
+export VWAVE_RUN_MODE=lsf
+export VWAVE_LSF_BSUB=/opt/LSF/10.1/linux3.10-glibc2.17-x86_64/bin/bsub
+export VWAVE_LSF_BKILL=/opt/LSF/10.1/linux3.10-glibc2.17-x86_64/bin/bkill
+export VWAVE_LSF_QUEUE=interactive
+vwave open tb_top.fsdb --backend ffr --verdi-home /path/to/verdi --run-dir /tmp/wave
+vwave status --run-dir /tmp/wave --json
+vwave get -s tb_top.clk -t 500000 --run-dir /tmp/wave --json
+vwave close --run-dir /tmp/wave
+```
+
+LSF 模式在登录机保留本地 UDS proxy，通过 `bsub -I` 启动计算节点上的
+`vwave-*-worker --stdio-loop`；后续独立执行的本地查询仍连接同一 proxy。
+`VWAVE_RUN_MODE=local` 或 `--run-mode local` 可切回原有本地模式。
+`VWAVE_LSF_RESOURCE`、`VWAVE_LSF_QUERY_TIMEOUT` 和 `--lsf-job-name` 可分别设置资源、查询超时和作业名。
+必须使用真实 LSF 的 `bsub/bkill`，避免系统中的 Slurm 兼容包装器。
+
 FFR 支持四态数字信号、宽总线、位选/片选、unpacked/packed struct 字段和静态数组组合值，复用原有查询命令；real 已支持普通值、范围和计数。string 按 NPI 当前行为处理：点值返回读取错误，范围为空，计数和 edge 事件仍可查询；事务/属性值仍返回明确的未支持错误。范围查询先输出起始时刻的值，`vc-count` 仅计真实记录；边沿查找保持原 NPI 命令的边界行为。
 
 补充测试曾发现总线位选/片选、数组中间层、struct 字段路径和 packed struct 展开问题，现已完成修复。当前支持范围、Reader 版本限制和 string 兼容语义见 [FFR 功能缺口分析](plan/09_ffr_feature_gaps_and_solution.md)。

@@ -5,6 +5,7 @@
 #include "backend/npi_backend.h"
 #endif
 #include <memory>
+#include <cstdio>
 
 int main(int argc, char** argv) {
 #ifndef WAVE_FFR_WORKER
@@ -23,12 +24,26 @@ int main(int argc, char** argv) {
         return 0;
     }
 #endif
-    if (argc != 4 || (std::string(argv[1]) != "--serve" && std::string(argv[1]) != "--check")) {
+    bool stdio_loop = argc == 3 && std::string(argv[1]) == "--stdio-loop";
+    if (!stdio_loop && (argc != 4 ||
+        (std::string(argv[1]) != "--serve" && std::string(argv[1]) != "--check"))) {
         std::cerr << "ERROR: Internal worker; use vwave open.\n";
         return 1;
     }
     wave::RunDir run_dir;
     bool serving = std::string(argv[1]) == "--serve";
+    int stdio_protocol_fd = -1;
+    if (stdio_loop) {
+        // Reader constructors may print to stdout before run_stdio_loop() can
+        // install its per-call redirection.  Keep that text off the JSONL
+        // channel from the first instruction of backend construction.
+        stdio_protocol_fd = dup(STDOUT_FILENO);
+        if (stdio_protocol_fd < 0) {
+            std::cerr << "ERROR: Cannot reserve stdio protocol descriptor\n";
+            return 1;
+        }
+        dup2(STDERR_FILENO, STDOUT_FILENO);
+    }
     try {
         auto session = wave::Session::parse(argv[2]);
 #ifdef WAVE_FFR_WORKER
@@ -38,11 +53,23 @@ int main(int argc, char** argv) {
         if (session.backend != "npi") throw std::runtime_error("Expected npi session");
         std::unique_ptr<wave::WaveBackend> backend(new wave::NpiBackend);
 #endif
+        if (stdio_loop) {
+            std::cout.flush();
+            std::fflush(nullptr);
+            dup2(stdio_protocol_fd, STDOUT_FILENO);
+            close(stdio_protocol_fd);
+            stdio_protocol_fd = -1;
+            return wave::server::run_stdio_loop(*backend, session);
+        }
         if (!serving) return 0;
         // 不向初始化接口传递 CLI 参数；只传工程会话配置。
         run_dir = wave::RunDir(session.file, argv[3]);
         return wave::server::run_server(*backend, session, run_dir);
     } catch (const std::exception& e) {
+        if (stdio_protocol_fd >= 0) {
+            dup2(stdio_protocol_fd, STDOUT_FILENO);
+            close(stdio_protocol_fd);
+        }
         std::cerr << "[vwave-server] ERROR: " << e.what() << '\n';
         if (serving && !run_dir.dir().empty()) run_dir.cleanup();
         return 1;

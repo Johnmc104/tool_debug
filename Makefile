@@ -71,7 +71,7 @@ VSIGNAL_BIN   = $(BIN_DIR)/vsignal
 
 # vwave sources
 VWAVE_MAIN    = src_vwave/main.cpp
-VWAVE_HDRS    = $(wildcard src_vwave/common/*.h src_vwave/server/*.h src_vwave/client/*.h src_vwave/backend/*.h)
+VWAVE_HDRS    = $(wildcard src_vwave/*.h src_vwave/common/*.h src_vwave/server/*.h src_vwave/client/*.h src_vwave/backend/*.h)
 VWAVE_INC     = -Isrc_vwave $(TW_INC) $(INCLUDES)
 
 # vsignal sources
@@ -82,7 +82,7 @@ VSIGNAL_INC   = -Isrc_vsignal $(TW_INC) $(INCLUDES)
 # ── Default target ───────────────────────────────────────────────────────────
 .DEFAULT_GOAL := all
 
-.PHONY: all compile vwave vwave-ffr vsignal test test-vwave test-vsignal clean help
+.PHONY: all compile vwave vwave-ffr vsignal test test-vwave test-vwave-lsf test-vsignal clean help
 
 all: compile
 
@@ -127,6 +127,10 @@ test: test-vwave test-vsignal
 test-vwave: vwave
 	@echo "\n══════ Running vwave tests ══════"
 	BIN_DIR=$(abspath $(BIN_DIR)) bash test_vwave/run_test.sh
+
+test-vwave-lsf: vwave
+	@echo "\n══════ Running vwave LSF proxy test ══════"
+	python3 test_vwave/test_lsf_mode.py
 
 test-vsignal: $(VSIGNAL_BIN)
 	@echo "\n══════ Running vsignal tests ══════"
