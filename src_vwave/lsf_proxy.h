@@ -67,6 +67,17 @@ inline std::vector<std::string> split_words(const std::string& text) {
     return result;
 }
 
+inline std::string hex_encode(const std::string& text) {
+    static const char* digits = "0123456789abcdef";
+    std::string out("hex:");
+    out.reserve(4 + text.size() * 2);
+    for (unsigned char c : text) {
+        out += digits[c >> 4];
+        out += digits[c & 0xf];
+    }
+    return out;
+}
+
 inline std::string replace_pid(const std::string& response, pid_t pid) {
     const std::string key = "\"pid\":";
     auto pos = response.find(key);
@@ -132,7 +143,10 @@ public:
             if (!cfg.resource.empty()) { args.push_back("-R"); args.push_back(cfg.resource); }
             args.push_back(session_worker_);
             args.push_back("--stdio-loop");
-            args.push_back(session.json());
+            // bsub reconstructs a shell command and strips JSON quotes.  A
+            // hex payload keeps the session metadata a single argv token on
+            // the execution host while retaining the public stdio-loop mode.
+            args.push_back(hex_encode(session.json()));
             std::vector<char*> argv;
             for (auto& a : args) argv.push_back(const_cast<char*>(a.c_str()));
             argv.push_back(nullptr);
