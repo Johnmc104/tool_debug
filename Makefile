@@ -40,9 +40,12 @@ _C_BLUE       ?= \033[1;34m
 _C_RESET      ?= \033[0m
 
 # ── Verdi NPI paths ──────────────────────────────────────────────────────────
-# 已验证: T-2022.06-SP2, Y-2026.03-SP2 (2026.03+ 需 License feature VerdiNPI)
+# 已验证: T-2022.06-SP2, W-2024.09, Y-2026.03-SP2
+# VCS 版本由 test-vsignal 的 VCS_BIN/VCS_HOME 选择；它不参与 vsignal 链接。
 VERDI_HOME   ?= /opt/Synopsys/verdi/Y-2026.03-SP2
 FFR_SDK_HOME ?= /opt/Synopsys/verdi/T-2022.06-SP2
+VCS_HOME     ?=
+VCS_BIN      ?=
 FFR_INC       = $(FFR_SDK_HOME)/share/FsdbReader
 NPI_INC       = $(VERDI_HOME)/share/NPI/inc
 NPI_L1_INC    = $(VERDI_HOME)/share/NPI/L1/C/inc
@@ -134,7 +137,7 @@ test-vwave-lsf: vwave
 
 test-vsignal: $(VSIGNAL_BIN)
 	@echo "\n══════ Running vsignal tests ══════"
-	BIN_DIR=$(abspath $(BIN_DIR)) bash test_vsignal/run_test.sh
+	BIN_DIR=$(abspath $(BIN_DIR)) VCS_HOME="$(VCS_HOME)" VCS_BIN="$(VCS_BIN)" bash test_vsignal/run_test.sh
 
 # ── Clean ─────────────────────────────────────────────────────────────────────
 clean:
@@ -171,5 +174,7 @@ help: ## 显示帮助
 	@echo "Environment:"
 	@echo "  VERDI_HOME=$(VERDI_HOME)"
 	@echo "  FFR_SDK_HOME=$(FFR_SDK_HOME)"
+	@echo "  VCS_HOME=$(if $(VCS_HOME),$(VCS_HOME),(由 PATH 查找))"
+	@echo "  VCS_BIN=$(if $(VCS_BIN),$(VCS_BIN),(由 VCS_HOME/PATH 查找))"
 	@echo "  VWAVE_RUN_MODE=local|lsf (LSF 模式可配 VWAVE_LSF_BSUB/BKILL/QUEUE/RESOURCE)"
 	@echo "  CXX=$(CXX)"

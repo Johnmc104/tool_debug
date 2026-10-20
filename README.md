@@ -1,4 +1,4 @@
-# tool_wave v1.8 — FSDB 波形读取 & 网表信号追踪
+# tool_wave v1.9 — FSDB 波形读取 & 网表信号追踪
 
 命令行工具集。vwave 支持 NPI 和动态加载 FsdbReader 两种后端，vsignal 使用 Verdi NPI。包含两个独立工具：
 
@@ -104,14 +104,41 @@ FFR 支持四态数字信号、宽总线、位选/片选、unpacked/packed struc
 
 CentOS 7/glibc 2.17 已验证 **2022 reader** 的完整 open、查询和 close。2026 reader 自身需要更高 glibc，动态加载不能降低该要求。构建时静态链接 C++ 运行库，以减少用户切换 EDA 后的 GLIBCXX 冲突；发布仍应核验生成二进制的 GLIBC 要求。
 
-### v1.8 发布说明
+### v1.9 发布说明
 
 - 新增 `VWAVE_RUN_MODE=lsf`：通过登录机 proxy、LSF interactive job 和 stdio-loop worker 支持计算节点运行、登录机查询；保留 `local` 模式。
-- vwave/vsignal CLI 增加 `--version`，公共编译和打包流程统一使用 `VERSION=1.8`。
+- vwave/vsignal CLI 增加 `--version`，公共编译和打包流程统一使用 `VERSION=1.9`。
+- 新增 VCS `W-2024.09` KDB 兼容支持；`VCS_HOME`/`VCS_BIN` 可指定 `test-vsignal` 使用的 VCS。
 - FFR 与 NPI 的普通位选、二维数组、struct、packed struct、real 和组合信号查询已完成对照验证。
 - T-2022.06-SP2、Y-2026.03-SP2 配套样本及 CentOS 7/2022 reader 验证通过；FFR worker 仍不携带厂商 reader，运行时需提供配套 SDK。
 - packed struct 展开依赖已验证 Reader 的内部开关，新增 EDA/Reader 版本必须重新做 ABI 和行为验证。
-- 当前发布归档：`tool_wave-1.7-linux-x86_64.tar.gz`，同时提供 SHA-256 校验文件。
+- 当前发布归档：`tool_wave-1.9-linux-x86_64.tar.gz`，同时提供 SHA-256 校验文件。
+
+### VCS 2024 / KDB 兼容性
+
+`vsignal` 已验证支持 VCS `W-2024.09` 生成的 KDB（`vcs -kdb`）。验证覆盖
+`open/status/info/driver/fanout/conn/close`，并确认同一套源码可使用 Verdi
+`W-2024.09` NPI 编译运行。VCS 只负责生成 KDB，`vsignal` 的 NPI 版本由构建时
+的 `VERDI_HOME` 决定；运行时必须保持 NPI 头文件、库和 `VERDI_HOME` 配套，不能
+混用不同 Verdi 版本的库。
+
+```bash
+# 使用 VCS 2024 生成 KDB并运行完整 vsignal 回归
+export VCS_HOME=/opt/Synopsys/vcs/W-2024.09
+export VERDI_HOME=/opt/Synopsys/verdi/W-2024.09
+make VERDI_HOME="$VERDI_HOME" vsignal
+make test-vsignal VCS_BIN="$VCS_HOME/bin/vcs"
+```
+
+也可以只切换 KDB 生成器，继续使用默认发布版（Y-2026.03-SP2）`vsignal`：
+
+```bash
+make test-vsignal VCS_HOME=/opt/Synopsys/vcs/W-2024.09
+```
+
+当前验证矩阵：VCS `W-2024.09` + Verdi/NPI `W-2024.09`，以及 VCS
+`W-2024.09` 生成的 KDB + Verdi/NPI `Y-2026.03-SP2`。VCS 2024 的其他补丁版、
+Verdi 2024 的其他补丁版需要按同样流程重新验证。
 
 ### vwave 命令速查
 
@@ -241,12 +268,13 @@ make clean            # 清理 release/ dist/ build/
 
 | 依赖 | 说明 |
 |------|------|
-| **VERDI_HOME** | Verdi 安装路径（`module load synopsys/verdi` 或手动 export） |
+| **VERDI_HOME** | Verdi 安装路径（`module load synopsys/verdi` 或手动 export）；决定 `vsignal` 的 NPI 编译/运行库 |
+| **VCS_HOME / VCS_BIN** | `test-vsignal` 生成 KDB 时使用的 VCS 安装或可执行文件；可选，默认从 `PATH` 查找 |
 | **GCC 9+** | C++14 编译器 |
 | **Linux** | Unix Domain Socket, fork/setsid |
 | **VCS -kdb** | vsignal 需要 KDB 数据库（`vcs -kdb ...` 编译生成） |
 
-> NPI worker 和 vsignal 通过 RPATH 绑定编译时的 NPI 库；NPI 运行时对齐配套环境。
+> NPI worker 和 vsignal 通过 RPATH 绑定编译时的 NPI 库；NPI 运行时对齐配套环境。VCS 2024 KDB 已完成交叉版本验证。
 > FFR worker 独立动态加载打开时选中的 reader，不调用 NPI 初始化。
 
 ### 双后端验证

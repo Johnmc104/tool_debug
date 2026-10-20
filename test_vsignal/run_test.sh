@@ -6,6 +6,27 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 VSIGNAL="${BIN_DIR:-$ROOT_DIR/release/bin}/vsignal"
 
+# VCS 选择优先级：VCS_BIN > VCS_HOME/bin/vcs > PATH 中的 vcs。
+# 这样可以在同一台机器上明确验证 VCS 2024/2026 生成的 KDB，避免
+# 测试结果受当前交互 shell 的 module 状态影响。
+if [ -n "${VCS_BIN:-}" ]; then
+    VCS_CMD="$VCS_BIN"
+    # VCS wrapper 会根据 VCS_HOME 查找 elabCom 等辅助程序；当调用者只
+    # 指定 VCS_BIN 时，从该可执行文件反推安装根目录，避免继承另一版本。
+    VCS_CMD_DIR="$(cd "$(dirname "$VCS_CMD")" 2>/dev/null && pwd)"
+    if [ -n "$VCS_CMD_DIR" ] && [ -x "$VCS_CMD_DIR/vcs" ]; then
+        export VCS_HOME="$(cd "$VCS_CMD_DIR/.." && pwd)"
+    fi
+elif [ -n "${VCS_HOME:-}" ] && [ -x "${VCS_HOME}/bin/vcs" ]; then
+    VCS_CMD="${VCS_HOME}/bin/vcs"
+else
+    VCS_CMD="$(command -v vcs 2>/dev/null || true)"
+fi
+
+if [ -n "${VCS_HOME:-}" ] && [ -d "${VCS_HOME}/bin" ]; then
+    export PATH="${VCS_HOME}/bin:$PATH"
+fi
+
 # Colors
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -57,6 +78,10 @@ if [ ! -x "$VSIGNAL" ]; then
     echo -e "${RED}ERROR: $VSIGNAL not found. Run 'make vsignal' first.${NC}"
     exit 1
 fi
+if [ -z "$VCS_CMD" ] || [ ! -x "$VCS_CMD" ]; then
+    echo -e "${RED}ERROR: VCS not found. Set VCS_BIN or VCS_HOME, or put vcs in PATH.${NC}"
+    exit 1
+fi
 
 # ── Step 1: Build KDB ────────────────────────────────────────────────────────
 echo ""
@@ -66,8 +91,9 @@ cd "$SCRIPT_DIR"
 # Clean previous artifacts
 rm -rf simv simv.daidir csrc .vtool
 
-echo "  Running: vcs -sverilog -kdb -q example.v"
-if ! vcs -sverilog -kdb -q example.v -o simv 2>&1 | tail -3; then
+echo "  VCS: $($VCS_CMD -ID 2>&1 | head -1)"
+echo "  Running: $VCS_CMD -sverilog -kdb -q example.v"
+if ! "$VCS_CMD" -sverilog -kdb -q example.v -o simv 2>&1 | tail -3; then
     echo -e "${RED}ERROR: VCS compilation failed${NC}"
     exit 1
 fi
