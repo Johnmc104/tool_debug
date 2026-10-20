@@ -23,7 +23,7 @@
 # ── 公共打包变量 (在 include 之前设置) ──────────────────────────────────────────
 PROJECT_NAME  := tool_wave
 BINARIES      := vwave vsignal vwave-npi-worker vwave-ffr-worker
-PACKAGE_FILES := README.md .github/skills
+PACKAGE_FILES := README.md
 
 # ── 引入公共打包目标: build / deploy-bin / package / release / tag / version ──
 COMMON_PKG_DIR := ../common_packaging
@@ -51,7 +51,7 @@ NPI_LIB_DIR   = $(VERDI_HOME)/share/NPI/lib/linux64
 # ── Compiler ─────────────────────────────────────────────────────────────────
 CXX          ?= g++
 RUNTIME_LDFLAGS ?= -static-libstdc++ -static-libgcc
-CXXFLAGS      = -std=c++14 -Wall -Wextra -O2 -DTW_BUILD_VERDI_HOME='"$(VERDI_HOME)"'
+CXXFLAGS      = -std=c++14 -Wall -Wextra -O2 -DTW_BUILD_VERDI_HOME='"$(VERDI_HOME)"' -DTOOL_WAVE_VERSION='"$(VERSION)"'
 INCLUDES      = -I$(NPI_INC) -I$(NPI_L1_INC)
 # RPATH (disable-new-dtags) 优先于 LD_LIBRARY_PATH，避免误加载其它 Verdi 版本的 libNPI
 LDFLAGS       = -L$(NPI_LIB_DIR) -Wl,--disable-new-dtags,-rpath,$(NPI_LIB_DIR)
@@ -160,6 +160,7 @@ help: ## 显示帮助
 	@echo "Test:"
 	@echo "  make test          Run all tests"
 	@echo "  make test-vwave    Run vwave tests"
+	@echo "  make test-vwave-lsf Run LSF proxy smoke test"
 	@echo "  make test-vsignal  Run vsignal tests"
 	@echo ""
 	@echo "Info:"
@@ -170,4 +171,5 @@ help: ## 显示帮助
 	@echo "Environment:"
 	@echo "  VERDI_HOME=$(VERDI_HOME)"
 	@echo "  FFR_SDK_HOME=$(FFR_SDK_HOME)"
+	@echo "  VWAVE_RUN_MODE=local|lsf (LSF 模式可配 VWAVE_LSF_BSUB/BKILL/QUEUE/RESOURCE)"
 	@echo "  CXX=$(CXX)"

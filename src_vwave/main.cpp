@@ -41,6 +41,10 @@
 #include "common/session.h"
 #include "lsf_proxy.h"
 
+#ifndef TOOL_WAVE_VERSION
+#define TOOL_WAVE_VERSION "dev"
+#endif
+
 // ─── CLI options ────────────────────────────────────────────────────────────
 
 static std::string g_executable;
@@ -145,6 +149,10 @@ Global options:
   --run-mode local|lsf      Override VWAVE_RUN_MODE for open
   --lsf-queue <name>        LSF queue (or VWAVE_LSF_QUEUE)
   --lsf-resource <expr>     LSF resource requirement (or VWAVE_LSF_RESOURCE)
+  --lsf-bsub <path>         bsub command (or VWAVE_LSF_BSUB)
+  --lsf-bkill <path>        bkill command (or VWAVE_LSF_BKILL)
+  --lsf-job-name <name>     LSF job name
+  --version, -V             Show vwave version
   -h, --help                Show this help
 
 Signal paths use dot-separated hierarchy: tb.u_cpu.core.clk
@@ -654,6 +662,11 @@ static CliOptions parse_args(int argc, char** argv) {
 
 int main(int argc, char** argv) {
     g_executable = argv[0];
+    if (argc == 2 && (std::string(argv[1]) == "--version" ||
+                      std::string(argv[1]) == "-V")) {
+        std::cout << "vwave " << TOOL_WAVE_VERSION << "\n";
+        return 0;
+    }
     if (argc > 1 && std::string(argv[1]) == "--lsf-proxy")
         return wave::lsf::entry(argc, argv);
     try {

@@ -1,4 +1,4 @@
-# tool_wave v1.7 — FSDB 波形读取 & 网表信号追踪
+# tool_wave v1.8 — FSDB 波形读取 & 网表信号追踪
 
 命令行工具集。vwave 支持 NPI 和动态加载 FsdbReader 两种后端，vsignal 使用 Verdi NPI。包含两个独立工具：
 
@@ -104,8 +104,10 @@ FFR 支持四态数字信号、宽总线、位选/片选、unpacked/packed struc
 
 CentOS 7/glibc 2.17 已验证 **2022 reader** 的完整 open、查询和 close。2026 reader 自身需要更高 glibc，动态加载不能降低该要求。构建时静态链接 C++ 运行库，以减少用户切换 EDA 后的 GLIBCXX 冲突；发布仍应核验生成二进制的 GLIBC 要求。
 
-### v1.7 发布说明
+### v1.8 发布说明
 
+- 新增 `VWAVE_RUN_MODE=lsf`：通过登录机 proxy、LSF interactive job 和 stdio-loop worker 支持计算节点运行、登录机查询；保留 `local` 模式。
+- vwave/vsignal CLI 增加 `--version`，公共编译和打包流程统一使用 `VERSION=1.8`。
 - FFR 与 NPI 的普通位选、二维数组、struct、packed struct、real 和组合信号查询已完成对照验证。
 - T-2022.06-SP2、Y-2026.03-SP2 配套样本及 CentOS 7/2022 reader 验证通过；FFR worker 仍不携带厂商 reader，运行时需提供配套 SDK。
 - packed struct 展开依赖已验证 Reader 的内部开关，新增 EDA/Reader 版本必须重新做 ABI 和行为验证。
@@ -132,6 +134,8 @@ CentOS 7/glibc 2.17 已验证 **2022 reader** 的完整 open、查询和 close�
 **edge 选项**: `--rising`、`--falling`、`--dir forward|backward`
 
 **全局选项**: `--json`、`--compact`、`--depth N`、`--fsdb <path>`、`--run-dir <path>`、`--backend npi|ffr`；`--verdi-home` 仅用于 `open --backend ffr`
+
+`vwave --version` 和 `vsignal --version` 输出当前发布版本；`make package` 会校验 CLI 版本与 `VERSION` 文件一致。
 
 ---
 

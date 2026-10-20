@@ -35,6 +35,10 @@
 // Server-side code (NPI-dependent, only executes in forked child)
 #include "server/server_core.h"
 
+#ifndef TOOL_WAVE_VERSION
+#define TOOL_WAVE_VERSION "dev"
+#endif
+
 // ─── CLI options ────────────────────────────────────────────────────────────
 
 struct CliOptions {
@@ -111,6 +115,7 @@ Output control:
 Global options:
   --json                     JSON output (recommended for programmatic use)
   --run-dir <path>           Override runtime directory (.vtool/vsignal_run/)
+  --version, -V              Show vsignal version
   -h, --help                 Show this help
 
 Signal paths use dot-separated hierarchy: top.u_sub.sig_a
@@ -433,6 +438,11 @@ static CliOptions parse_args(int argc, char** argv) {
 }
 
 int main(int argc, char** argv) {
+    if (argc == 2 && (std::string(argv[1]) == "--version" ||
+                      std::string(argv[1]) == "-V")) {
+        std::cout << "vsignal " << TOOL_WAVE_VERSION << "\n";
+        return 0;
+    }
     CliOptions opts = parse_args(argc, argv);
 
     if (opts.command.empty()) {
