@@ -2,6 +2,7 @@
 # tool_wave — FSDB Waveform & Netlist Signal Trace Tools
 #   vwave   — 波形读取 (FSDB)
 #   vsignal — 网表信号追踪 (KDB/RTL)
+#   vsignal-worker — NPI server for local/LSF execution nodes
 #
 # 构建与发布 (由 common_packaging/packaging.mk 提供):
 #   make build        — 构建二进制
@@ -22,7 +23,7 @@
 
 # ── 公共打包变量 (在 include 之前设置) ──────────────────────────────────────────
 PROJECT_NAME  := tool_wave
-BINARIES      := vwave vsignal vwave-npi-worker vwave-ffr-worker
+BINARIES      := vwave vsignal vsignal-worker vsignal-worker-2022 vsignal-worker-2024 vsignal-worker-2026 vwave-npi-worker vwave-ffr-worker
 PACKAGE_FILES := README.md
 
 # ── 引入公共打包目标: build / deploy-bin / package / release / tag / version ──
@@ -44,6 +45,9 @@ _C_RESET      ?= \033[0m
 # VCS 版本由 test-vsignal 的 VCS_BIN/VCS_HOME 选择；它不参与 vsignal 链接。
 VERDI_HOME   ?= /opt/Synopsys/verdi/Y-2026.03-SP2
 FFR_SDK_HOME ?= /opt/Synopsys/verdi/T-2022.06-SP2
+VERDI_2022_HOME ?= /opt/Synopsys/verdi/T-2022.06-SP2
+VERDI_2024_HOME ?= /opt/Synopsys/verdi/W-2024.09
+VERDI_2026_HOME ?= /opt/Synopsys/verdi/Y-2026.03-SP2
 VCS_HOME     ?=
 VCS_BIN      ?=
 FFR_INC       = $(FFR_SDK_HOME)/share/FsdbReader
@@ -71,6 +75,10 @@ TW_INC        = -I$(TW_INC_DIR)
 # ── Binary targets ───────────────────────────────────────────────────────────
 VWAVE_BIN     = $(BIN_DIR)/vwave
 VSIGNAL_BIN   = $(BIN_DIR)/vsignal
+VSIGNAL_WORKER_BIN = $(BIN_DIR)/vsignal-worker
+VSIGNAL_WORKER_2022_BIN = $(BIN_DIR)/vsignal-worker-2022
+VSIGNAL_WORKER_2024_BIN = $(BIN_DIR)/vsignal-worker-2024
+VSIGNAL_WORKER_2026_BIN = $(BIN_DIR)/vsignal-worker-2026
 
 # vwave sources
 VWAVE_MAIN    = src_vwave/main.cpp
@@ -80,20 +88,22 @@ VWAVE_INC     = -Isrc_vwave $(TW_INC) $(INCLUDES)
 # vsignal sources
 VSIGNAL_MAIN  = src_vsignal/main.cpp
 VSIGNAL_HDRS  = $(wildcard src_vsignal/common/*.h src_vsignal/server/*.h src_vsignal/client/*.h)
-VSIGNAL_INC   = -Isrc_vsignal $(TW_INC) $(INCLUDES)
+VSIGNAL_INC   = -Isrc_vsignal $(TW_INC)
+VSIGNAL_WORKER_INC = -Isrc_vsignal $(TW_INC) $(INCLUDES)
+VSIGNAL_WORKER_BASE_INC = -Isrc_vsignal $(TW_INC)
 
 # ── Default target ───────────────────────────────────────────────────────────
 .DEFAULT_GOAL := all
 
-.PHONY: all compile vwave vwave-ffr vsignal test test-vwave test-vwave-lsf test-vsignal clean help
+.PHONY: all compile vwave vwave-ffr vsignal test test-vwave test-vwave-lsf test-vsignal test-vsignal-lsf clean help
 
 all: compile
 
-compile: vwave $(VSIGNAL_BIN)
+compile: vwave vsignal
 
 vwave: $(VWAVE_BIN) $(BIN_DIR)/vwave-npi-worker $(BIN_DIR)/vwave-ffr-worker
 vwave-ffr: $(VWAVE_BIN) $(BIN_DIR)/vwave-ffr-worker
-vsignal: $(VSIGNAL_BIN)
+vsignal: $(VSIGNAL_BIN) $(VSIGNAL_WORKER_BIN) $(VSIGNAL_WORKER_2022_BIN) $(VSIGNAL_WORKER_2024_BIN) $(VSIGNAL_WORKER_2026_BIN)
 
 # Symlink so #include "tw/xxx.h" resolves to src_common/xxx.h
 $(TW_INC_DIR)/tw: $(COMMON_HDRS)
@@ -107,8 +117,28 @@ $(VWAVE_BIN): $(VWAVE_MAIN) $(VWAVE_HDRS) $(COMMON_HDRS) $(TW_INC_DIR)/tw
 
 $(VSIGNAL_BIN): $(VSIGNAL_MAIN) $(VSIGNAL_HDRS) $(COMMON_HDRS) $(TW_INC_DIR)/tw
 	@mkdir -p $(BIN_DIR)
-	$(CXX) $(CXXFLAGS) $(VSIGNAL_INC) -o $@ $(VSIGNAL_MAIN) $(LDFLAGS) $(LIBS)
+	$(CXX) $(CXXFLAGS) $(VSIGNAL_INC) -o $@ $(VSIGNAL_MAIN) $(RUNTIME_LDFLAGS) $(EXTRA_LDFLAGS) -lpthread -lrt -ldl
 	@printf '%b\n' "$(_C_GREEN)[OK]$(_C_RESET)    $@ ($$(du -h $@ | cut -f1))"
+
+$(VSIGNAL_WORKER_BIN): src_vsignal/worker.cpp $(VSIGNAL_HDRS) $(COMMON_HDRS) $(TW_INC_DIR)/tw
+	@mkdir -p $(BIN_DIR)
+	$(CXX) $(CXXFLAGS) $(VSIGNAL_WORKER_INC) -o $@ $< $(LDFLAGS) $(RUNTIME_LDFLAGS) $(EXTRA_LDFLAGS) $(LIBS)
+	@printf '%b\n' "$(_C_GREEN)[OK]$(_C_RESET)    $@ ($$(du -h $@ | cut -f1))"
+
+define build_vsignal_worker
+	@mkdir -p $(BIN_DIR)
+	$(CXX) $(filter-out -DTW_BUILD_VERDI_HOME=%,$(CXXFLAGS)) -DTW_BUILD_VERDI_HOME='"$(1)"' $(VSIGNAL_WORKER_BASE_INC) -I$(1)/share/NPI/inc -I$(1)/share/NPI/L1/C/inc -o $@ $< -L$(1)/share/NPI/lib/linux64 -Wl,--disable-new-dtags,-rpath,$(1)/share/NPI/lib/linux64 $(RUNTIME_LDFLAGS) $(EXTRA_LDFLAGS) -lNPI -lnpiL1 -lpthread -lrt -ldl
+	@printf '%b\n' "$(_C_GREEN)[OK]$(_C_RESET)    $@ ($$(du -h $@ | cut -f1))"
+endef
+
+$(VSIGNAL_WORKER_2022_BIN): src_vsignal/worker.cpp $(VSIGNAL_HDRS) $(COMMON_HDRS) $(TW_INC_DIR)/tw
+	$(call build_vsignal_worker,$(VERDI_2022_HOME))
+
+$(VSIGNAL_WORKER_2024_BIN): src_vsignal/worker.cpp $(VSIGNAL_HDRS) $(COMMON_HDRS) $(TW_INC_DIR)/tw
+	$(call build_vsignal_worker,$(VERDI_2024_HOME))
+
+$(VSIGNAL_WORKER_2026_BIN): src_vsignal/worker.cpp $(VSIGNAL_HDRS) $(COMMON_HDRS) $(TW_INC_DIR)/tw
+	$(call build_vsignal_worker,$(VERDI_2026_HOME))
 
 # Isolated workers: only the NPI target links vendor libraries.
 $(BIN_DIR)/vwave-npi-worker: src_vwave/worker.cpp $(VWAVE_HDRS) $(COMMON_HDRS) $(TW_INC_DIR)/tw
@@ -135,9 +165,13 @@ test-vwave-lsf: vwave
 	@echo "\n══════ Running vwave LSF proxy test ══════"
 	python3 test_vwave/test_lsf_mode.py
 
-test-vsignal: $(VSIGNAL_BIN)
+test-vsignal: vsignal
 	@echo "\n══════ Running vsignal tests ══════"
 	BIN_DIR=$(abspath $(BIN_DIR)) VCS_HOME="$(VCS_HOME)" VCS_BIN="$(VCS_BIN)" bash test_vsignal/run_test.sh
+
+test-vsignal-lsf: vsignal
+	@echo "\n══════ Running vsignal LSF proxy test ══════"
+	python3 test_vsignal/test_lsf_mode.py
 
 # ── Clean ─────────────────────────────────────────────────────────────────────
 clean:
@@ -165,6 +199,7 @@ help: ## 显示帮助
 	@echo "  make test-vwave    Run vwave tests"
 	@echo "  make test-vwave-lsf Run LSF proxy smoke test"
 	@echo "  make test-vsignal  Run vsignal tests"
+	@echo "  make test-vsignal-lsf Run vsignal LSF proxy smoke test"
 	@echo ""
 	@echo "Info:"
 	@echo "  make version       Print version"
@@ -173,8 +208,12 @@ help: ## 显示帮助
 	@echo ""
 	@echo "Environment:"
 	@echo "  VERDI_HOME=$(VERDI_HOME)"
+	@echo "  VERDI_2022_HOME=$(VERDI_2022_HOME)"
+	@echo "  VERDI_2024_HOME=$(VERDI_2024_HOME)"
+	@echo "  VERDI_2026_HOME=$(VERDI_2026_HOME)"
 	@echo "  FFR_SDK_HOME=$(FFR_SDK_HOME)"
 	@echo "  VCS_HOME=$(if $(VCS_HOME),$(VCS_HOME),(由 PATH 查找))"
 	@echo "  VCS_BIN=$(if $(VCS_BIN),$(VCS_BIN),(由 VCS_HOME/PATH 查找))"
 	@echo "  VWAVE_RUN_MODE=local|lsf (LSF 模式可配 VWAVE_LSF_BSUB/BKILL/QUEUE/RESOURCE)"
+	@echo "  vsignal 复用 VWAVE_RUN_MODE 与 VWAVE_LSF_* 环境变量"
 	@echo "  CXX=$(CXX)"

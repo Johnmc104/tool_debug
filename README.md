@@ -1,4 +1,4 @@
-# tool_wave v1.9 — FSDB 波形读取 & 网表信号追踪
+# tool_wave v1.12 — FSDB 波形读取 & 网表信号追踪
 
 命令行工具集。vwave 支持 NPI 和动态加载 FsdbReader 两种后端，vsignal 使用 Verdi NPI。包含两个独立工具：
 
@@ -77,7 +77,7 @@ FFR 库来源为 `--verdi-home` 或当前 `VERDI_HOME`，加载配套 `share/Fsd
 
 ### LSF 计算节点模式
 
-`vwave` 支持通过 `VWAVE_RUN_MODE` 选择本地 daemon 或 LSF 计算节点 worker：
+`vwave` 和 `vsignal` 都支持通过 `VWAVE_RUN_MODE` 选择本地 daemon 或 LSF 计算节点 worker：
 
 ```bash
 export VWAVE_RUN_MODE=lsf
@@ -88,6 +88,11 @@ vwave open tb_top.fsdb --backend ffr --verdi-home /path/to/verdi --run-dir /tmp/
 vwave status --run-dir /tmp/wave --json
 vwave get -s tb_top.clk -t 500000 --run-dir /tmp/wave --json
 vwave close --run-dir /tmp/wave
+
+# vsignal 复用同一组 VWAVE_LSF_* 环境变量
+vsignal open -dbdir simv.daidir --run-mode lsf --run-dir /tmp/signal
+vsignal driver top.u_cpu.HCLK --run-dir /tmp/signal --json
+vsignal close --run-dir /tmp/signal
 ```
 
 LSF 模式在登录机保留本地 UDS proxy，通过 `bsub -I` 启动计算节点上的
@@ -105,20 +110,23 @@ FFR 支持四态数字信号、宽总线、位选/片选、unpacked/packed struc
 
 补充测试曾发现总线位选/片选、数组中间层、struct 字段路径和 packed struct 展开问题，现已完成修复。当前支持范围、Reader 版本限制和 string 兼容语义见 [FFR 功能缺口分析](plan/09_ffr_feature_gaps_and_solution.md)。
 
-运行时 `vwave` 与相应 `vwave-*-worker` 必须位于同一目录，发布包已包含两个 worker。FFR 前端和 worker 不直接链接厂商库，不需要完整 Verdi 安装；选定的配套 reader 库及其运行依赖必须可用。NPI 保留编译时配套安装和许可证行为。
+运行时 `vwave`、`vwave-*-worker`、`vsignal` 与 `vsignal-worker-*` 必须位于同一目录。发布包包含 vwave 的 NPI/FFR worker，以及
+绑定 Verdi 2022、2024、2026 NPI 的三套 vsignal worker。两个 CLI 都不链接 NPI；NPI/FFR worker 在实际执行节点加载配套厂商库和许可证环境。
 
 CentOS 7/glibc 2.17 已验证 **2022 reader** 的完整 open、查询和 close。2026 reader 自身需要更高 glibc，动态加载不能降低该要求。构建时静态链接 C++ 运行库，以减少用户切换 EDA 后的 GLIBCXX 冲突；发布仍应核验生成二进制的 GLIBC 要求。
 
-### v1.10 发布说明
+### v1.12 发布说明
 
 - 新增 `VWAVE_RUN_MODE=lsf`：通过登录机 proxy、LSF interactive job 和 stdio-loop worker 支持计算节点运行、登录机查询；保留 `local` 模式。
-- vwave/vsignal CLI 增加 `--version`，公共编译和打包流程统一使用 `VERSION=1.10`。
+- vwave/vsignal CLI 增加 `--version`，公共编译和打包流程统一使用 `VERSION=1.12`。
+- vsignal 拆分为 NPI-free CLI 与 `vsignal-worker`，复用 `VWAVE_RUN_MODE` 和 `VWAVE_LSF_*` 实现本地/LSF 查询。
+- vsignal 发布包同时提供 `vsignal-worker-2022`、`vsignal-worker-2024`、`vsignal-worker-2026`；CLI 根据 `VERDI_HOME` 自动选择对应 worker。
 - 修复 FFR LSF 模式在登录节点错误执行 reader preflight 的问题，改为等待计算节点 worker 完成实际加载。
 - 新增 VCS `W-2024.09` KDB 兼容支持；`VCS_HOME`/`VCS_BIN` 可指定 `test-vsignal` 使用的 VCS。
 - FFR 与 NPI 的普通位选、二维数组、struct、packed struct、real 和组合信号查询已完成对照验证。
 - T-2022.06-SP2、Y-2026.03-SP2 配套样本及 CentOS 7/2022 reader 验证通过；FFR worker 仍不携带厂商 reader，运行时需提供配套 SDK。
 - packed struct 展开依赖已验证 Reader 的内部开关，新增 EDA/Reader 版本必须重新做 ABI 和行为验证。
-- 当前发布归档：`tool_wave-1.10-linux-x86_64.tar.gz`，同时提供 SHA-256 校验文件。
+- 当前发布归档：`tool_wave-1.12-linux-x86_64.tar.gz`，同时提供 SHA-256 校验文件。
 
 ### VCS 2024 / KDB 兼容性
 
@@ -142,9 +150,25 @@ make test-vsignal VCS_BIN="$VCS_HOME/bin/vcs"
 make test-vsignal VCS_HOME=/opt/Synopsys/vcs/W-2024.09
 ```
 
-当前验证矩阵：VCS `W-2024.09` + Verdi/NPI `W-2024.09`，以及 VCS
-`W-2024.09` 生成的 KDB + Verdi/NPI `Y-2026.03-SP2`。VCS 2024 的其他补丁版、
-Verdi 2024 的其他补丁版需要按同样流程重新验证。
+当前验证矩阵使用匹配的 VCS/Verdi 版本：`T-2022.06-SP2`、`W-2024.09`、
+`Y-2026.03-SP2` 均已完成 `open/info/driver/close`。VCS 2024 生成的 KDB
+可由 Verdi 2024/2026 读取；Verdi 2022 对 VCS 2024 KDB 不兼容，必须使用
+VCS 2022 生成的 KDB。其他补丁版本需要按同样流程重新验证。
+
+### vsignal 多版本 Verdi 选择
+
+发布包中的三套 NPI worker 使用各自安装目录的头文件、库和 RPATH 编译：
+
+| `VERDI_HOME` 路径 | 选择的 worker | NPI 库 |
+|---|---|---|
+| 包含 `2022`（如 `T-2022.06-SP2`） | `vsignal-worker-2022` | `$VERDI_HOME/share/NPI/lib/linux64` |
+| 包含 `2024`（如 `W-2024.09`） | `vsignal-worker-2024` | `$VERDI_HOME/share/NPI/lib/linux64` |
+| 包含 `2026`（如 `Y-2026.03-SP2`） | `vsignal-worker-2026` | `$VERDI_HOME/share/NPI/lib/linux64` |
+
+`vsignal open` 在登录机只运行 NPI-free CLI；本地模式或 LSF 模式的 worker
+再加载 NPI。`VERDI_HOME` 未设置或路径不含上述年份时，保留 `vsignal-worker`
+作为兼容回退，其版本由构建时的 `VERDI_HOME` 决定。切换 Verdi 版本前应关闭
+旧会话并重新执行 `open`，避免一个运行中的 server 继续使用旧 NPI。
 
 ### vwave 命令速查
 
@@ -280,7 +304,7 @@ make clean            # 清理 release/ dist/ build/
 | **Linux** | Unix Domain Socket, fork/setsid |
 | **VCS -kdb** | vsignal 需要 KDB 数据库（`vcs -kdb ...` 编译生成） |
 
-> NPI worker 和 vsignal 通过 RPATH 绑定编译时的 NPI 库；NPI 运行时对齐配套环境。VCS 2024 KDB 已完成交叉版本验证。
+> `vsignal-worker` 通过 RPATH 绑定编译时的 NPI 库；CLI 本身不依赖 NPI。VCS 2024 KDB 已完成交叉版本验证。
 > FFR worker 独立动态加载打开时选中的 reader，不调用 NPI 初始化。
 
 ### 双后端验证

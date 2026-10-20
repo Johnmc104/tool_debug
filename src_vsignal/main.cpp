@@ -14,10 +14,13 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <algorithm>
 #include <cstring>
 #include <cstdlib>
 #include <csignal>
 #include <sstream>
+#include <fstream>
+#include <stdexcept>
 
 #include <unistd.h>
 #include <fcntl.h>
@@ -28,12 +31,10 @@
 #include "common/protocol.h"
 #include "common/json_parser.h"
 #include "common/run_dir.h"
+#include "common/session.h"
 #include "client/client_core.h"
 #include "tw/daemon.h"
-#include "tw/npi_env.h"
-
-// Server-side code (NPI-dependent, only executes in forked child)
-#include "server/server_core.h"
+#include "lsf_proxy.h"
 
 #ifndef TOOL_WAVE_VERSION
 #define TOOL_WAVE_VERSION "dev"
@@ -65,6 +66,13 @@ struct CliOptions {
     // Open-specific
     std::string dbdir;
     std::vector<std::string> source_files;
+    std::string run_mode;
+    std::string lsf_queue;
+    std::string lsf_resource;
+    std::string lsf_bsub;
+    std::string lsf_bkill;
+    std::string lsf_job_name;
+    int open_timeout_sec = 30;
 };
 
 
@@ -115,6 +123,13 @@ Output control:
 Global options:
   --json                     JSON output (recommended for programmatic use)
   --run-dir <path>           Override runtime directory (.vtool/vsignal_run/)
+  --run-mode local|lsf       Override VWAVE_RUN_MODE for open
+  --lsf-queue <name>         LSF queue (or VWAVE_LSF_QUEUE)
+  --lsf-resource <expr>      LSF resource (or VWAVE_LSF_RESOURCE)
+  --lsf-bsub <path>          bsub command (or VWAVE_LSF_BSUB)
+  --lsf-bkill <path>         bkill command (or VWAVE_LSF_BKILL)
+  --lsf-job-name <name>      LSF job name
+  --timeout <sec>            Worker startup timeout (default: 30)
   --version, -V              Show vsignal version
   -h, --help                 Show this help
 
@@ -134,8 +149,12 @@ Examples:
 
 // ─── resolve_run_dir: find or create RunDir ─────────────────────────────────
 
-static bool resolve_run_dir(const std::string& /*run_dir_override*/,
+static bool resolve_run_dir(const std::string& run_dir_override,
                             vsignal::RunDir& out) {
+    if (!run_dir_override.empty()) {
+        out = vsignal::RunDir::from_dir(run_dir_override);
+        if (out.is_server_alive()) return true;
+    }
     // Auto-detect: search upward from CWD
     if (vsignal::RunDir::auto_detect(out)) {
         return true;
@@ -145,13 +164,84 @@ static bool resolve_run_dir(const std::string& /*run_dir_override*/,
     return false;
 }
 
+static std::string verdi_worker_suffix() {
+    const char* verdi_home = std::getenv("VERDI_HOME");
+    if (!verdi_home || !*verdi_home) return "";
+    std::string path(verdi_home);
+    // Accept the standard Synopsys names (T-/W-/Y-) and site aliases which
+    // retain the four-digit Verdi release in the installation path.
+    if (path.find("2022") != std::string::npos) return "-2022";
+    if (path.find("2024") != std::string::npos) return "-2024";
+    if (path.find("2026") != std::string::npos) return "-2026";
+    return "";
+}
+
+static std::string worker_path() {
+    char executable[PATH_MAX];
+    auto size = readlink("/proc/self/exe", executable, sizeof(executable)-1);
+    if (size < 0) throw std::runtime_error("Cannot locate vsignal executable; mount /proc");
+    executable[size] = 0;
+    std::string path(executable);
+    const std::string dir = path.substr(0, path.rfind('/') + 1);
+    return dir + "vsignal-worker" + verdi_worker_suffix();
+}
+
+static std::string configured_run_mode(const CliOptions& opts) {
+    std::string mode = opts.run_mode;
+    if (mode.empty() && getenv("VWAVE_RUN_MODE")) mode = getenv("VWAVE_RUN_MODE");
+    if (mode.empty()) mode = "local";
+    if (mode != "local" && mode != "lsf")
+        throw std::runtime_error("VWAVE_RUN_MODE/--run-mode must be local or lsf");
+    return mode;
+}
+
+static std::string env_value(const std::string& value, const char* name,
+                             const char* fallback = "") {
+    if (!value.empty()) return value;
+    const char* current = getenv(name);
+    return current ? std::string(current) : std::string(fallback);
+}
+
+static int exec_local_worker(const std::string& worker,
+                             const vsignal::DesignSession& session,
+                             const vsignal::RunDir& run_dir) {
+    std::string payload = vsignal::hex_encode(session.json());
+    execl(worker.c_str(), worker.c_str(), "--serve", payload.c_str(),
+          run_dir.dir().c_str(), nullptr);
+    std::cerr << "ERROR: Cannot execute vsignal worker " << worker << ": "
+              << strerror(errno) << "\n";
+    return 1;
+}
+
+static int exec_lsf_proxy(const std::string& worker,
+                          const vsignal::DesignSession& session,
+                          const vsignal::RunDir& run_dir,
+                          const CliOptions& opts) {
+    std::string bsub = env_value(opts.lsf_bsub, "VWAVE_LSF_BSUB", "bsub");
+    std::string bkill = env_value(opts.lsf_bkill, "VWAVE_LSF_BKILL", "bkill");
+    std::string queue = env_value(opts.lsf_queue, "VWAVE_LSF_QUEUE");
+    std::string resource = env_value(opts.lsf_resource, "VWAVE_LSF_RESOURCE");
+    std::string job = opts.lsf_job_name.empty()
+        ? "vsignal_" + std::to_string(static_cast<long long>(getpid()))
+        : opts.lsf_job_name;
+    std::string startup = std::to_string(opts.open_timeout_sec);
+    std::string query = getenv("VWAVE_LSF_QUERY_TIMEOUT") ? getenv("VWAVE_LSF_QUERY_TIMEOUT") : "360";
+    char self_buf[PATH_MAX];
+    ssize_t self_size = readlink("/proc/self/exe", self_buf, sizeof(self_buf)-1);
+    std::string self = self_size > 0 ? std::string(self_buf, static_cast<size_t>(self_size)) : worker;
+    std::string payload = vsignal::hex_encode(session.json());
+    execl(self.c_str(), self.c_str(), "--lsf-proxy", payload.c_str(), run_dir.dir().c_str(),
+          worker.c_str(), bsub.c_str(), bkill.c_str(), queue.c_str(), resource.c_str(),
+          job.c_str(), startup.c_str(), query.c_str(), nullptr);
+    std::cerr << "ERROR: Cannot execute vsignal LSF proxy: " << strerror(errno) << "\n";
+    return 1;
+}
+
 // ─── Command: open ───────────────────────────────────────────────────────────
 
-static int cmd_open(int argc, char** argv,
+static int cmd_open(const CliOptions& opts,
                     const std::string& design_source,
-                    const std::vector<std::string>& design_args,
-                    const std::string& run_dir_override,
-                    bool json_mode) {
+                    const std::vector<std::string>& design_args) {
     if (design_args.empty()) {
         std::cerr << "Error: No design source specified.\n"
                   << "Usage: vsignal open -dbdir <kdb_dir>\n"
@@ -159,7 +249,8 @@ static int cmd_open(int argc, char** argv,
         return 1;
     }
 
-    vsignal::RunDir run_dir(design_source, run_dir_override);
+    const std::string run_mode = configured_run_mode(opts);
+    vsignal::RunDir run_dir(design_source, opts.run_dir_override);
 
     // Check if server already running
     if (run_dir.is_server_alive()) {
@@ -171,7 +262,7 @@ static int cmd_open(int argc, char** argv,
             abs_design = resolved;
 
         if (stored == abs_design) {
-            if (json_mode)
+            if (opts.json_mode)
                 std::cout << "{\"status\":\"ok\",\"message\":\"Server already running\","
                           << "\"pid\":" << run_dir.read_pid() << "}" << std::endl;
             else
@@ -179,7 +270,7 @@ static int cmd_open(int argc, char** argv,
                           << ") for " << design_source << "\n";
             return 0;
         }
-        if (!json_mode)
+        if (!opts.json_mode)
             std::cout << "Switching design: closing " << stored << "...\n";
         tw::daemon::shutdown_server(
             run_dir.base(), [](const std::string& s, const std::string& r) { return tw::client::send_request(s, r); },
@@ -189,24 +280,38 @@ static int cmd_open(int argc, char** argv,
         run_dir.cleanup();
     }
 
+    std::string worker = worker_path();
+    if (access(worker.c_str(), X_OK) != 0)
+        throw std::runtime_error("Missing backend worker: " + worker);
     run_dir.ensure_dir();
-    tw::npi_env::sync_verdi_home(json_mode);
-    tw::npi_env::ensure_npi_lib_path();
+    vsignal::DesignSession session{design_source, design_args};
+
+    CliOptions launch_opts = opts;
+    launch_opts.lsf_queue = env_value(launch_opts.lsf_queue, "VWAVE_LSF_QUEUE");
+    launch_opts.lsf_resource = env_value(launch_opts.lsf_resource, "VWAVE_LSF_RESOURCE");
+    launch_opts.lsf_bsub = env_value(launch_opts.lsf_bsub, "VWAVE_LSF_BSUB", "bsub");
+    launch_opts.lsf_bkill = env_value(launch_opts.lsf_bkill, "VWAVE_LSF_BKILL", "bkill");
 
     tw::daemon::LaunchConfig cfg;
-    cfg.log_tag     = "vsignal";
-    cfg.timeout_sec = 30;
-    cfg.json_mode   = json_mode;
+    cfg.log_tag     = run_mode == "lsf" ? "vsignal-lsf" : "vsignal";
+    cfg.timeout_sec = opts.open_timeout_sec;
+    cfg.json_mode   = opts.json_mode;
 
-    return tw::daemon::fork_and_wait(
+    int rc = tw::daemon::fork_and_wait(
         run_dir.base(),
         [&]() {
-            return vsignal::server::run_server(argc, argv, run_dir,
-                                                design_source, design_args);
+            if (run_mode == "lsf")
+                return exec_lsf_proxy(worker, session, run_dir, launch_opts);
+            return exec_local_worker(worker, session, run_dir);
         },
         [&]() { return vsignal::client::build_request(0, "status"); },
         [](const std::string& s, const std::string& r) { return tw::client::send_request(s, r); },
         cfg);
+    if (rc == 0) {
+        std::ofstream mode_file(run_dir.dir() + "/run_mode");
+        mode_file << run_mode << "\n";
+    }
+    return rc;
 }
 
 // ─── Command: close ──────────────────────────────────────────────────────────
@@ -387,6 +492,20 @@ static CliOptions parse_args(int argc, char** argv) {
 
         if (arg == "--run-dir" && i + 1 < argc) {
             opts.run_dir_override = argv[++i];
+        } else if (arg == "--run-mode" && i + 1 < argc) {
+            opts.run_mode = argv[++i];
+        } else if (arg == "--lsf-queue" && i + 1 < argc) {
+            opts.lsf_queue = argv[++i];
+        } else if (arg == "--lsf-resource" && i + 1 < argc) {
+            opts.lsf_resource = argv[++i];
+        } else if (arg == "--lsf-bsub" && i + 1 < argc) {
+            opts.lsf_bsub = argv[++i];
+        } else if (arg == "--lsf-bkill" && i + 1 < argc) {
+            opts.lsf_bkill = argv[++i];
+        } else if (arg == "--lsf-job-name" && i + 1 < argc) {
+            opts.lsf_job_name = argv[++i];
+        } else if (arg == "--timeout" && i + 1 < argc) {
+            opts.open_timeout_sec = std::max(1, std::atoi(argv[++i]));
         } else if (arg == "--json") {
             opts.json_mode = true;
         } else if (arg == "-h" || arg == "--help") {
@@ -438,6 +557,8 @@ static CliOptions parse_args(int argc, char** argv) {
 }
 
 int main(int argc, char** argv) {
+    if (argc >= 2 && std::string(argv[1]) == "--lsf-proxy")
+        return vsignal::lsf::entry(argc, argv);
     if (argc == 2 && (std::string(argv[1]) == "--version" ||
                       std::string(argv[1]) == "-V")) {
         std::cout << "vsignal " << TOOL_WAVE_VERSION << "\n";
@@ -471,8 +592,7 @@ int main(int argc, char** argv) {
             for (auto& f : opts.source_files) design_args.push_back(f);
         }
 
-        return cmd_open(argc, argv, design_source, design_args,
-                        opts.run_dir_override, opts.json_mode);
+        return cmd_open(opts, design_source, design_args);
     }
 
     // ── RunDir for all other commands ──

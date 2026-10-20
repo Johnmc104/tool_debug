@@ -50,7 +50,7 @@ public:
     void   remove_pid()               const { base_.remove_pid(); }
     bool   write_design_source()      const { return base_.write_source_info(); }
     void   remove_socket()            const { base_.remove_socket(); }
-    void   cleanup()                  const { base_.cleanup(); }
+    void   cleanup()                  const { base_.cleanup(); unlink((dir() + "/run_mode").c_str()); }
     void   cleanup_all()              const { base_.cleanup_all(); }
     bool   is_server_alive()          const { return base_.is_server_alive(); }
 
