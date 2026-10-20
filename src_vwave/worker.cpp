@@ -6,26 +6,7 @@
 #endif
 #include <memory>
 #include <cstdio>
-
-static std::string decode_hex_session(const std::string& encoded) {
-    if (encoded.compare(0, 4, "hex:") != 0) return encoded;
-    const std::string hex = encoded.substr(4);
-    if (hex.size() % 2) throw std::runtime_error("Invalid hex stdio session");
-    std::string decoded;
-    decoded.reserve(hex.size() / 2);
-    for (size_t i = 0; i < hex.size(); i += 2) {
-        auto digit = [](char c) -> int {
-            if (c >= '0' && c <= '9') return c - '0';
-            if (c >= 'a' && c <= 'f') return c - 'a' + 10;
-            if (c >= 'A' && c <= 'F') return c - 'A' + 10;
-            return -1;
-        };
-        int hi = digit(hex[i]), lo = digit(hex[i + 1]);
-        if (hi < 0 || lo < 0) throw std::runtime_error("Invalid hex stdio session");
-        decoded.push_back(static_cast<char>((hi << 4) | lo));
-    }
-    return decoded;
-}
+#include "tw/transport.h"
 
 int main(int argc, char** argv) {
 #ifndef WAVE_FFR_WORKER
@@ -65,7 +46,7 @@ int main(int argc, char** argv) {
         dup2(STDERR_FILENO, STDOUT_FILENO);
     }
     try {
-        auto session = wave::Session::parse(decode_hex_session(argv[2]));
+        auto session = wave::Session::parse(tw::transport::hex_decode(argv[2]));
 #ifdef WAVE_FFR_WORKER
         if (session.backend != "ffr") throw std::runtime_error("Expected ffr session");
         std::unique_ptr<wave::WaveBackend> backend(new wave::FfrBackend(session));

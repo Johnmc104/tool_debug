@@ -34,6 +34,7 @@
 #include "common/session.h"
 #include "client/client_core.h"
 #include "tw/daemon.h"
+#include "tw/transport.h"
 #include "lsf_proxy.h"
 
 #ifndef TOOL_WAVE_VERSION
@@ -205,7 +206,7 @@ static std::string env_value(const std::string& value, const char* name,
 static int exec_local_worker(const std::string& worker,
                              const vsignal::DesignSession& session,
                              const vsignal::RunDir& run_dir) {
-    std::string payload = vsignal::hex_encode(session.json());
+    std::string payload = tw::transport::hex_encode(session.json());
     execl(worker.c_str(), worker.c_str(), "--serve", payload.c_str(),
           run_dir.dir().c_str(), nullptr);
     std::cerr << "ERROR: Cannot execute vsignal worker " << worker << ": "
@@ -229,7 +230,7 @@ static int exec_lsf_proxy(const std::string& worker,
     char self_buf[PATH_MAX];
     ssize_t self_size = readlink("/proc/self/exe", self_buf, sizeof(self_buf)-1);
     std::string self = self_size > 0 ? std::string(self_buf, static_cast<size_t>(self_size)) : worker;
-    std::string payload = vsignal::hex_encode(session.json());
+    std::string payload = tw::transport::hex_encode(session.json());
     execl(self.c_str(), self.c_str(), "--lsf-proxy", payload.c_str(), run_dir.dir().c_str(),
           worker.c_str(), bsub.c_str(), bkill.c_str(), queue.c_str(), resource.c_str(),
           job.c_str(), startup.c_str(), query.c_str(), nullptr);

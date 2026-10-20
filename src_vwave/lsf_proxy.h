@@ -13,7 +13,9 @@
 #include "common/session.h"
 #include "common/json_parser.h"
 #include "common/protocol.h"
+#include "tw/lsf.h"
 #include "tw/server_loop.h"
+#include "tw/transport.h"
 
 #include <cerrno>
 #include <chrono>
@@ -48,61 +50,6 @@ struct Config {
     int query_timeout_sec = 360;
 };
 
-inline std::vector<std::string> split_words(const std::string& text) {
-    std::vector<std::string> result;
-    std::string word;
-    bool quote = false;
-    char quote_char = 0;
-    for (char c : text) {
-        if (quote) {
-            if (c == quote_char) quote = false;
-            else word += c;
-        } else if (c == '\'' || c == '"') {
-            quote = true; quote_char = c;
-        } else if (std::isspace(static_cast<unsigned char>(c))) {
-            if (!word.empty()) { result.push_back(word); word.clear(); }
-        } else word += c;
-    }
-    if (!word.empty()) result.push_back(word);
-    return result;
-}
-
-inline std::string hex_encode(const std::string& text) {
-    static const char* digits = "0123456789abcdef";
-    std::string out("hex:");
-    out.reserve(4 + text.size() * 2);
-    for (unsigned char c : text) {
-        out += digits[c >> 4];
-        out += digits[c & 0xf];
-    }
-    return out;
-}
-
-inline std::string replace_pid(const std::string& response, pid_t pid) {
-    const std::string key = "\"pid\":";
-    auto pos = response.find(key);
-    if (pos == std::string::npos) return response;
-    auto begin = pos + key.size(), end = begin;
-    while (end < response.size() && std::isdigit(static_cast<unsigned char>(response[end]))) ++end;
-    if (end == begin) return response;
-    return response.substr(0, begin) + std::to_string(static_cast<long long>(pid)) + response.substr(end);
-}
-
-inline std::string add_status_fields(const std::string& response,
-                                     const std::string& job_id,
-                                     const std::string& job_name) {
-    auto marker = response.find("\"data\":{");
-    if (marker == std::string::npos) return response;
-    JsonObject fields;
-    fields.set("run_mode", "lsf");
-    if (!job_id.empty()) fields.set("job_id", job_id);
-    if (!job_name.empty()) fields.set("job_name", job_name);
-    std::string text = fields.dump();
-    text.erase(0, 1);
-    if (!text.empty() && text.back() == '}') text.pop_back();
-    return response.substr(0, marker + 8) + text + "," + response.substr(marker + 8);
-}
-
 class RemoteProcess {
 public:
     RemoteProcess() = default;
@@ -133,7 +80,7 @@ public:
             if (in_pipe[1] > STDERR_FILENO) close(in_pipe[1]);
             if (out_pipe[0] > STDERR_FILENO) close(out_pipe[0]);
             if (err_pipe[0] > STDERR_FILENO) close(err_pipe[0]);
-            std::vector<std::string> args = split_words(cfg.bsub.empty() ? "bsub" : cfg.bsub);
+            std::vector<std::string> args = tw::lsf::split_command(cfg.bsub.empty() ? "bsub" : cfg.bsub);
             if (args.empty()) args.push_back("bsub");
             bool interactive = false;
             for (const auto& a : args) if (a == "-I" || a == "-Is" || a == "-Ip") interactive = true;
@@ -146,7 +93,7 @@ public:
             // bsub reconstructs a shell command and strips JSON quotes.  A
             // hex payload keeps the session metadata a single argv token on
             // the execution host while retaining the public stdio-loop mode.
-            args.push_back(hex_encode(session.json()));
+            args.push_back(tw::transport::hex_encode(session.json()));
             std::vector<char*> argv;
             for (auto& a : args) argv.push_back(const_cast<char*>(a.c_str()));
             argv.push_back(nullptr);
@@ -262,7 +209,7 @@ private:
     }
 
     static void run_bkill(const std::string& command, const std::string& job_id) {
-        auto args = split_words(command);
+        auto args = tw::lsf::split_command(command);
         if (args.empty()) args.push_back("bkill");
         args.push_back(job_id);
         pid_t child = fork();
@@ -306,7 +253,7 @@ inline int run_proxy(const Session& session, RunDir& run_dir, const Config& cfg,
             JsonParser parser;
             if (parser.parse(request) && parser.get_string("cmd") == "status") {
                 auto response = remote.request(request, cfg.query_timeout_sec);
-                return add_status_fields(replace_pid(response, getpid()), remote.job_id(), cfg.job_name);
+                return tw::lsf::add_status_fields(tw::lsf::replace_pid(response, getpid()), remote.job_id(), cfg.job_name);
             }
             auto response = remote.request(request, cfg.query_timeout_sec);
             if (parser.parse(request) &&
@@ -329,7 +276,7 @@ inline int run_proxy(const Session& session, RunDir& run_dir, const Config& cfg,
 inline int entry(int argc, char** argv) {
     if (argc < 12 || std::string(argv[1]) != "--lsf-proxy") return 2;
     try {
-        Session session = Session::parse(argv[2]);
+        Session session = Session::parse(tw::transport::hex_decode(argv[2]));
         RunDir run_dir = RunDir::from_dir(argv[3]);
         Config cfg;
         cfg.bsub = argv[5];

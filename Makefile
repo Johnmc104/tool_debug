@@ -95,7 +95,7 @@ VSIGNAL_WORKER_BASE_INC = -Isrc_vsignal $(TW_INC)
 # ── Default target ───────────────────────────────────────────────────────────
 .DEFAULT_GOAL := all
 
-.PHONY: all compile vwave vwave-ffr vsignal test test-vwave test-vwave-lsf test-vsignal test-vsignal-lsf clean help
+.PHONY: all compile vwave vwave-ffr vsignal test test-vwave test-vwave-lsf test-vsignal test-vsignal-lsf check-source-governance clean help
 
 all: compile
 
@@ -155,7 +155,18 @@ _do-build _do-build-local:
 	@$(MAKE) --no-print-directory compile
 
 # ── Test targets ──────────────────────────────────────────────────────────────
-test: test-vwave test-vsignal
+test: check-source-governance test-vwave test-vsignal
+
+check-source-governance:
+	@set -eu; \
+	bad="$$(rg -n '#include.*(src_vwave|src_vsignal|NPI|FsdbReader)' src_common || true)"; \
+	if [ -n "$$bad" ]; then printf '%s\n' "[ERR] src_common has tool/vendor dependency:"; printf '%s\n' "$$bad"; exit 1; fi; \
+	duplicate="$$(rg -n '^inline[[:space:]].*(hex_encode|hex_decode|split_words|replace_pid|add_status_fields)' src_vwave src_vsignal || true)"; \
+	if [ -n "$$duplicate" ]; then printf '%s\n' "[ERR] duplicated shared transport helper:"; printf '%s\n' "$$duplicate"; exit 1; fi; \
+	for bin in vwave vwave-npi-worker vwave-ffr-worker vsignal vsignal-worker vsignal-worker-2022 vsignal-worker-2024 vsignal-worker-2026; do \
+		printf '%s\n' "$(BINARIES)" | tr ' ' '\n' | grep -qx "$$bin" || { printf '%s\n' "[ERR] package manifest missing $$bin"; exit 1; }; \
+	done; \
+	printf '%b\n' "$(_C_GREEN)[OK]$(_C_RESET)    source governance checks passed"
 
 test-vwave: vwave
 	@echo "\n══════ Running vwave tests ══════"
@@ -200,6 +211,7 @@ help: ## 显示帮助
 	@echo "  make test-vwave-lsf Run LSF proxy smoke test"
 	@echo "  make test-vsignal  Run vsignal tests"
 	@echo "  make test-vsignal-lsf Run vsignal LSF proxy smoke test"
+	@echo "  make check-source-governance Check shared-layer boundaries and package manifest"
 	@echo ""
 	@echo "Info:"
 	@echo "  make version       Print version"

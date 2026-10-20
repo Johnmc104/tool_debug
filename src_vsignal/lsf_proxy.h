@@ -5,7 +5,9 @@
 #include "common/run_dir.h"
 #include "common/json_parser.h"
 #include "common/protocol.h"
+#include "tw/lsf.h"
 #include "tw/server_loop.h"
+#include "tw/transport.h"
 
 #include <chrono>
 #include <cctype>
@@ -36,45 +38,6 @@ struct Config {
     int query_timeout_sec = 360;
 };
 
-inline std::vector<std::string> split_words(const std::string& text) {
-    std::vector<std::string> result;
-    std::string word; char quote = 0;
-    for (char c : text) {
-        if (quote) { if (c == quote) quote = 0; else word += c; }
-        else if (c == '\'' || c == '"') quote = c;
-        else if (std::isspace(static_cast<unsigned char>(c))) {
-            if (!word.empty()) { result.push_back(word); word.clear(); }
-        } else word += c;
-    }
-    if (!word.empty()) result.push_back(word);
-    return result;
-}
-
-inline std::string replace_pid(const std::string& response, pid_t pid) {
-    const std::string key = "\"pid\":";
-    auto pos = response.find(key);
-    if (pos == std::string::npos) return response;
-    auto begin = pos + key.size(), end = begin;
-    while (end < response.size() && std::isdigit(static_cast<unsigned char>(response[end]))) ++end;
-    return end == begin ? response : response.substr(0, begin) +
-        std::to_string(static_cast<long long>(pid)) + response.substr(end);
-}
-
-inline std::string add_status_fields(const std::string& response,
-                                     const std::string& job_id,
-                                     const std::string& job_name) {
-    auto marker = response.find("\"data\":{");
-    if (marker == std::string::npos) return response;
-    JsonObject fields;
-    fields.set("run_mode", "lsf");
-    if (!job_id.empty()) fields.set("job_id", job_id);
-    if (!job_name.empty()) fields.set("job_name", job_name);
-    std::string prefix = fields.dump();
-    prefix.erase(0, 1);
-    if (!prefix.empty() && prefix.back() == '}') prefix.pop_back();
-    return response.substr(0, marker + 8) + prefix + "," + response.substr(marker + 8);
-}
-
 class RemoteProcess {
 public:
     ~RemoteProcess() { terminate(); }
@@ -90,7 +53,7 @@ public:
             dup2(in_pipe[0], STDIN_FILENO); dup2(out_pipe[1], STDOUT_FILENO); dup2(err_pipe[1], STDERR_FILENO);
             for (int fd : {in_pipe[0],in_pipe[1],out_pipe[0],out_pipe[1],err_pipe[0],err_pipe[1]})
                 if (fd > STDERR_FILENO) close(fd);
-            auto args = split_words(cfg.bsub.empty() ? "bsub" : cfg.bsub);
+            auto args = tw::lsf::split_command(cfg.bsub.empty() ? "bsub" : cfg.bsub);
             if (args.empty()) args.push_back("bsub");
             bool interactive = false;
             for (const auto& arg : args) if (arg == "-I" || arg == "-Is" || arg == "-Ip") interactive = true;
@@ -99,7 +62,7 @@ public:
             if (!cfg.queue.empty()) { args.push_back("-q"); args.push_back(cfg.queue); }
             if (!cfg.resource.empty()) { args.push_back("-R"); args.push_back(cfg.resource); }
             args.push_back(worker_); args.push_back("--stdio-loop");
-            args.push_back(hex_encode(session.json()));
+            args.push_back(tw::transport::hex_encode(session.json()));
             std::vector<char*> argv;
             for (auto& arg : args) argv.push_back(const_cast<char*>(arg.c_str()));
             argv.push_back(nullptr); execvp(argv[0], argv.data()); _exit(127);
@@ -166,7 +129,7 @@ private:
             char c; ssize_t n=read(out_fd_,&c,1); if (n <= 0) return result; if (c == '\n') return result; result += c; timeout_ms=1000; }
     }
     static void run_bkill(const std::string& command, const std::string& job_id) {
-        auto args=split_words(command); if (args.empty()) args.push_back("bkill"); args.push_back(job_id);
+        auto args=tw::lsf::split_command(command); if (args.empty()) args.push_back("bkill"); args.push_back(job_id);
         pid_t child=fork(); if (child == 0) { std::vector<char*> argv; for (auto& arg:args) argv.push_back(const_cast<char*>(arg.c_str())); argv.push_back(nullptr); execvp(argv[0],argv.data()); _exit(127); }
         if (child > 0) waitpid(child,nullptr,0);
     }
@@ -182,7 +145,7 @@ inline int run_proxy(const DesignSession& session, RunDir& run_dir, const Config
         auto dispatch=[&](const std::string& request) {
             auto response=remote.request(request,cfg.query_timeout_sec); JsonParser parser;
             if (parser.parse(request) && parser.get_string("cmd") == "status")
-                response=add_status_fields(replace_pid(response,getpid()),remote.job_id(),cfg.job_name);
+                response=tw::lsf::add_status_fields(tw::lsf::replace_pid(response,getpid()),remote.job_id(),cfg.job_name);
             if (parser.parse(request) && parser.get_string("cmd") == "shutdown") tw::server::g_running=0;
             return response;
         };
@@ -193,7 +156,7 @@ inline int run_proxy(const DesignSession& session, RunDir& run_dir, const Config
 inline int entry(int argc, char** argv) {
     if (argc != 12 || std::string(argv[1]) != "--lsf-proxy") return 2;
     try {
-        DesignSession session=DesignSession::parse(hex_decode(argv[2])); RunDir run_dir=RunDir::from_dir(argv[3]); Config cfg;
+        DesignSession session=DesignSession::parse(tw::transport::hex_decode(argv[2])); RunDir run_dir=RunDir::from_dir(argv[3]); Config cfg;
         cfg.bsub=argv[5]; cfg.bkill=argv[6]; cfg.queue=argv[7]; cfg.resource=argv[8]; cfg.job_name=argv[9]; cfg.startup_timeout_sec=std::max(1,atoi(argv[10])); cfg.query_timeout_sec=std::max(1,atoi(argv[11]));
         return run_proxy(session,run_dir,cfg,argv[4]);
     } catch (const std::exception& error) { std::cerr << "[vsignal-lsf-proxy] ERROR: " << error.what() << "\n"; return 1; }

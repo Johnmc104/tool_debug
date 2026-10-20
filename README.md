@@ -282,6 +282,8 @@ vsignal fanin tb_top.dut.HCLK --json                        # 门控寄存器?
 
 ## 构建 & 部署
 
+源码复用边界、公共层依赖规则和后续治理任务见 [vwave/vsignal 源码复用与治理方案](plan/16_source_reuse_and_governance.md)。
+
 ```bash
 make                  # 编译 → release/bin/
 make build            # 同上
@@ -289,6 +291,7 @@ make deploy-bin       # 安装到 $VTOOL_HOME/bin/
 make package          # 打包 tar.gz + sha256 → dist/
 make release          # 创建 git tag + GitHub Release
 make test             # 运行全部测试
+make check-source-governance # 检查 vwave/vsignal 公共层边界和发布清单
 make version          # 显示版本号
 make pkg-info         # 显示打包配置
 make clean            # 清理 release/ dist/ build/

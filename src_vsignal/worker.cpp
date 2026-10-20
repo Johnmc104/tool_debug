@@ -1,6 +1,7 @@
 #include "server/server_core.h"
 #include "common/session.h"
 #include "common/run_dir.h"
+#include "tw/transport.h"
 
 #include <iostream>
 #include <string>
@@ -14,7 +15,7 @@ int main(int argc, char** argv) {
         return 1;
     }
     try {
-        auto session = vsignal::DesignSession::parse(vsignal::hex_decode(argv[2]));
+        auto session = vsignal::DesignSession::parse(tw::transport::hex_decode(argv[2]));
         tw::npi_env::sync_verdi_home(true);
         tw::npi_env::ensure_npi_lib_path();
         if (stdio_loop)
