@@ -73,7 +73,7 @@ vwave info --run-dir /tmp/other-wave --json
 
 FFR 库来源为 `--verdi-home` 或当前 `VERDI_HOME`，加载配套 `share/FsdbReader/linux64/libnffr.so` 和 `libnsys.so`。库加载失败会报告原因，不自动换成 NPI。当前已验证并接受的 reader 构建为 **T-2022.06-SP2**、**Y-2026.03-SP2**；其他构建明确报未验证，后续按 ABI 和行为验证扩展。
 
-切换 EDA 环境不会改变已有会话。再次 `open --backend ffr` 时，如果安装目录或库哈希变化，会重启该会话；加载预检失败则保留原会话。`status/info` 的 JSON 包含实际 backend、SDK 路径、库路径和 SHA-256。查询可显式指定 `--backend` 核对当前模式，不匹配时提示重新 open。
+切换 EDA 环境不会改变已有会话。再次 `open --backend ffr` 时，如果安装目录或库哈希变化，会重启该会话；本地模式会先做 worker 加载预检，失败时保留原会话。`status/info` 的 JSON 包含实际 backend、SDK 路径、库路径和 SHA-256。查询可显式指定 `--backend` 核对当前模式，不匹配时提示重新 open。
 
 ### LSF 计算节点模式
 
@@ -92,6 +92,11 @@ vwave close --run-dir /tmp/wave
 
 LSF 模式在登录机保留本地 UDS proxy，通过 `bsub -I` 启动计算节点上的
 `vwave-*-worker --stdio-loop`；后续独立执行的本地查询仍连接同一 proxy。
+`--backend ffr` 的 reader 预检在 LSF 模式不会于登录机执行：登录机只读取库文件
+指纹，实际 `dlopen(libnffr.so/libnsys.so)`、许可证检查和 FSDB 打开由计算节点
+worker 完成，`open` 等待远端 `ready` 响应。这使登录节点 glibc 2.17、计算节点
+glibc 2.28 的 Verdi Y-2026.03-SP2 组合可以正常工作；库目录和 worker 必须在
+计算节点可访问的共享文件系统上。
 `VWAVE_RUN_MODE=local` 或 `--run-mode local` 可切回原有本地模式。
 `VWAVE_LSF_RESOURCE`、`VWAVE_LSF_QUERY_TIMEOUT` 和 `--lsf-job-name` 可分别设置资源、查询超时和作业名。
 必须使用真实 LSF 的 `bsub/bkill`，避免系统中的 Slurm 兼容包装器。
@@ -104,15 +109,16 @@ FFR 支持四态数字信号、宽总线、位选/片选、unpacked/packed struc
 
 CentOS 7/glibc 2.17 已验证 **2022 reader** 的完整 open、查询和 close。2026 reader 自身需要更高 glibc，动态加载不能降低该要求。构建时静态链接 C++ 运行库，以减少用户切换 EDA 后的 GLIBCXX 冲突；发布仍应核验生成二进制的 GLIBC 要求。
 
-### v1.9 发布说明
+### v1.10 发布说明
 
 - 新增 `VWAVE_RUN_MODE=lsf`：通过登录机 proxy、LSF interactive job 和 stdio-loop worker 支持计算节点运行、登录机查询；保留 `local` 模式。
-- vwave/vsignal CLI 增加 `--version`，公共编译和打包流程统一使用 `VERSION=1.9`。
+- vwave/vsignal CLI 增加 `--version`，公共编译和打包流程统一使用 `VERSION=1.10`。
+- 修复 FFR LSF 模式在登录节点错误执行 reader preflight 的问题，改为等待计算节点 worker 完成实际加载。
 - 新增 VCS `W-2024.09` KDB 兼容支持；`VCS_HOME`/`VCS_BIN` 可指定 `test-vsignal` 使用的 VCS。
 - FFR 与 NPI 的普通位选、二维数组、struct、packed struct、real 和组合信号查询已完成对照验证。
 - T-2022.06-SP2、Y-2026.03-SP2 配套样本及 CentOS 7/2022 reader 验证通过；FFR worker 仍不携带厂商 reader，运行时需提供配套 SDK。
 - packed struct 展开依赖已验证 Reader 的内部开关，新增 EDA/Reader 版本必须重新做 ABI 和行为验证。
-- 当前发布归档：`tool_wave-1.9-linux-x86_64.tar.gz`，同时提供 SHA-256 校验文件。
+- 当前发布归档：`tool_wave-1.10-linux-x86_64.tar.gz`，同时提供 SHA-256 校验文件。
 
 ### VCS 2024 / KDB 兼容性
 

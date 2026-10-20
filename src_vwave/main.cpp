@@ -147,6 +147,7 @@ Global options:
   --verdi-home <path>       FsdbReader install (ffr open; default: VERDI_HOME)
   --timeout <sec>           Server start timeout (default: 30, open only)
   --run-mode local|lsf      Override VWAVE_RUN_MODE for open
+                             LSF FFR loads and validates the reader on the compute node
   --lsf-queue <name>        LSF queue (or VWAVE_LSF_QUEUE)
   --lsf-resource <expr>     LSF resource requirement (or VWAVE_LSF_RESOURCE)
   --lsf-bsub <path>         bsub command (or VWAVE_LSF_BSUB)
@@ -360,8 +361,12 @@ static int cmd_open(const CliOptions& opts) {
             return 0;
         }
     }
-    // 验证候选库后才停止已有会话。
-    if (!preflight(worker,session)) return 1;
+    // 本地模式需要在启动 daemon 前验证 worker。LSF 模式的 worker 会在
+    // 计算节点由 bsub 启动，reader 的 dlopen、许可证检查和 FSDB 打开都
+    // 必须在那里执行；登录节点可能只有 glibc 2.17，不能用本地 preflight
+    // 代替远端验证。LSF proxy 的 wait_ready() 会等待远端 worker 完成同样
+    // 的 backend.open()/info() 初始化，因此仍保留实际启动检查。
+    if (run_mode != "lsf" && !preflight(worker,session)) return 1;
     if (run_dir.is_server_alive()) {
         tw::daemon::shutdown_server(run_dir.base(),send,wave::client::build_request(1,"shutdown"));
     }

@@ -63,6 +63,66 @@ raise SystemExit('worker command not found')
         local_status = run(local_env, "status", "--run-dir", run_dir)
         assert local_status["data"].get("run_mode") != "lsf"
         run(local_env, "close", "--run-dir", run_dir)
+
+        # Regression: an FFR SDK may be readable on the login host while its
+        # libnsys.so cannot be loaded there (for example, Verdi Y-2026 on a
+        # glibc 2.17 login node).  LSF mode must defer that check to the worker
+        # on the execution host.  The fake remote worker below lets the test
+        # exercise the launcher without vendor libraries.
+        invalid_sdk = Path(tmp) / "remote-sdk"
+        reader_dir = invalid_sdk / "share/FsdbReader/linux64"
+        reader_dir.mkdir(parents=True)
+        (reader_dir / "libnffr.so").write_bytes(b"remote-only reader")
+        (reader_dir / "libnsys.so").write_bytes(b"remote-only support")
+
+        remote_worker = Path(tmp) / "remote_worker.py"
+        remote_worker.write_text(r'''#!/usr/bin/env python3
+import json
+import os
+import sys
+
+print(json.dumps({"type": "ready", "protocol": "vwave-stdio-loop",
+                  "version": 1, "pid": os.getpid(), "backend": "ffr"},
+                 separators=(',', ':')),
+      flush=True)
+for line in sys.stdin:
+    if not line.strip():
+        continue
+    request = json.loads(line)
+    command = request.get("cmd", "")
+    response = {"id": request.get("id", 0), "status": "ok", "data": {}}
+    if command == "status":
+        response["data"] = {"backend": "ffr", "uptime_seconds": 0,
+                             "pid": os.getpid()}
+    print(json.dumps(response, separators=(',', ':')), flush=True)
+    if command in ("shutdown", "stdio.quit"):
+        break
+''')
+        remote_worker.chmod(remote_worker.stat().st_mode | stat.S_IEXEC)
+        remote_bsub = Path(tmp) / "remote_bsub"
+        remote_bsub.write_text(r'''#!/usr/bin/env python3
+import os
+import sys
+
+print('Job <5252> is submitted to queue <interactive>.', file=sys.stderr, flush=True)
+args = sys.argv[1:]
+for index, value in enumerate(args):
+    if value.endswith('vwave-ffr-worker'):
+        worker = os.environ['VWAVE_TEST_REMOTE_WORKER']
+        os.execv(worker, [worker] + args[index + 1:])
+raise SystemExit('worker command not found')
+''')
+        remote_bsub.chmod(remote_bsub.stat().st_mode | stat.S_IEXEC)
+        remote_run_dir = Path(tmp) / "remote-only-run"
+        remote_env = dict(env, VWAVE_LSF_BSUB=str(remote_bsub),
+                          VWAVE_TEST_REMOTE_WORKER=str(remote_worker))
+        remote_open = run(remote_env, "open", FSDB, "--backend", "ffr",
+                           "--verdi-home", invalid_sdk, "--run-dir",
+                           remote_run_dir, "--timeout", "30")
+        assert remote_open["status"] == "ok"
+        remote_status = run(remote_env, "status", "--run-dir", remote_run_dir)
+        assert remote_status["data"]["backend"] == "ffr"
+        run(remote_env, "close", "--run-dir", remote_run_dir)
     print("LSF proxy smoke test passed")
 
 
