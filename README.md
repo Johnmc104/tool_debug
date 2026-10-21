@@ -5,7 +5,7 @@
 - **vwave** — 读取 FSDB 波形：信号值查询、边沿查找、变化计数
 - **vsignal** — 追踪网表连接：驱动/负载、fanin/fanout、路径追踪、端口连接
 
-两工具均采用 daemon 模式（open 一次，反复查询），支持 `--json` 结构化输出。
+两工具均采用 daemon 模式（open 一次，反复查询），支持 `--json` 结构化输出，并可用 `VWAVE_RUN_MODE=local|lsf` 在本地 worker 和 LSF 计算节点 worker 之间切换。
 
 ## 安装
 
@@ -123,6 +123,7 @@ CentOS 7/glibc 2.17 已验证 **2022 reader** 的完整 open、查询和 close�
 - vsignal 发布包同时提供 `vsignal-worker-2022`、`vsignal-worker-2024`、`vsignal-worker-2026`；CLI 根据 `VERDI_HOME` 自动选择对应 worker。
 - 修复 FFR LSF 模式在登录节点错误执行 reader preflight 的问题，改为等待计算节点 worker 完成实际加载。
 - 新增 VCS `W-2024.09` KDB 兼容支持；`VCS_HOME`/`VCS_BIN` 可指定 `test-vsignal` 使用的 VCS。
+- 新增 `src_common/transport.h` 和 `src_common/lsf.h`，统一两个工具的 worker session 编解码、LSF 命令拆分及状态字段处理；业务 session、协议和厂商库适配仍保持隔离。
 - FFR 与 NPI 的普通位选、二维数组、struct、packed struct、real 和组合信号查询已完成对照验证。
 - T-2022.06-SP2、Y-2026.03-SP2 配套样本及 CentOS 7/2022 reader 验证通过；FFR worker 仍不携带厂商 reader，运行时需提供配套 SDK。
 - packed struct 展开依赖已验证 Reader 的内部开关，新增 EDA/Reader 版本必须重新做 ABI 和行为验证。
@@ -291,6 +292,8 @@ make deploy-bin       # 安装到 $VTOOL_HOME/bin/
 make package          # 打包 tar.gz + sha256 → dist/
 make release          # 创建 git tag + GitHub Release
 make test             # 运行全部测试
+make test-vwave-lsf   # vwave LSF proxy smoke test
+make test-vsignal-lsf # vsignal LSF proxy smoke test
 make check-source-governance # 检查 vwave/vsignal 公共层边界和发布清单
 make version          # 显示版本号
 make pkg-info         # 显示打包配置
@@ -303,6 +306,10 @@ make clean            # 清理 release/ dist/ build/
 |------|------|
 | **VERDI_HOME** | Verdi 安装路径（`module load synopsys/verdi` 或手动 export）；决定 `vsignal` 的 NPI 编译/运行库 |
 | **VCS_HOME / VCS_BIN** | `test-vsignal` 生成 KDB 时使用的 VCS 安装或可执行文件；可选，默认从 `PATH` 查找 |
+| **VWAVE_RUN_MODE** | 运行模式：`local`（默认）或 `lsf`；`--run-mode` 可只覆盖当前 `open` |
+| **VWAVE_LSF_BSUB / VWAVE_LSF_BKILL** | LSF 的 `bsub`、`bkill` 可执行文件路径；默认从 `PATH` 查找 |
+| **VWAVE_LSF_QUEUE / VWAVE_LSF_RESOURCE** | LSF 队列和资源表达式；也可用 `--lsf-queue`、`--lsf-resource` |
+| **VWAVE_LSF_QUERY_TIMEOUT** | LSF worker 查询超时（秒），默认 `360` |
 | **GCC 9+** | C++14 编译器 |
 | **Linux** | Unix Domain Socket, fork/setsid |
 | **VCS -kdb** | vsignal 需要 KDB 数据库（`vcs -kdb ...` 编译生成） |
@@ -335,9 +342,8 @@ python3 test_vwave/test_centos7_chroot.py --rootfs build/centos7_backend/rootfs
 ```
 
 开发与验收记录见 [双后端实施记录](plan/08_vwave_dual_backend_implementation.md)。
->
-> 已验证 Verdi 版本：T-2022.06-SP2、Y-2026.03-SP2。2026.03 起 NPI 签出 License feature
-> `VerdiNPI`，若 License 服务器无此 feature，可 `export NPI_LICENSE=Verdi` 回退使用 `Verdi` feature。
+
+> 已验证 Verdi 版本：T-2022.06-SP2、Y-2026.03-SP2。2026.03 起 NPI 签出 License feature `VerdiNPI`，若 License 服务器无此 feature，可 `export NPI_LICENSE=Verdi` 回退使用 `Verdi` feature。
 
 ## 工程结构
 
@@ -350,6 +356,8 @@ src_common/           共享库（tw:: 命名空间）
   protocol.h          响应编码、错误码
   run_dir.h           运行目录管理
   npi_env.h           VERDI_HOME 对齐、NPI 初始化失败诊断
+  transport.h         worker session 的 hex 编解码
+  lsf.h               LSF command 拆分、PID 替换和 status 字段注入
 
 src_vwave/            vwave 源码
   main.cpp            CLI + CliOptions + parse_args + cmd_query
